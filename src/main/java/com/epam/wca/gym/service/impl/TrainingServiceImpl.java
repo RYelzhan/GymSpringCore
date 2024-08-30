@@ -1,8 +1,8 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.gym.dto.TrainingDTO;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.repository.TrainingDAO;
-import com.epam.wca.gym.repository.database.InMemoryDatabase;
 import com.epam.wca.gym.service.TrainingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 public class TrainingServiceImpl implements TrainingService {
     @Autowired
     private TrainingDAO trainingDAO;
-    @Autowired
-    private InMemoryDatabase inMemoryDatabase;
 
-    public void createTraining(Training training) {
+    public void createTraining(TrainingDTO trainingDTO) {
+        Training training = new Training(0, trainingDTO.traineeId(), trainingDTO.trainerId(), trainingDTO.trainingName(),
+                trainingDTO.trainingType(), trainingDTO.trainingDate(), trainingDTO.trainingDuration());
+
         trainingDAO.save(training);
     }
 

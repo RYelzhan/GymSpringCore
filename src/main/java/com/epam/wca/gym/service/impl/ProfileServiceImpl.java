@@ -10,13 +10,10 @@ import java.util.Map;
 @Slf4j
 @Service
 public class ProfileServiceImpl implements ProfileService {
+    @Autowired
     private Map<String, Integer> usernameCounter;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int PASSWORD_LENGTH = 10;
-    @Autowired
-    public void setMap(Map<String, Integer> usernameCounter) {
-        this.usernameCounter = usernameCounter;
-    }
 
     public String createUserName(String firstName, String lastName) {
         log.info("Creating Username: " + firstName + lastName);

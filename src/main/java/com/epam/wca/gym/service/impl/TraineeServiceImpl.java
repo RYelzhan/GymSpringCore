@@ -13,7 +13,7 @@ public class TraineeServiceImpl implements TraineeService {
     private TraineeDAO traineeDAO;
 
     public void createTrainee(TraineeDTO traineeDTO) {
-        Trainee trainee = new Trainee(traineeDTO.getFirstName(), traineeDTO.getLastName(), traineeDTO.getDateOfBirth(), traineeDTO.getAddress());
+        Trainee trainee = new Trainee(traineeDTO.firstName(), traineeDTO.lastName(), traineeDTO.dateOfBirth(), traineeDTO.address());
         traineeDAO.save(trainee);
     }
 

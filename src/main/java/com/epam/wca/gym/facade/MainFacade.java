@@ -39,5 +39,6 @@ public class MainFacade {
 
         ProfileServiceImpl profileService = context.getBean(ProfileServiceImpl.class);
         System.out.println(profileService.getUsernameCounter());
+
     }
 }

@@ -12,7 +12,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Autowired
     private TrainerDAO trainerDAO;
     public void createTrainer(TrainerDTO trainerDTO) {
-        Trainer trainer = new Trainer(trainerDTO.getFirstName(), trainerDTO.getLastName(), trainerDTO.getTrainingType());
+        Trainer trainer = new Trainer(trainerDTO.firstName(), trainerDTO.lastName(), trainerDTO.trainingType());
         trainerDAO.save(trainer);
     }
 
