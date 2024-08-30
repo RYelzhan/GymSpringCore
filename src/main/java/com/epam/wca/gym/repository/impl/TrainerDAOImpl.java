@@ -50,4 +50,12 @@ public class TrainerDAOImpl implements TrainerDAO {
     public Map<Long, Trainer> getAll() {
         return trainerMap;
     }
+
+    public Map<String, Long> getUsernameToId() {
+        return usernameToId;
+    }
+
+    public long[] getCurrentMaxId() {
+        return currentMaxId;
+    }
 }

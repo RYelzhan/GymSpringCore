@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
 public class TrainerServiceImpl implements TrainerService {
     @Autowired
     private TrainerDAO trainerDAO;
-    public void createTrainer(TrainerDTO trainer) {
-
+    public void createTrainer(TrainerDTO trainerDTO) {
+        Trainer trainer = new Trainer(trainerDTO.getFirstName(), trainerDTO.getLastName(), trainerDTO.getTrainingType());
+        trainerDAO.save(trainer);
     }
 
     public void updateTrainerByUsername(String username, Trainer trainer) {
-
+        trainerDAO.updateByUsername(username, trainer);
     }
 
-    @Override
     public Trainer findByUsername(String username) {
         return trainerDAO.findByUsername(username);
     }

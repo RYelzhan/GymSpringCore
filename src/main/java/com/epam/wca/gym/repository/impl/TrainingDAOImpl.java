@@ -5,6 +5,7 @@ import com.epam.wca.gym.repository.TrainingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Component
@@ -14,6 +15,9 @@ public class TrainingDAOImpl implements TrainingDAO {
     @Autowired
     public void setTrainingMap(Map<Long, Training> trainingMap) {
         this.trainingMap = trainingMap;
+    }
+    @PostConstruct
+    public void updateMaxId() {
         if (!trainingMap.isEmpty()) {
             currentMaxId = trainingMap.keySet().stream().max(Long::compare).orElse(0L);
         }
@@ -29,5 +33,8 @@ public class TrainingDAOImpl implements TrainingDAO {
     }
     public Map<Long, Training> getAll() {
         return trainingMap;
+    }
+    public long getCurrentMaxId() {
+        return currentMaxId;
     }
 }

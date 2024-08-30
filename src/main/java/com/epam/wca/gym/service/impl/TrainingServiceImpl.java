@@ -15,10 +15,10 @@ public class TrainingServiceImpl implements TrainingService {
     private InMemoryDatabase inMemoryDatabase;
 
     public void createTraining(Training training) {
-
+        trainingDAO.save(training);
     }
 
     public Training findTrainingById(long id) {
-        return null;
+        return trainingDAO.findById(id);
     }
 }

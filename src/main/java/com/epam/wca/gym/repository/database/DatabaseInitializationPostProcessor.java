@@ -104,7 +104,6 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     }
 
     private void updateUsernameToIdStorage(String userName, Long id, Map<String, Long> usernameToIdStorage) {
-        System.out.println(userName + " " + id);
         usernameToIdStorage.put(userName, id);
     }
     private void processTrainer(String[] parts, long id, Map<Long, Trainer> trainerStorage,

@@ -22,10 +22,10 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     public void deleteTraineeByUsername(String username) {
-
+        traineeDAO.deleteByUsername(username);
     }
 
     public Trainee findTraineeByUsername(String username) {
-        return traineeDAO.;
+        return traineeDAO.findByUsername(username);
     }
 }
