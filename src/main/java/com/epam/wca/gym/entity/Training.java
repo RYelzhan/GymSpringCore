@@ -19,6 +19,15 @@ public class Training {
     private Date trainingDate;
     private int trainingDuration;
 
+    public Training(long traineeId, long trainerId, String trainingName, TrainingType trainingType, Date trainingDate, int trainingDuration) {
+        this.traineeId = traineeId;
+        this.trainerId = trainerId;
+        this.trainingName = trainingName;
+        this.trainingType = trainingType;
+        this.trainingDate = trainingDate;
+        this.trainingDuration = trainingDuration;
+    }
+
     @Override
     public String toString() {
         return "Training{" +

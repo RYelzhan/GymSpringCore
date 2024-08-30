@@ -14,8 +14,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,13 +25,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-@Component
 @Slf4j
+@DependsOn({"counterOfId", "counterOfIdForTrainings"})
 public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     private Resource dataFileResource;
+    private long[] maxUserId;
+    private Long[] maxTrainingId;
     @Autowired
     public void setDataFilePath(@Value("${data.file.path}") Resource dataFileResource) {
         this.dataFileResource = dataFileResource;
+    }
+
+    @Autowired
+    public void setMaxUserId(long[] maxUserId) {
+        this.maxUserId = maxUserId;
+    }
+
+    @Autowired
+    public void setMaxTrainingId(Long[] maxTrainingId) {
+        this.maxTrainingId = maxTrainingId;
     }
 
     @Override
@@ -105,6 +117,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
 
     private void updateUsernameToIdStorage(String userName, Long id, Map<String, Long> usernameToIdStorage) {
         usernameToIdStorage.put(userName, id);
+        maxUserId[0] = Math.max(maxUserId[0], id);
     }
     private void processTrainer(String[] parts, long id, Map<Long, Trainer> trainerStorage,
                                 Map<String, Integer> usernameStorage, Map<String, Long> userToIdStorage) throws ParseException {
@@ -158,5 +171,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         int trainingDuration = Integer.parseInt(parts[7]);
         Training training = new Training(id, traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
         trainingStorage.put(id, training);
+
+        maxTrainingId[0] = Math.max(maxTrainingId[0], id);
     }
 }

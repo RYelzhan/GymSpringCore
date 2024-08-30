@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="GymSpringCore" target="1.8" />
+      <module name="GymSpringCore" target="16" />
     </bytecodeTargetLevel>
   </component>
 </project>

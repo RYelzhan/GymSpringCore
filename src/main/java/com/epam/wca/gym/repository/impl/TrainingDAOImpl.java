@@ -5,27 +5,24 @@ import com.epam.wca.gym.repository.TrainingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Component
 public class TrainingDAOImpl implements TrainingDAO {
     private Map<Long, Training> trainingMap;
-    private long currentMaxId = 0;
+    private Long[] currentMaxId;
     @Autowired
     public void setTrainingMap(Map<Long, Training> trainingMap) {
         this.trainingMap = trainingMap;
     }
-    @PostConstruct
-    public void updateMaxId() {
-        if (!trainingMap.isEmpty()) {
-            currentMaxId = trainingMap.keySet().stream().max(Long::compare).orElse(0L);
-        }
+    @Autowired
+    public void setCurrentMaxId(Long[] currentMaxId) {
+        this.currentMaxId = currentMaxId;
     }
 
     public void save(Training training) {
-        training.setTrainingId(++ currentMaxId);
-        trainingMap.put(currentMaxId, training);
+        training.setTrainingId(++ currentMaxId[0]);
+        trainingMap.put(currentMaxId[0], training);
     }
 
     public Training findById(long id) {
@@ -35,6 +32,6 @@ public class TrainingDAOImpl implements TrainingDAO {
         return trainingMap;
     }
     public long getCurrentMaxId() {
-        return currentMaxId;
+        return currentMaxId[0];
     }
 }
