@@ -1,4 +1,5 @@
 package com.epam.wca.gym.entity;
 
-public class TrainingType {
+public enum TrainingType {
+    ORDINARY, POWERLIFTING, CALISTHENICS, CROSSFIT, YOGA, PILATES
 }

@@ -5,18 +5,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class User {
     private String firstName;
     private String lastName;
     private String userName;
     private String password;
     private boolean isActive;
+
+    @Override
+    public String toString() {
+        return "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", isActive=" + isActive +
+                '}';
+    }
 }

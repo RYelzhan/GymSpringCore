@@ -1,0 +1,23 @@
+<configuration>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Pattern for the console output -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <!--- Global Configuration -->
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <!-- Logger for your application -->
+    <logger name="com.epam.wca.gym" level="INFO" additivity="false">
+        <!--- Application Configuration -->
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+</configuration>

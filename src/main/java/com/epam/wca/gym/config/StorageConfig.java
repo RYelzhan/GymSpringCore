@@ -15,14 +15,29 @@ import java.util.Map;
 public class StorageConfig {
     @Bean
     public Map<Long, Trainee> traineeStorage() {
-        return new HashMap<Long, Trainee>();
+        return new HashMap<>();
     }
     @Bean
     public Map<Long, Trainer> trainerStorage() {
-        return new HashMap<Long, Trainer>();
+        return new HashMap<>();
     }
     @Bean
     public Map<Long, Training> trainingStorage() {
-        return new HashMap<Long, Training>();
+        return new HashMap<>();
+    }
+
+    @Bean
+    public Map<String, Integer> usernameStorage() {
+        return new HashMap<>();
+    }
+
+    @Bean
+    public Map<String, Long> usernameToIdStorage() {
+        return new HashMap<>();
+    }
+
+    @Bean
+    public long[] counterOfId() {
+        return new long[]{0};
     }
 }

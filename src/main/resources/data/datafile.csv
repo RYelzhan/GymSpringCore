@@ -1,0 +1,4 @@
+Type;Id;;;;;;;
+Trainer;1;John;Doe;John.Doe;password12;TRUE;CROSSFIT;
+Trainee;2;Jane;Smith;Jane.Smith;password34;TRUE;10.05.1990;123 Main St
+Training;1;2;1;Morning Workout;CROSSFIT;29.08.2024;60;
