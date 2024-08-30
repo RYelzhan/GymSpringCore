@@ -11,15 +11,13 @@ import org.springframework.stereotype.Service;
 public class TrainingServiceImpl implements TrainingService {
     @Autowired
     private TrainingDAO trainingDAO;
-
     public void createTraining(TrainingDTO trainingDTO) {
         Training training = new Training(0, trainingDTO.traineeId(), trainingDTO.trainerId(), trainingDTO.trainingName(),
                 trainingDTO.trainingType(), trainingDTO.trainingDate(), trainingDTO.trainingDuration());
-
         trainingDAO.save(training);
     }
 
-    public Training findTrainingById(long id) {
+    public com.epam.wca.gym.entity.Training findTrainingById(long id) {
         return trainingDAO.findById(id);
     }
 }

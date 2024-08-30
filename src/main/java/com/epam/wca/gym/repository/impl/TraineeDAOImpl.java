@@ -5,7 +5,6 @@ import com.epam.wca.gym.repository.TraineeDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Component
@@ -24,12 +23,6 @@ public class TraineeDAOImpl implements TraineeDAO {
     @Autowired
     public void setCurrentMaxId(long[] currentMaxId) {
         this.currentMaxId = currentMaxId;
-    }
-    @PostConstruct
-    public void updateMaxIdUsed() {
-        if (!traineeMap.isEmpty()) {
-            currentMaxId[0] = Math.max(currentMaxId[0], traineeMap.keySet().stream().max(Long::compare).get());
-        }
     }
     public void save(Trainee trainee) {
         trainee.setUserId(++ currentMaxId[0]);

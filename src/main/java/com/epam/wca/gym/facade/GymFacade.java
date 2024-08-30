@@ -20,6 +20,7 @@ public class GymFacade {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
+
     @Autowired
     public GymFacade(TraineeService traineeService, TrainerService trainerService, TrainingService trainingService) {
         this.traineeService = traineeService;
@@ -40,17 +41,13 @@ public class GymFacade {
                 String choice = scanner.nextLine();
 
                 switch (choice) {
-                    case "l":
-                        loggedIn = login(scanner);
-                        break;
-                    case "r":
-                        register(scanner);
-                        break;
-                    case "q":
+                    case "l" -> loggedIn = login(scanner);
+                    case "r" -> register(scanner);
+                    case "q" -> {
                         System.out.println("Exiting...");
                         return;
-                    default:
-                        System.out.println("Invalid option, please try again.");
+                    }
+                    default -> System.out.println("Invalid option, please try again.");
                 }
             } else {
                 System.out.println("c - create training");
@@ -58,11 +55,8 @@ public class GymFacade {
                 String choice = scanner.nextLine();
 
                 switch (choice) {
-                    case "c":
-                        createTraining(scanner);
-                        break;
-                    default:
-                        System.out.println("Invalid option, please try again.");
+                    case "c" -> createTraining(scanner);
+                    default -> System.out.println("Invalid option, please try again.");
                 }
             }
         }
@@ -187,5 +181,4 @@ public class GymFacade {
             System.out.println("An error occurred while creating the training session: " + e.getMessage());
         }
     }
-
 }

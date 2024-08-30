@@ -14,6 +14,8 @@
         <appender-ref ref="CONSOLE" />
     </root>
 
+    <logger name="org.springframework" level="ERROR"/>
+
     <!-- Logger for your application -->
     <logger name="com.epam.wca.gym" level="INFO" additivity="false">
         <!--- Application Configuration -->

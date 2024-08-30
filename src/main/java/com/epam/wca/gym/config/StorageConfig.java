@@ -3,6 +3,7 @@ package com.epam.wca.gym.config;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
+import com.epam.wca.gym.repository.database.DatabaseInitializationPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,5 +40,14 @@ public class StorageConfig {
     @Bean
     public long[] counterOfId() {
         return new long[]{0};
+    }
+    @Bean
+    public Long[] counterOfIdForTrainings() {
+        return new Long[]{0L};
+    }
+
+    @Bean
+    public DatabaseInitializationPostProcessor databaseInitializationPostProcessor() {
+        return new DatabaseInitializationPostProcessor();
     }
 }
