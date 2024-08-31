@@ -1,3 +1,0 @@
-Trainer,1,John,Doe,jdoe,pass123,true,CROSSFIT
-Trainee,2,Jane,Smith,jsmith,pass456,true,1990-05-10,123 Main St
-Training,3,2,1,Morning Workout,CROSSFIT,2024-08-29,60

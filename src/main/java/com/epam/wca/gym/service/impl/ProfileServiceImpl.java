@@ -1,10 +1,13 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.service.ProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.security.SecureRandom;
 import java.util.Map;
 @Slf4j
@@ -14,10 +17,16 @@ public class ProfileServiceImpl implements ProfileService {
     private Map<String, Integer> usernameCounter;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int PASSWORD_LENGTH = 10;
+    @PostConstruct
+    public void injectIntoEntities() {
+        Trainee.setProfileService(this);
+        Trainer.setProfileService(this);
+    }
 
     public String createUserName(String firstName, String lastName) {
-        log.info("Creating Username: " + firstName + lastName);
         String baseUsername = firstName + '.' + lastName;
+        log.info("Creating Username: " + baseUsername);
+
         String userName = baseUsername;
 
         if (usernameCounter.containsKey(baseUsername)) {

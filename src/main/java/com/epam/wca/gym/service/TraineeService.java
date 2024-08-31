@@ -4,8 +4,9 @@ import com.epam.wca.gym.dto.TraineeDTO;
 import com.epam.wca.gym.entity.Trainee;
 
 public interface TraineeService {
-    void createTrainee(TraineeDTO trainee);
-    void updateTraineeByUsername(String username, Trainee trainee);
-    void deleteTraineeByUsername(String username);
-    Trainee findTraineeByUsername(String username);
+    Trainee create(TraineeDTO trainee);
+    void updateByUsername(String username, Trainee trainee);
+    void deleteByUsername(String username);
+    Trainee findByUsername(String username);
+    Trainee findById(long id);
 }

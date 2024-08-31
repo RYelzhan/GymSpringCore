@@ -1,19 +1,16 @@
 package com.epam.wca.gym.entity;
 
 import com.epam.wca.gym.service.ProfileService;
-import com.epam.wca.gym.service.impl.ProfileServiceImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-@Component
 public class Trainee extends User{
-    private static ProfileService profileService = new ProfileServiceImpl();
+    private static ProfileService profileService;
 
     private Date dateOfBirth;
     private String address;
@@ -30,6 +27,10 @@ public class Trainee extends User{
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.userId = userId;
+    }
+
+    public static void setProfileService(ProfileService profileService) {
+        Trainee.profileService = profileService;
     }
 
     @Override

@@ -26,7 +26,10 @@ public class TrainingDAOImpl implements TrainingDAO {
     }
 
     public Training findById(long id) {
-        return trainingMap.get(id);
+        if (trainingMap.containsKey(id)) {
+            return trainingMap.get(id);
+        }
+        return null;
     }
     public Map<Long, Training> getAll() {
         return trainingMap;

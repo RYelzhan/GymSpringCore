@@ -24,10 +24,12 @@ public class TraineeDAOImpl implements TraineeDAO {
     public void setCurrentMaxId(long[] currentMaxId) {
         this.currentMaxId = currentMaxId;
     }
-    public void save(Trainee trainee) {
+    public Trainee save(Trainee trainee) {
         trainee.setUserId(++ currentMaxId[0]);
         traineeMap.put(currentMaxId[0], trainee);
         usernameToId.put(trainee.getUserName(), currentMaxId[0]);
+
+        return trainee;
     }
 
     public void updateByUsername(String username, Trainee trainee) {
@@ -45,6 +47,13 @@ public class TraineeDAOImpl implements TraineeDAO {
     public Trainee findByUsername(String username) {
         if (usernameToId.containsKey(username)) {
             return traineeMap.get(usernameToId.get(username));
+        }
+        return null;
+    }
+
+    public Trainee findById(long id) {
+        if (traineeMap.containsKey(id)) {
+            return traineeMap.get(id);
         }
         return null;
     }

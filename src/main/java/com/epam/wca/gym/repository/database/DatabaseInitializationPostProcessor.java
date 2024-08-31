@@ -4,6 +4,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
+import com.epam.wca.gym.utils.AppConstants;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -61,7 +62,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 .build();
         try (Reader reader = new InputStreamReader(dataFileResource.getInputStream());
              CSVReader csvReader = new CSVReaderBuilder(reader)
-                     .withSkipLines(1)
+                     .withSkipLines(AppConstants.fileSkippedLines)
                      .withCSVParser(parser)
                      .build()) {
 
@@ -76,18 +77,12 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 long id = Long.parseLong(parts[1]);
 
                 switch (type) {
-                    case "Trainer":
-                        processTrainer(parts, id, database.getTrainerStorage(), database.getUsernameStorage(), database.getUsernameToIdStorage());
-                        break;
-                    case "Trainee":
-                        processTrainee(parts, id, database.getTraineeStorage(), database.getUsernameStorage(), database.getUsernameToIdStorage());
-                        break;
-                    case "Training":
-                        processTraining(parts, id, database.getTrainingStorage());
-                        break;
-                    default:
-                        System.err.println("Unknown type found in CSV: " + type);
-                        break;
+                    case "Trainer" ->
+                            processTrainer(parts, id, database.getTrainerStorage(), database.getUsernameStorage(), database.getUsernameToIdStorage());
+                    case "Trainee" ->
+                            processTrainee(parts, id, database.getTraineeStorage(), database.getUsernameStorage(), database.getUsernameToIdStorage());
+                    case "Training" -> processTraining(parts, id, database.getTrainingStorage());
+                    default -> System.err.println("Unknown type found in CSV: " + type);
                 }
             }
         } catch (IOException e) {
@@ -106,11 +101,14 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
 
     private void updateUsernameStorage(String firstName, String lastName, String userName, Map<String, Integer> usernameStorage) {
         int lengthOfDefault = firstName.length() + lastName.length() + 1;
+        log.info("Updating Username Storage");
         if (lengthOfDefault == userName.length()) {
             // first person with such username
             usernameStorage.put(userName, 1);
+            log.info(userName + " " + 1);
         } else {
             // getting integers that were added to the end of default username
+            log.info(userName + " " + Integer.parseInt(userName.substring(lengthOfDefault)));
             usernameStorage.put(userName, Integer.parseInt(userName.substring(lengthOfDefault)));
         }
     }
@@ -118,6 +116,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     private void updateUsernameToIdStorage(String userName, Long id, Map<String, Long> usernameToIdStorage) {
         usernameToIdStorage.put(userName, id);
         maxUserId[0] = Math.max(maxUserId[0], id);
+        log.info("Updating max User ID: " + maxUserId[0]);
     }
     private void processTrainer(String[] parts, long id, Map<Long, Trainer> trainerStorage,
                                 Map<String, Integer> usernameStorage, Map<String, Long> userToIdStorage) throws ParseException {
@@ -149,7 +148,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         String userName = parts[4];
         String password = parts[5];
         boolean isActive = Boolean.parseBoolean(parts[6]);
-        Date dateOfBirth = new SimpleDateFormat("yyyy.MM.dd").parse(parts[7]);
+        Date dateOfBirth = new SimpleDateFormat(AppConstants.DEFAULT_DATE_FORMAT).parse(parts[7]);
         String address = parts[8];
         Trainee trainee = new Trainee(firstName, lastName, userName, password, isActive, dateOfBirth, address, id);
         traineeStorage.put(id, trainee);
@@ -167,11 +166,12 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         long trainerId = Long.parseLong(parts[3]);
         String trainingName = parts[4];
         TrainingType trainingType = TrainingType.valueOf(parts[5].toUpperCase());
-        Date trainingDate = new SimpleDateFormat("yyyy.MM.dd").parse(parts[6]);
+        Date trainingDate = new SimpleDateFormat(AppConstants.DEFAULT_DATE_FORMAT).parse(parts[6]);
         int trainingDuration = Integer.parseInt(parts[7]);
         Training training = new Training(id, traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
         trainingStorage.put(id, training);
 
         maxTrainingId[0] = Math.max(maxTrainingId[0], id);
+        log.info("Updating max Training ID: " + maxTrainingId[0]);
     }
 }

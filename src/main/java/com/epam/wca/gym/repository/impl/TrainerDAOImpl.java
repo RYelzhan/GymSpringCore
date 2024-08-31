@@ -24,9 +24,11 @@ public class TrainerDAOImpl implements TrainerDAO {
     public void setCurrentMaxId(long[] currentMaxId) {
         this.currentMaxId = currentMaxId;
     }
-    public void save(Trainer trainer) {
+    public Trainer save(Trainer trainer) {
         trainer.setUserId(++ currentMaxId[0]);
         trainerMap.put(currentMaxId[0], trainer);
+
+        return trainer;
     }
 
     public void updateByUsername(String username, Trainer trainer) {
@@ -34,12 +36,20 @@ public class TrainerDAOImpl implements TrainerDAO {
             trainerMap.put(usernameToId.get(username), trainer);
         }
     }
-    public Trainer findByUsername(String name) {
-        if (usernameToId.containsKey(name)) {
-            return trainerMap.get(usernameToId.get(name));
+    public Trainer findByUsername(String username) {
+        if (usernameToId.containsKey(username)) {
+            return trainerMap.get(usernameToId.get(username));
         }
         return null;
     }
+
+    public Trainer findById(long id) {
+        if (trainerMap.containsKey(id)) {
+            return trainerMap.get(id);
+        }
+        return null;
+    }
+
     public Map<Long, Trainer> getAll() {
         return trainerMap;
     }
