@@ -7,9 +7,10 @@ import com.epam.wca.gym.service.impl.TraineeServiceImpl;
 import com.epam.wca.gym.utils.AppConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,11 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
 class TraineeServiceImplTest {
     @Mock
     private TraineeDAO traineeDAO;
-
+    @Mock
+    private ProfileService profileService;
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
@@ -31,9 +33,11 @@ class TraineeServiceImplTest {
 
     @BeforeEach
     void setUp() throws ParseException {
-        MockitoAnnotations.openMocks(this);
-        traineeDTO = new TraineeDTO("John", "Doe", new SimpleDateFormat((AppConstants.DEFAULT_DATE_FORMAT)).parse("1990-01-01"), "123 Street");
-        trainee = new Trainee("John", "Doe", new SimpleDateFormat((AppConstants.DEFAULT_DATE_FORMAT)).parse("1990-01-01"), "123 Street");
+        Trainee.setProfileService(profileService);
+        when(profileService.createUserName(anyString(), anyString())).thenReturn("John.Doe");
+
+        traineeDTO = new TraineeDTO("John", "Doe", new SimpleDateFormat((AppConstants.DEFAULT_DATE_FORMAT)).parse("1990.01.01"), "123 Street");
+        trainee = new Trainee("John", "Doe", new SimpleDateFormat((AppConstants.DEFAULT_DATE_FORMAT)).parse("1990.01.01"), "123 Street");
     }
 
     @Test
@@ -48,21 +52,21 @@ class TraineeServiceImplTest {
     @Test
     void testUpdateTrainee() {
         doNothing().when(traineeDAO).updateByUsername(anyString(), any(Trainee.class));
-        traineeService.updateByUsername("john.doe", trainee);
+        traineeService.updateByUsername("John.Doe", trainee);
         verify(traineeDAO, times(1)).updateByUsername(anyString(), any(Trainee.class));
     }
 
     @Test
     void testDeleteTrainee() {
         doNothing().when(traineeDAO).deleteByUsername(anyString());
-        traineeService.deleteByUsername("john.doe");
+        traineeService.deleteByUsername("John.Doe");
         verify(traineeDAO, times(1)).deleteByUsername(anyString());
     }
 
     @Test
     void testFindByUsername() {
-        when(traineeDAO.findByUsername("john.doe")).thenReturn(trainee);
-        Trainee foundTrainee = traineeService.findByUsername("john.doe");
+        when(traineeDAO.findByUsername("John.Doe")).thenReturn(trainee);
+        Trainee foundTrainee = traineeService.findByUsername("John.Doe");
         assertNotNull(foundTrainee);
         assertEquals("John", foundTrainee.getFirstName());
     }
