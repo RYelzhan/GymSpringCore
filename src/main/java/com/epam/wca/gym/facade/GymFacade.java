@@ -60,6 +60,7 @@ public class GymFacade {
             } else {
                 System.out.println("c - create training");
                 System.out.println("u - update user information");
+                System.out.println("g - get user information");
                 System.out.println("d - delete Trainee");
                 System.out.println("f - find Training Info");
                 System.out.println("l - log out");
@@ -69,6 +70,7 @@ public class GymFacade {
                 switch (choice) {
                     case "c" -> createTraining(scanner);
                     case "u" -> updateUser(scanner);
+                    case "g" -> getUserInformation();
                     case "d" -> delete();
                     case "f" -> findTrainingInfo(scanner);
                     case "l" -> loggedIn = false;
@@ -254,6 +256,27 @@ public class GymFacade {
 
             trainerService.updateByUsername(username, trainer);
             System.out.println("Trainer information updated successfully!");
+        }
+    }
+    private void getUserInformation() {
+        Trainee trainee = traineeService.findByUsername(username);
+        Trainer trainer = trainerService.findByUsername(username);
+
+        if (trainee != null) {
+            System.out.println("Trainee Information:");
+            System.out.println("Id: " + trainee.getUserId());
+            System.out.println("Username: " + trainee.getUserName());
+            System.out.println("First Name: " + trainee.getFirstName());
+            System.out.println("Last Name: " + trainee.getLastName());
+            System.out.println("Date of Birth: " + trainee.getDateOfBirth());
+            System.out.println("Address: " + trainee.getAddress());
+        } else {
+            System.out.println("Trainer Information:");
+            System.out.println("Id: " + trainer.getUserId());
+            System.out.println("Username: " + trainer.getUserName());
+            System.out.println("First Name: " + trainer.getFirstName());
+            System.out.println("Last Name: " + trainer.getLastName());
+            System.out.println("Specialization: " + trainer.getSpecialization());
         }
     }
     private void delete() {

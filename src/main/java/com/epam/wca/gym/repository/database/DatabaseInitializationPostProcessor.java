@@ -58,7 +58,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     private void initializeData(InMemoryDatabase database) {
         log.info("Started Initialising In-Memory Database");
         CSVParser parser = new CSVParserBuilder()
-                .withSeparator(';')
+                .withSeparator(AppConstants.DATA_DELIMITER)
                 .build();
         try (Reader reader = new InputStreamReader(dataFileResource.getInputStream());
              CSVReader csvReader = new CSVReaderBuilder(reader)

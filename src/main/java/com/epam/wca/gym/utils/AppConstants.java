@@ -4,6 +4,7 @@ public class AppConstants {
     private AppConstants() {
         // Prevent instantiation
     }
-    public static final int fileSkippedLines = 1;
+    public static final int fileSkippedLines = 0;
     public static final String DEFAULT_DATE_FORMAT = "yyyy.MM.dd";
+    public static final char DATA_DELIMITER = ';';
 }
