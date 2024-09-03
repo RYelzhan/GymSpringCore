@@ -22,7 +22,7 @@ public class MainFacade {
 
         System.out.println(traineeDAO.getAll());
         System.out.println(traineeDAO.getUsernameToId());
-        System.out.println(Arrays.toString(traineeDAO.getCurrentMaxId()));
+        System.out.println(traineeDAO.getCurrentMaxId());
 
         System.out.println("----------------------");
 

@@ -27,8 +27,25 @@ public class TrainerDAOImpl implements TrainerDAO {
     public Trainer save(Trainer trainer) {
         trainer.setUserId(++ currentMaxId[0]);
         trainerMap.put(currentMaxId[0], trainer);
+        usernameToId.put(trainer.getUserName(), currentMaxId[0]);
 
         return trainer;
+    }
+
+    @Override
+    public void updateById(Long id, Trainer trainer) {
+        trainerMap.put(id, trainer);
+    }
+
+    @Override
+    public void deleteById(Long id) {}
+
+    @Override
+    public Trainer findById(Long id) {
+        if (trainerMap.containsKey(id)) {
+            return trainerMap.get(id);
+        }
+        return null;
     }
 
     public void updateByUsername(String username, Trainer trainer) {

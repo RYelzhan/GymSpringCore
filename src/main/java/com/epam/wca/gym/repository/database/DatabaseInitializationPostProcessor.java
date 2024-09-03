@@ -89,8 +89,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
             log.error("Error reading data file: " + e.getMessage());
             e.printStackTrace();
         } catch (CsvValidationException | ParseException e) {
-            log.error("Error parsing data file: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error parsing data file: " + e);
         }
         log.info("Finished Initialising In-Memory Database");
     }

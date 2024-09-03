@@ -98,6 +98,17 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/epam/gym/app/*</exclude>
+                        <exclude>com/epam/gym/config/*</exclude>
+                        <exclude>com/epam/gym/dto/*</exclude>
+                        <exclude>com/epam/gym/entity/*</exclude>
+                        <exclude>com/epam/gym/facade/*</exclude>
+                        <exclude>com/epam/gym/repository/*</exclude>
+                        <exclude>com/epam/gym/utils/*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -147,6 +158,8 @@
                     <argLine> <!-- @{argLine} I have to do something with it -->
                         -Dfile.encoding=UTF-8</argLine>
                     <includes>
+                        <!-- can also add exclude to only see percentage for parts that I am interested in.
+                         Example: to only see coverage for services -->
                         <include>**/*Test.java</include>
                     </includes>
                 </configuration>

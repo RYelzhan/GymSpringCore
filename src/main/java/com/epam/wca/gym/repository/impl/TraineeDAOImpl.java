@@ -32,6 +32,23 @@ public class TraineeDAOImpl implements TraineeDAO {
         return trainee;
     }
 
+    public void updateById(Long id, Trainee trainee) {
+        if (traineeMap.containsKey(id)) {
+            traineeMap.put(id, trainee);
+        }
+    }
+
+    public void deleteById(Long id) {
+        traineeMap.remove(id);
+    }
+
+    public Trainee findById(Long id) {
+        if (traineeMap.containsKey(id)) {
+            return traineeMap.get(id);
+        }
+        return null;
+    }
+
     public void updateByUsername(String username, Trainee trainee) {
         if (usernameToId.containsKey(username) && traineeMap.containsKey(usernameToId.get(username))) {
             traineeMap.put(usernameToId.get(username), trainee);

@@ -20,12 +20,26 @@ public class TrainingDAOImpl implements TrainingDAO {
         this.currentMaxId = currentMaxId;
     }
 
-    public void save(Training training) {
+    @Override
+    public Training save(Training training) {
         training.setTrainingId(++ currentMaxId[0]);
         trainingMap.put(currentMaxId[0], training);
+
+        return training;
     }
 
-    public Training findById(long id) {
+    @Override
+    public void updateById(Long aLong, Training entity) {
+
+    }
+
+    @Override
+    public void deleteById(Long aLong) {
+
+    }
+
+    @Override
+    public Training findById(Long id) {
         if (trainingMap.containsKey(id)) {
             return trainingMap.get(id);
         }
