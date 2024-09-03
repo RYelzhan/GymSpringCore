@@ -4,6 +4,7 @@ import com.epam.wca.gym.dto.TraineeDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.repository.TraineeDAO;
 import com.epam.wca.gym.service.TraineeService;
+import com.epam.wca.gym.utils.UserFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class TraineeServiceImpl implements TraineeService {
     private TraineeDAO traineeDAO;
 
     public Trainee create(TraineeDTO traineeDTO) {
-        Trainee newTrainee = traineeDAO.save(new Trainee(traineeDTO.firstName(), traineeDTO.lastName(), traineeDTO.dateOfBirth(), traineeDTO.address()));
+        Trainee newTrainee = traineeDAO.save(UserFactory.createTrainee(traineeDTO));
 
         log.info("Creating new Trainee: " + newTrainee.getUserName());
 

@@ -51,7 +51,7 @@ public class TrainingServiceImplTest {
     void testCreateTraining_Success() {
         when(traineeService.findById(1L)).thenReturn(new Trainee());
         when(trainerService.findById(2L)).thenReturn(new Trainer());
-        doNothing().when(trainingDAO).save(any(Training.class));
+        when(trainingDAO.save(any(Training.class))).thenReturn(new Training());
 
         Training createdTraining = trainingService.createTraining(trainingDTO);
 

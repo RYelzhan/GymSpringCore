@@ -3,6 +3,7 @@ package com.epam.wca.gym.service.impl;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.service.ProfileService;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.security.SecureRandom;
 import java.util.Map;
+@Getter
 @Slf4j
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -51,10 +53,6 @@ public class ProfileServiceImpl implements ProfileService {
             password.append(CHARACTERS.charAt(index));
         }
 
-        return password.toString();
-    }
-
-    public Map<String, Integer> getUsernameCounter() {
-        return usernameCounter;
+        return password.toString(); // Hashing, maybe
     }
 }

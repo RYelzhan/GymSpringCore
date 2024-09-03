@@ -3,10 +3,12 @@ package com.epam.wca.gym.repository.database;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+@Getter
 @Component
 public class InMemoryDatabase {
     private Map<Long, Trainee> traineeStorage;
@@ -33,26 +35,6 @@ public class InMemoryDatabase {
     @Autowired
     public void setUsernameToIdStorage(Map<String, Long> usernameToIdStorage) {
         this.usernameToIdStorage = usernameToIdStorage;
-    }
-
-    public Map<Long, Trainee> getTraineeStorage() {
-        return traineeStorage;
-    }
-
-    public Map<Long, Trainer> getTrainerStorage() {
-        return trainerStorage;
-    }
-
-    public Map<Long, Training> getTrainingStorage() {
-        return trainingStorage;
-    }
-
-    public Map<String, Integer> getUsernameStorage() {
-        return usernameStorage;
-    }
-
-    public Map<String, Long> getUsernameToIdStorage() {
-        return usernameToIdStorage;
     }
 
     /*
