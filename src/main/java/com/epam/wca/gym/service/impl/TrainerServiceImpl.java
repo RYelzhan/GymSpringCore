@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class TrainerServiceImpl implements TrainerService {
     @Autowired
     private TrainerDAO trainerDAO;
+
     public Trainer create(TrainerDTO trainerDTO) {
         Trainer newTrainer = trainerDAO.save(UserFactory.createTrainer(trainerDTO));
 

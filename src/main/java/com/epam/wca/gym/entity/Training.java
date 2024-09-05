@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,10 +17,15 @@ public class Training {
     private long trainerId;
     private String trainingName;
     private TrainingType trainingType;
-    private Date trainingDate;
+    private LocalDate trainingDate;
     private int trainingDuration;
 
-    public Training(long traineeId, long trainerId, String trainingName, TrainingType trainingType, Date trainingDate, int trainingDuration) {
+    public Training(long traineeId,
+                    long trainerId,
+                    String trainingName,
+                    TrainingType trainingType,
+                    LocalDate trainingDate,
+                    int trainingDuration) {
         this.traineeId = traineeId;
         this.trainerId = trainerId;
         this.trainingName = trainingName;

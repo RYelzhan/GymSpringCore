@@ -1,10 +1,9 @@
 package com.epam.wca.gym.utils;
 
-public class AppConstants {
-    private AppConstants() {
-        // Prevent instantiation
-    }
+import lombok.experimental.UtilityClass;
+@UtilityClass
+public final class AppConstants {
     public static final int fileSkippedLines = 0;
-    public static final String DEFAULT_DATE_FORMAT = "yyyy.MM.dd";
+    public static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy";
     public static final char DATA_DELIMITER = ';';
 }

@@ -18,10 +18,12 @@ public class StorageConfig {
     public Map<Long, Trainee> traineeStorage() {
         return new HashMap<>();
     }
+
     @Bean
     public Map<Long, Trainer> trainerStorage() {
         return new HashMap<>();
     }
+
     @Bean
     public Map<Long, Training> trainingStorage() {
         return new HashMap<>();
@@ -41,6 +43,7 @@ public class StorageConfig {
     public long[] counterOfId() {
         return new long[]{0};
     }
+
     @Bean
     public Long[] counterOfIdForTrainings() {
         return new Long[]{0L};

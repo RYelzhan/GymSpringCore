@@ -11,10 +11,12 @@ import java.util.Map;
 public class TrainingDAOImpl implements TrainingDAO {
     private Map<Long, Training> trainingMap;
     private Long[] currentMaxId;
+
     @Autowired
     public void setTrainingMap(Map<Long, Training> trainingMap) {
         this.trainingMap = trainingMap;
     }
+
     @Autowired
     public void setCurrentMaxId(Long[] currentMaxId) {
         this.currentMaxId = currentMaxId;
@@ -22,7 +24,7 @@ public class TrainingDAOImpl implements TrainingDAO {
 
     @Override
     public Training save(Training training) {
-        training.setTrainingId(++ currentMaxId[0]);
+        training.setTrainingId(++currentMaxId[0]);
         trainingMap.put(currentMaxId[0], training);
 
         return training;
@@ -45,9 +47,11 @@ public class TrainingDAOImpl implements TrainingDAO {
         }
         return null;
     }
+
     public Map<Long, Training> getAll() {
         return trainingMap;
     }
+
     public long getCurrentMaxId() {
         return currentMaxId[0];
     }

@@ -24,17 +24,20 @@ public class ProfileServiceImplTest {
     private ProfileServiceImpl profileService;
 
     @ParameterizedTest
-    @CsvSource({ "John, Doe, John.Doe", "Jane, Smith, Jane.Smith" })
+    @CsvSource({"John, Doe, John.Doe", "Jane, Smith, Jane.Smith"})
     void testCreateNewUserName(String firstName, String lastName, String expectedUsername) {
-        when(usernameCounter.containsKey(expectedUsername)).thenReturn(false);
+        when(usernameCounter.containsKey(expectedUsername))
+                .thenReturn(false);
         assertEquals(expectedUsername, profileService.createUserName(firstName, lastName));
     }
 
     @ParameterizedTest
-    @CsvSource({ "John, Doe, John.Doe2", "Jane, Smith, Jane.Smith2" })
+    @CsvSource({"John, Doe, John.Doe2", "Jane, Smith, Jane.Smith2"})
     void testCreateExistingUserName(String firstName, String lastName, String expectedUsername) {
-        when(usernameCounter.containsKey(anyString())).thenReturn(true);
-        when(usernameCounter.get(anyString())).thenReturn(1);
+        when(usernameCounter.containsKey(anyString()))
+                .thenReturn(true);
+        when(usernameCounter.get(anyString()))
+                .thenReturn(1);
         assertEquals(expectedUsername, profileService.createUserName(firstName, lastName));
     }
 

@@ -13,14 +13,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+
 @ExtendWith(MockitoExtension.class)
 public class TrainingServiceImplTest {
     @Mock
@@ -39,30 +45,46 @@ public class TrainingServiceImplTest {
     private Training training;
 
     @BeforeEach
-    void setUp() throws ParseException {
-        MockitoAnnotations.openMocks(this);
-        trainingDTO = new TrainingDTO(1L, 2L, "Yoga",
-                TrainingType.POWERLIFTING, new SimpleDateFormat(AppConstants.DEFAULT_DATE_FORMAT).parse("2024.08.31"), 60);
-        training = new Training(1L, 2L, "Yoga",
-                TrainingType.POWERLIFTING, new SimpleDateFormat(AppConstants.DEFAULT_DATE_FORMAT).parse("2024.08.31"), 60);
+    void setUp() {
+        trainingDTO = new TrainingDTO(1L,
+                2L,
+                "Yoga",
+                TrainingType.POWERLIFTING,
+                LocalDate.parse("2024.08.31", DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
+                60);
+
+        training = new Training(1L,
+                2L,
+                "Yoga",
+                TrainingType.POWERLIFTING,
+                LocalDate.parse("2024.08.31", DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
+                60);
     }
 
     @Test
     void testCreateTraining_Success() {
-        when(traineeService.findById(1L)).thenReturn(new Trainee());
-        when(trainerService.findById(2L)).thenReturn(new Trainer());
-        when(trainingDAO.save(any(Training.class))).thenReturn(new Training());
+        when(traineeService.findById(1L))
+                .thenReturn(new Trainee());
+
+        when(trainerService.findById(2L))
+                .thenReturn(new Trainer());
+
+        when(trainingDAO.save(any(Training.class)))
+                .thenReturn(new Training());
 
         Training createdTraining = trainingService.createTraining(trainingDTO);
 
         assertNotNull(createdTraining);
         assertEquals("Yoga", createdTraining.getTrainingName());
-        verify(trainingDAO, times(1)).save(any(Training.class));
+
+        verify(trainingDAO, times(1))
+                .save(any(Training.class));
     }
 
     @Test
     void testCreateTraining_TraineeNotFound() {
-        when(traineeService.findById(1L)).thenReturn(null);
+        when(traineeService.findById(1L))
+                .thenReturn(null);
 
         assertThrows(IllegalStateException.class, () -> trainingService.createTraining(trainingDTO));
 
@@ -71,8 +93,11 @@ public class TrainingServiceImplTest {
 
     @Test
     void testCreateTraining_TrainerNotFound() {
-        when(traineeService.findById(1L)).thenReturn(new Trainee());
-        when(trainerService.findById(2L)).thenReturn(null);
+        when(traineeService.findById(1L))
+                .thenReturn(new Trainee());
+
+        when(trainerService.findById(2L))
+                .thenReturn(null);
 
         assertThrows(IllegalStateException.class, () -> trainingService.createTraining(trainingDTO));
 
@@ -81,7 +106,8 @@ public class TrainingServiceImplTest {
 
     @Test
     void testFindById() {
-        when(trainingDAO.findById(1L)).thenReturn(training);
+        when(trainingDAO.findById(1L))
+                .thenReturn(training);
 
         Training foundTraining = trainingService.findById(1L);
 

@@ -1,5 +1,11 @@
 package com.epam.wca.gym.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public record TraineeDTO(String firstName, String lastName, Date dateOfBirth, String address) {}
+public record TraineeDTO(
+        String firstName,
+        String lastName,
+        LocalDate dateOfBirth,
+        String address
+) {
+}

@@ -5,6 +5,7 @@ import com.epam.wca.gym.repository.TraineeDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Component
@@ -12,20 +13,24 @@ public class TraineeDAOImpl implements TraineeDAO {
     private Map<Long, Trainee> traineeMap;
     private Map<String, Long> usernameToId;
     private long[] currentMaxId;
+
     @Autowired
     public void setTraineeMap(Map<Long, Trainee> traineeMap) {
         this.traineeMap = traineeMap;
     }
+
     @Autowired
     public void setUsernameToId(Map<String, Long> usernameToId) {
         this.usernameToId = usernameToId;
     }
+
     @Autowired
     public void setCurrentMaxId(long[] currentMaxId) {
         this.currentMaxId = currentMaxId;
     }
+
     public Trainee save(Trainee trainee) {
-        trainee.setUserId(++ currentMaxId[0]);
+        trainee.setUserId(++currentMaxId[0]);
         traineeMap.put(currentMaxId[0], trainee);
         usernameToId.put(trainee.getUserName(), currentMaxId[0]);
 
@@ -76,11 +81,13 @@ public class TraineeDAOImpl implements TraineeDAO {
     }
 
     public Map<Long, Trainee> getAll() {
-        return traineeMap;
+        return Collections.unmodifiableMap(traineeMap);
     }
+
     public Map<String, Long> getUsernameToId() {
         return usernameToId;
     }
+
     public long[] getCurrentMaxId() {
         return currentMaxId;
     }

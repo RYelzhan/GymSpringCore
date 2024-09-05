@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.security.SecureRandom;
 import java.util.Map;
+
 @Getter
 @Slf4j
 @Service
@@ -19,6 +20,7 @@ public class ProfileServiceImpl implements ProfileService {
     private Map<String, Integer> usernameCounter;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int PASSWORD_LENGTH = 10;
+
     @PostConstruct
     public void injectIntoEntities() {
         Trainee.setProfileService(this);

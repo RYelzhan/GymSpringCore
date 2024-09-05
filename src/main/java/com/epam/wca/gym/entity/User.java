@@ -18,11 +18,9 @@ public class User {
 
     @Override
     public String toString() {
-        return "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", isActive=" + isActive +
-                '}';
+        return "firstName = " + firstName + '\n' +
+                "lastName = " + lastName + '\n' +
+                "userName = " + userName + '\n' +
+                "isActive = " + isActive + '\n';
     }
 }

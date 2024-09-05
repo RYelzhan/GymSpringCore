@@ -21,9 +21,8 @@ import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Slf4j
@@ -32,6 +31,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     private Resource dataFileResource;
     private long[] maxUserId;
     private Long[] maxTrainingId;
+
     @Autowired
     public void setDataFilePath(@Value("${data.file.path}") Resource dataFileResource) {
         this.dataFileResource = dataFileResource;
@@ -48,7 +48,8 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean,
+                                                 String beanName) throws BeansException {
         if (bean instanceof InMemoryDatabase) {
             initializeData((InMemoryDatabase) bean);
         }
@@ -77,10 +78,16 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 long id = Long.parseLong(parts[1]);
 
                 switch (type) {
-                    case "Trainer" ->
-                            processTrainer(parts, id, database.getTrainerStorage(), database.getUsernameStorage(), database.getUsernameToIdStorage());
-                    case "Trainee" ->
-                            processTrainee(parts, id, database.getTraineeStorage(), database.getUsernameStorage(), database.getUsernameToIdStorage());
+                    case "Trainer" -> processTrainer(parts,
+                            id,
+                            database.getTrainerStorage(),
+                            database.getUsernameStorage(),
+                            database.getUsernameToIdStorage());
+                    case "Trainee" -> processTrainee(parts,
+                            id,
+                            database.getTraineeStorage(),
+                            database.getUsernameStorage(),
+                            database.getUsernameToIdStorage());
                     case "Training" -> processTraining(parts, id, database.getTrainingStorage());
                     default -> System.err.println("Unknown type found in CSV: " + type);
                 }
@@ -88,7 +95,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         } catch (IOException e) {
             log.error("Error reading data file: " + e.getMessage());
             e.printStackTrace();
-        } catch (CsvValidationException | ParseException e) {
+        } catch (CsvValidationException e) {
             log.error("Error parsing data file: " + e);
         }
         log.info("Finished Initialising In-Memory Database");
@@ -98,7 +105,10 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         return parts.length < 2 || parts[0].isEmpty();
     }
 
-    private void updateUsernameStorage(String firstName, String lastName, String userName, Map<String, Integer> usernameStorage) {
+    private void updateUsernameStorage(String firstName,
+                                       String lastName,
+                                       String userName,
+                                       Map<String, Integer> usernameStorage) {
         int lengthOfDefault = firstName.length() + lastName.length() + 1;
         log.info("Updating Username Storage");
         if (lengthOfDefault == userName.length()) {
@@ -112,13 +122,19 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         }
     }
 
-    private void updateUsernameToIdStorage(String userName, Long id, Map<String, Long> usernameToIdStorage) {
+    private void updateUsernameToIdStorage(String userName,
+                                           Long id, Map<String,
+            Long> usernameToIdStorage) {
         usernameToIdStorage.put(userName, id);
         maxUserId[0] = Math.max(maxUserId[0], id);
         log.info("Updating max User ID: " + maxUserId[0]);
     }
-    private void processTrainer(String[] parts, long id, Map<Long, Trainer> trainerStorage,
-                                Map<String, Integer> usernameStorage, Map<String, Long> userToIdStorage) throws ParseException {
+
+    private void processTrainer(String[] parts,
+                                long id,
+                                Map<Long, Trainer> trainerStorage,
+                                Map<String, Integer> usernameStorage,
+                                Map<String, Long> userToIdStorage) {
         if (parts.length < 8) {
             log.debug("Skipping malformed Trainer line: " + String.join(",", parts));
             return;
@@ -129,15 +145,32 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         String password = parts[5];
         boolean isActive = Boolean.parseBoolean(parts[6]);
         TrainingType specialization = TrainingType.valueOf(parts[7].toUpperCase());
-        Trainer trainer = new Trainer(firstName, lastName, userName, password, isActive, specialization, id);
+
+        Trainer trainer = new Trainer(firstName,
+                lastName,
+                userName,
+                password,
+                isActive,
+                specialization,
+                id);
+
         trainerStorage.put(id, trainer);
 
-        updateUsernameStorage(firstName, lastName, userName, usernameStorage);
-        updateUsernameToIdStorage(userName, id, userToIdStorage);
+        updateUsernameStorage(firstName,
+                lastName,
+                userName,
+                usernameStorage);
+
+        updateUsernameToIdStorage(userName,
+                id,
+                userToIdStorage);
     }
 
-    private void processTrainee(String[] parts, long id, Map<Long, Trainee> traineeStorage,
-                                Map<String, Integer> usernameStorage, Map<String, Long> userToIdStorage) throws ParseException {
+    private void processTrainee(String[] parts,
+                                long id,
+                                Map<Long, Trainee> traineeStorage,
+                                Map<String, Integer> usernameStorage,
+                                Map<String, Long> userToIdStorage) {
         if (parts.length < 9) {
             log.debug("Skipping malformed Trainee line: " + String.join(",", parts));
             return;
@@ -147,16 +180,35 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         String userName = parts[4];
         String password = parts[5];
         boolean isActive = Boolean.parseBoolean(parts[6]);
-        Date dateOfBirth = new SimpleDateFormat(AppConstants.DEFAULT_DATE_FORMAT).parse(parts[7]);
+        LocalDate dateOfBirth = LocalDate.parse(parts[7],
+                DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT));
         String address = parts[8];
-        Trainee trainee = new Trainee(firstName, lastName, userName, password, isActive, dateOfBirth, address, id);
+
+        Trainee trainee = new Trainee(firstName,
+                lastName,
+                userName,
+                password,
+                isActive,
+                dateOfBirth,
+                address,
+                id);
+
         traineeStorage.put(id, trainee);
 
-        updateUsernameStorage(firstName, lastName, userName, usernameStorage);
-        updateUsernameToIdStorage(userName, id, userToIdStorage);
+        updateUsernameStorage(firstName,
+                lastName,
+                userName,
+                usernameStorage);
+
+        updateUsernameToIdStorage(userName,
+                id,
+                userToIdStorage);
     }
 
-    private void processTraining(String[] parts, long id, Map<Long, Training> trainingStorage) throws ParseException {
+    private void processTraining(String[] parts,
+                                 long id,
+                                 Map<Long,
+                                         Training> trainingStorage) {
         if (parts.length < 7) {
             log.debug("Skipping malformed Training line: " + String.join(",", parts));
             return;
@@ -165,9 +217,17 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         long trainerId = Long.parseLong(parts[3]);
         String trainingName = parts[4];
         TrainingType trainingType = TrainingType.valueOf(parts[5].toUpperCase());
-        Date trainingDate = new SimpleDateFormat(AppConstants.DEFAULT_DATE_FORMAT).parse(parts[6]);
+        LocalDate trainingDate = LocalDate.parse(parts[6],
+                DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT));
         int trainingDuration = Integer.parseInt(parts[7]);
-        Training training = new Training(id, traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
+        Training training = new Training(id,
+                traineeId,
+                trainerId,
+                trainingName,
+                trainingType,
+                trainingDate,
+                trainingDuration);
+
         trainingStorage.put(id, training);
 
         maxTrainingId[0] = Math.max(maxTrainingId[0], id);

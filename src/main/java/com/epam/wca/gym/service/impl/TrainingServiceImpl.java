@@ -19,9 +19,10 @@ public class TrainingServiceImpl implements TrainingService {
     private TraineeService traineeService;
     @Autowired
     private TrainerService trainerService;
+
     public Training createTraining(TrainingDTO trainingDTO) {
         if (traineeService.findById(trainingDTO.traineeId()) == null ||
-            trainerService.findById(trainingDTO.trainerId()) == null) {
+                trainerService.findById(trainingDTO.trainerId()) == null) {
             throw new IllegalStateException();
         }
 

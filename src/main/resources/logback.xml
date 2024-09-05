@@ -9,7 +9,7 @@
     </appender>
 
     <!-- Root logger -->
-    <root level="DEBUG">
+    <root level="WARN">
         <!--- Global Configuration -->
         <appender-ref ref="CONSOLE" />
     </root>
@@ -17,7 +17,7 @@
     <logger name="org.springframework" level="ERROR"/>
 
     <!-- Logger for your application -->
-    <logger name="com.epam.wca.gym" level="DEBUG" additivity="false">
+    <logger name="com.epam.wca.gym" level="WARN" additivity="false">
         <!--- Application Configuration -->
         <appender-ref ref="CONSOLE" />
     </logger>

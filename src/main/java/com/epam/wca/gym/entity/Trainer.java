@@ -8,18 +8,38 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Trainer extends User{
+public class Trainer extends User {
     private static ProfileService profileService;
 
     private TrainingType specialization;
+
     private long userId;
 
-    public Trainer(String firstName, String lastName, TrainingType specialization) {
-        super(firstName, lastName, profileService.createUserName(firstName, lastName), profileService.createPassword(), true);
+    public Trainer(String firstName,
+                   String lastName,
+                   TrainingType specialization) {
+        super(firstName,
+                lastName,
+                profileService.createUserName(firstName, lastName),
+                profileService.createPassword(),
+                true);
+
         this.specialization = specialization;
     }
-    public Trainer(String firstName, String lastName, String userName, String password, boolean isActive, TrainingType specialization, long userId) {
-        super(firstName, lastName, userName, password, isActive);
+
+    public Trainer(String firstName,
+                   String lastName,
+                   String userName,
+                   String password,
+                   boolean isActive,
+                   TrainingType specialization,
+                   long userId) {
+        super(firstName,
+                lastName,
+                userName,
+                password,
+                isActive);
+
         this.specialization = specialization;
         this.userId = userId;
     }
@@ -30,10 +50,8 @@ public class Trainer extends User{
 
     @Override
     public String toString() {
-        return "Trainer{" +
-                super.toString() +
-                "specialization=" + specialization +
-                ", userId=" + userId +
-                "}";
+        return super.toString() +
+                "specialization = " + specialization + '\n' +
+                "userId = " + userId + '\n';
     }
 }
