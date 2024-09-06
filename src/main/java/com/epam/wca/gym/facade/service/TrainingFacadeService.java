@@ -1,18 +1,19 @@
-package com.epam.wca.gym.service.facade;
+package com.epam.wca.gym.facade.service;
 
 import com.epam.wca.gym.dto.TrainingDTO;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.service.TrainingService;
-import com.epam.wca.gym.utils.AppConstants;
-import com.epam.wca.gym.utils.DateParser;
-import com.epam.wca.gym.utils.InputHandler;
+import com.epam.wca.gym.util.AppConstants;
+import com.epam.wca.gym.util.DateParser;
+import com.epam.wca.gym.util.InputHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Scanner;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TrainingFacadeService {
@@ -31,9 +32,9 @@ public class TrainingFacadeService {
         try {
             Training newTraining = trainingService.createTraining(trainingDTO);
 
-            System.out.println("Training created successfully. ID: " + newTraining.getTrainingId());
+            log.info("Training created successfully. ID: " + newTraining.getTrainingId());
         } catch (IllegalStateException e) {
-            System.out.println("Invalid participant details. Try Again.");
+            log.info("Invalid participant details. Try Again.");
         }
     }
 
@@ -42,9 +43,9 @@ public class TrainingFacadeService {
         Training training = trainingService.findById(trainingId);
 
         if (training != null) {
-            System.out.println("Training found: " + training);
+            log.info("Training found: " + training);
         } else {
-            System.out.println("Training with ID " + trainingId + " not found.");
+            log.info("Training with ID " + trainingId + " not found.");
         }
     }
 }

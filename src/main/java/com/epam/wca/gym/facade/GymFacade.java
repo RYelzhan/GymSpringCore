@@ -2,10 +2,10 @@ package com.epam.wca.gym.facade;
 
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
-import com.epam.wca.gym.service.facade.AuthenticationService;
-import com.epam.wca.gym.service.facade.TrainingFacadeService;
-import com.epam.wca.gym.service.facade.UserFacadeService;
-import com.epam.wca.gym.utils.InputHandler;
+import com.epam.wca.gym.facade.service.AuthenticationService;
+import com.epam.wca.gym.facade.service.TrainingFacadeService;
+import com.epam.wca.gym.facade.service.UserFacadeService;
+import com.epam.wca.gym.util.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +46,10 @@ public class GymFacade {
     }
 
     private void handleLoggedOutState(Scanner scanner) {
-        System.out.println("Choose action:");
-        System.out.println("l - login");
-        System.out.println("r - register");
-        System.out.println("q - quit");
+        log.info("Choose action:");
+        log.info("l - login");
+        log.info("r - register");
+        log.info("q - quit");
 
         String choice = scanner.nextLine();
 
@@ -57,21 +57,21 @@ public class GymFacade {
             case "l" -> loggedIn = login(scanner);
             case "r" -> authenticationService.registerUser(scanner);
             case "q" -> {
-                System.out.println("Exiting...");
+                log.info("Exiting...");
                 appRunning = false;
             }
-            default -> System.out.println("Invalid option, please try again.");
+            default -> log.info("Invalid option, please try again.");
         }
     }
 
     private void handleLoggedInState(Scanner scanner) {
-        System.out.println("Choose action:");
-        System.out.println("c - create training");
-        System.out.println("u - update user information");
-        System.out.println("g - get user information");
-        System.out.println("d - delete Trainee");
-        System.out.println("f - find Training Info");
-        System.out.println("l - log out");
+        log.info("Choose action:");
+        log.info("c - create training");
+        log.info("u - update user information");
+        log.info("g - get user information");
+        log.info("d - delete Trainee");
+        log.info("f - find Training Info");
+        log.info("l - log out");
 
         String choice = scanner.nextLine();
 
@@ -82,16 +82,16 @@ public class GymFacade {
             case "d" -> delete();
             case "f" -> trainingFacadeService.findTrainingInfo(scanner);
             case "l" -> loggedIn = false;
-            default -> System.out.println("Invalid option, please try again.");
+            default -> log.info("Invalid option, please try again.");
         }
     }
 
     private boolean login(Scanner scanner) {
-        String username = InputHandler.promptForInput(scanner, "Enter username:");
+        String authenticatedUsername = InputHandler.promptForInput(scanner, "Enter username:");
 
-        loggedIn = authenticationService.login(scanner, username);
+        loggedIn = authenticationService.login(scanner, authenticatedUsername);
         if (loggedIn) {
-            this.username = username;
+            this.username = authenticatedUsername;
         }
 
         return loggedIn;
@@ -103,7 +103,7 @@ public class GymFacade {
             traineeService.deleteByUsername(username);
             loggedIn = false;
         } else {
-            System.out.println("You are not Trainee.");
+            log.info("You are not Trainee.");
         }
     }
 }

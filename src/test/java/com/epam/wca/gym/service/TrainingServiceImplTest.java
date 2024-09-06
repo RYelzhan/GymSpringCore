@@ -7,7 +7,7 @@ import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.repository.TrainingDAO;
 import com.epam.wca.gym.service.impl.TrainingServiceImpl;
-import com.epam.wca.gym.utils.AppConstants;
+import com.epam.wca.gym.util.AppConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

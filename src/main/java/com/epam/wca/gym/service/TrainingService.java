@@ -5,5 +5,6 @@ import com.epam.wca.gym.entity.Training;
 
 public interface TrainingService {
     Training createTraining(TrainingDTO trainingDTO);
+
     Training findById(long id);
 }

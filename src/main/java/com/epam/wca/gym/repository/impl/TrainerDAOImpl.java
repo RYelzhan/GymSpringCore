@@ -5,6 +5,7 @@ import com.epam.wca.gym.repository.TrainerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Component
@@ -43,6 +44,7 @@ public class TrainerDAOImpl implements TrainerDAO {
 
     @Override
     public void deleteById(Long id) {
+        // TODO document why this method is empty
     }
 
     @Override
@@ -75,7 +77,7 @@ public class TrainerDAOImpl implements TrainerDAO {
     }
 
     public Map<Long, Trainer> getAll() {
-        return trainerMap;
+        return Collections.unmodifiableMap(trainerMap);
     }
 
     public Map<String, Long> getUsernameToId() {

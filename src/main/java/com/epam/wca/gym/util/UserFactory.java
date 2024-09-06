@@ -1,4 +1,4 @@
-package com.epam.wca.gym.utils;
+package com.epam.wca.gym.util;
 
 import com.epam.wca.gym.dto.TraineeDTO;
 import com.epam.wca.gym.dto.TrainerDTO;
@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class UserFactory {
+
     public static Trainee createTrainee(TraineeDTO traineeDTO) {
         return new Trainee(traineeDTO.firstName(),
                 traineeDTO.lastName(),

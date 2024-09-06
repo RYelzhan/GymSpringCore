@@ -5,6 +5,7 @@ import com.epam.wca.gym.repository.TrainingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Component
@@ -32,12 +33,12 @@ public class TrainingDAOImpl implements TrainingDAO {
 
     @Override
     public void updateById(Long aLong, Training entity) {
-
+        // TODO document why this method is empty
     }
 
     @Override
     public void deleteById(Long aLong) {
-
+        // TODO document why this method is empty
     }
 
     @Override
@@ -49,7 +50,7 @@ public class TrainingDAOImpl implements TrainingDAO {
     }
 
     public Map<Long, Training> getAll() {
-        return trainingMap;
+        return Collections.unmodifiableMap(trainingMap);
     }
 
     public long getCurrentMaxId() {

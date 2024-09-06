@@ -4,7 +4,7 @@ import com.epam.wca.gym.dto.TraineeDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.repository.TraineeDAO;
 import com.epam.wca.gym.service.impl.TraineeServiceImpl;
-import com.epam.wca.gym.utils.AppConstants;
+import com.epam.wca.gym.util.AppConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

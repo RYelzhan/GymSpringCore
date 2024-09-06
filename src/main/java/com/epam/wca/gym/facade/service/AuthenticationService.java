@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service.facade;
+package com.epam.wca.gym.facade.service;
 
 import com.epam.wca.gym.dto.TraineeDTO;
 import com.epam.wca.gym.dto.TrainerDTO;
@@ -8,9 +8,9 @@ import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
-import com.epam.wca.gym.utils.AppConstants;
-import com.epam.wca.gym.utils.DateParser;
-import com.epam.wca.gym.utils.InputHandler;
+import com.epam.wca.gym.util.AppConstants;
+import com.epam.wca.gym.util.DateParser;
+import com.epam.wca.gym.util.InputHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,7 +32,7 @@ public class AuthenticationService {
 
         if (trainee != null && trainee.getPassword().equals(password) ||
                 trainer != null && trainer.getPassword().equals(password)) {
-            System.out.println("Successful login.");
+            log.info("Successful login.");
 
             log.info("User authenticated: " + username);
 
@@ -41,21 +41,21 @@ public class AuthenticationService {
 
         log.info("Unsuccessful authentication attempt!");
 
-        System.out.println("Invalid user information. Please try again.");
+        log.info("Invalid user information. Please try again.");
 
         return false;
     }
 
     public void registerUser(Scanner scanner) {
-        System.out.println("Register as:");
-        System.out.println("1 - Trainee");
-        System.out.println("2 - Trainer");
+        log.info("Register as:");
+        log.info("1 - Trainee");
+        log.info("2 - Trainer");
         String choice = scanner.nextLine();
 
         switch (choice) {
             case "1" -> registerTrainee(scanner);
             case "2" -> registerTrainer(scanner);
-            default -> System.out.println("Invalid choice, please try again.");
+            default -> log.info("Invalid choice, please try again.");
         }
     }
     private void registerTrainee(Scanner scanner) {
@@ -69,7 +69,7 @@ public class AuthenticationService {
             TraineeDTO traineeDTO = new TraineeDTO(firstName, lastName, dateOfBirth, address);
             printUserDetails(traineeService.create(traineeDTO));
         } else {
-            System.out.println("Invalid Date Format. Trainee not created");
+            log.info("Invalid Date Format. Trainee not created");
         }
     }
 
@@ -82,14 +82,14 @@ public class AuthenticationService {
             TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
             printUserDetails(trainerService.create(trainerDTO));
         } else {
-            System.out.println("Invalid Date Format. Trainer not created");
+            log.info("Invalid Date Format. Trainer not created");
         }
     }
 
     private void printUserDetails(User newUser) {
-        System.out.println("User registered successfully!");
-        System.out.println("Username: " + newUser.getUserName());
-        System.out.println("Password: " + newUser.getPassword());
+        log.info("User registered successfully!");
+        log.info("Username: " + newUser.getUserName());
+        log.info("Password: " + newUser.getPassword());
         log.info("New User Registered: " + newUser.getUserName());
     }
 }

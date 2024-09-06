@@ -5,7 +5,10 @@ import com.epam.wca.gym.entity.Trainer;
 
 public interface TrainerService {
     Trainer create(TrainerDTO trainer);
+
     void updateByUsername(String username, Trainer trainer);
+
     Trainer findByUsername(String username);
+
     Trainer findById(long id);
 }

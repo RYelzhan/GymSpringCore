@@ -4,7 +4,7 @@ import com.epam.wca.gym.dto.TrainerDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.repository.TrainerDAO;
 import com.epam.wca.gym.service.TrainerService;
-import com.epam.wca.gym.utils.UserFactory;
+import com.epam.wca.gym.util.UserFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

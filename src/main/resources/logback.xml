@@ -1,10 +1,16 @@
 <configuration>
 
     <!-- Console Appender -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- Pattern for the console output -->
+    <appender name="APP_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Pattern for the app console output -->
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="USER_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Pattern for the user console output -->
+        <encoder>
+            <pattern>%msg%n</pattern>
         </encoder>
     </appender>
 
@@ -16,10 +22,18 @@
 
     <logger name="org.springframework" level="ERROR"/>
 
+    <logger name="com.epam.wca.gym.facade" level="INFO" additivity="false">
+        <appender-ref ref="USER_CONSOLE"/>
+    </logger>
+
+    <logger name="com.epam.wca.gym.util" level="INFO" additivity="false">
+        <appender-ref ref="USER_CONSOLE"/>
+    </logger>
+
     <!-- Logger for your application -->
     <logger name="com.epam.wca.gym" level="WARN" additivity="false">
         <!--- Application Configuration -->
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="APP_CONSOLE" />
     </logger>
 
 </configuration>

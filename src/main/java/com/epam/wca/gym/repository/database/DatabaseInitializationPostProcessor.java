@@ -4,7 +4,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.utils.AppConstants;
+import com.epam.wca.gym.util.AppConstants;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -50,8 +50,8 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean,
                                                  String beanName) throws BeansException {
-        if (bean instanceof InMemoryDatabase) {
-            initializeData((InMemoryDatabase) bean);
+        if (bean instanceof InMemoryDatabase inMemoryDatabase) {
+            initializeData(inMemoryDatabase);
         }
         return bean;
     }
@@ -63,7 +63,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 .build();
         try (Reader reader = new InputStreamReader(dataFileResource.getInputStream());
              CSVReader csvReader = new CSVReaderBuilder(reader)
-                     .withSkipLines(AppConstants.fileSkippedLines)
+                     .withSkipLines(AppConstants.FILE_SKIPPED_LINES)
                      .withCSVParser(parser)
                      .build()) {
 
@@ -88,8 +88,10 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                             database.getTraineeStorage(),
                             database.getUsernameStorage(),
                             database.getUsernameToIdStorage());
-                    case "Training" -> processTraining(parts, id, database.getTrainingStorage());
-                    default -> System.err.println("Unknown type found in CSV: " + type);
+                    case "Training" -> processTraining(parts,
+                            id,
+                            database.getTrainingStorage());
+                    default -> log.debug("Unknown type found in CSV: " + type);
                 }
             }
         } catch (IOException e) {
@@ -123,8 +125,8 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     }
 
     private void updateUsernameToIdStorage(String userName,
-                                           Long id, Map<String,
-            Long> usernameToIdStorage) {
+                                           Long id,
+                                           Map<String, Long> usernameToIdStorage) {
         usernameToIdStorage.put(userName, id);
         maxUserId[0] = Math.max(maxUserId[0], id);
         log.info("Updating max User ID: " + maxUserId[0]);

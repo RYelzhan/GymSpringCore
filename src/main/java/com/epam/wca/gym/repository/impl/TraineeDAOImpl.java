@@ -38,9 +38,7 @@ public class TraineeDAOImpl implements TraineeDAO {
     }
 
     public void updateById(Long id, Trainee trainee) {
-        if (traineeMap.containsKey(id)) {
-            traineeMap.put(id, trainee);
-        }
+        traineeMap.computeIfPresent(id, (key, existingTrainee) -> trainee);
     }
 
     public void deleteById(Long id) {

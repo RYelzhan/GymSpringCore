@@ -1,19 +1,20 @@
-package com.epam.wca.gym.service.facade;
+package com.epam.wca.gym.facade.service;
 
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
-import com.epam.wca.gym.utils.AppConstants;
-import com.epam.wca.gym.utils.DateParser;
-import com.epam.wca.gym.utils.InputHandler;
+import com.epam.wca.gym.util.AppConstants;
+import com.epam.wca.gym.util.DateParser;
+import com.epam.wca.gym.util.InputHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Scanner;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserFacadeService {
@@ -29,19 +30,19 @@ public class UserFacadeService {
         } else if (trainer != null) {
             updateTrainer(scanner, trainer);
         } else {
-            System.out.println("User not found.");
+            log.info("User not found.");
         }
     }
 
     private void updateTrainee(Scanner scanner, Trainee trainee) {
-        System.out.println("Current date of birth: " + trainee.getDateOfBirth());
+        log.info("Current date of birth: " + trainee.getDateOfBirth());
         LocalDate newDateOfBirth = DateParser.parseDate(scanner,
                 "Enter new date of birth: (" + AppConstants.DEFAULT_DATE_FORMAT + ")");
         if (newDateOfBirth != null) {
             trainee.setDateOfBirth(newDateOfBirth);
         }
 
-        System.out.println("Current address: " + trainee.getAddress());
+        log.info("Current address: " + trainee.getAddress());
         String newAddress = InputHandler.promptForInput(scanner,
                 "Enter new address:");
         if (!newAddress.isEmpty()) {
@@ -50,7 +51,7 @@ public class UserFacadeService {
 
         traineeService.updateByUsername(trainee.getUserName(), trainee);
 
-        System.out.println("Trainee information updated successfully!");
+        log.info("Trainee information updated successfully!");
     }
 
     private void updateTrainer(Scanner scanner, Trainer trainer) {
@@ -61,7 +62,7 @@ public class UserFacadeService {
 
         trainerService.updateByUsername(trainer.getUserName(), trainer);
 
-        System.out.println("Trainer information updated successfully!");
+        log.info("Trainer information updated successfully!");
     }
 
     public void getUserInformation(String username) {
@@ -73,15 +74,15 @@ public class UserFacadeService {
         } else if (trainer != null) {
             displayTrainerInfo(trainer);
         } else {
-            System.out.println("No user found with the provided username.");
+            log.info("No user found with the provided username.");
         }
     }
 
     private void displayTraineeInfo(Trainee trainee) {
-        System.out.println("Trainee Information:\n" + trainee);
+        log.info("Trainee Information:\n" + trainee);
     }
 
     private void displayTrainerInfo(Trainer trainer) {
-        System.out.println("Trainer Information:\n" + trainer);
+        log.info("Trainer Information:\n" + trainer);
     }
 }
