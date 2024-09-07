@@ -49,6 +49,14 @@
             <version>${javax.annotation.version}</version>
         </dependency>
 
+        <!-- Working With CSV -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.9</version>
+        </dependency>
+
+
         <!-- Database Dependencies -->
         <dependency>
             <groupId>javax.persistence</groupId>

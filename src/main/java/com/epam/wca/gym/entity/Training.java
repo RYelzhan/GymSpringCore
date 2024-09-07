@@ -1,5 +1,6 @@
 package com.epam.wca.gym.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,23 +12,36 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "TRAININGS")
 public class Training {
-    private long trainingId;
-    private long traineeId;
-    private long trainerId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TRAINEE_D")
+    private Trainee trainee;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TRAINER_ID")
+    private Trainer trainer;
+    @Column(name = "NAME")
     private String trainingName;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TRAINING_TYPE_ID")
     private TrainingType trainingType;
+    @Column(name = "DATE")
     private LocalDate trainingDate;
+    @Column(name = "DURATION")
     private int trainingDuration;
 
-    public Training(long traineeId,
-                    long trainerId,
+    public Training(Trainee trainee,
+                    Trainer trainer,
                     String trainingName,
                     TrainingType trainingType,
                     LocalDate trainingDate,
                     int trainingDuration) {
-        this.traineeId = traineeId;
-        this.trainerId = trainerId;
+        this.trainee = trainee;
+        this.trainer = trainer;
         this.trainingName = trainingName;
         this.trainingType = trainingType;
         this.trainingDate = trainingDate;
@@ -36,14 +50,12 @@ public class Training {
 
     @Override
     public String toString() {
-        return "Training{" +
-                "trainingId=" + trainingId +
-                ", traineeId=" + traineeId +
-                ", trainerId=" + trainerId +
-                ", trainingName='" + trainingName + '\'' +
-                ", trainingType=" + trainingType +
-                ", trainingDate=" + trainingDate +
-                ", trainingDuration=" + trainingDuration +
-                '}';
+        return "id = " + id + '\n' +
+                "traineeId = " + trainee.getId() + '\n' +
+                "trainerId = " + trainer.getId() +'\n' +
+                "trainingName = '" + trainingName + '\n' +
+                "trainingType = " + trainingType + '\n' +
+                "trainingDate = " + trainingDate + '\n' +
+                "trainingDuration = " + trainingDuration + '\n';
     }
 }

@@ -3,7 +3,6 @@ package com.epam.wca.gym.repository.in_memory_database;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
-import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.util.AppConstants;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -161,6 +160,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         String userName = parts[4];
         String password = parts[5];
         boolean isActive = Boolean.parseBoolean(parts[6]);
+        /*
         TrainingType specialization = TrainingType.valueOf(parts[7].toUpperCase());
 
         Trainer trainer = new Trainer(firstName,
@@ -172,7 +172,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 id);
 
         trainerStorage.put(id, trainer);
-
+*/
         updateUsernameStorage(firstName,
                 lastName,
                 userName,
@@ -200,7 +200,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         LocalDate dateOfBirth = LocalDate.parse(parts[7],
                 DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT));
         String address = parts[8];
-
+/*
         Trainee trainee = new Trainee(firstName,
                 lastName,
                 userName,
@@ -211,7 +211,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 id);
 
         traineeStorage.put(id, trainee);
-
+*/
         updateUsernameStorage(firstName,
                 lastName,
                 userName,
@@ -233,6 +233,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
         long traineeId = Long.parseLong(parts[2]);
         long trainerId = Long.parseLong(parts[3]);
         String trainingName = parts[4];
+        /*
         TrainingType trainingType = TrainingType.valueOf(parts[5].toUpperCase());
         LocalDate trainingDate = LocalDate.parse(parts[6],
                 DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT));
@@ -246,7 +247,7 @@ public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
                 trainingDuration);
 
         trainingStorage.put(id, training);
-
+*/
         maxTrainingId[0] = Math.max(maxTrainingId[0], id);
         log.info("Updating max Training ID: " + maxTrainingId[0]);
     }
