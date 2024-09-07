@@ -1,30 +1,42 @@
-package com.epam.wca.gym.repository.impl;
+package com.epam.wca.gym.repository.in_memory_impl;
 
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.repository.TrainerDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Map;
 
-@Component
+/**
+ * Implementation of {@link TrainerDAO} that uses an in-memory storage (Map) to manage {@link Trainer} entities.
+ *
+ * <p>This class provides CRUD operations for managing {@link Trainer} objects. It uses maps to store trainers
+ * and map usernames to user IDs. This implementation is suitable for testing and small-scale applications where
+ * a database is not required. It is not recommended for use in production systems due to its in-memory nature.</p>
+ *
+ * @deprecated This class is deprecated and replaced by a new implementation using PostgresSQL with JPA and Hibernate.
+ * This in-memory solution is no longer appropriate for production systems.
+ * @since 1.1
+ * @see TrainerDAO
+ */
+
+@Deprecated(since = "1.1", forRemoval = false)
+
 public class TrainerDAOImpl implements TrainerDAO {
     private Map<Long, Trainer> trainerMap;
     private Map<String, Long> usernameToId;
     private long[] currentMaxId;
 
-    @Autowired
+//    @Autowired
     public void setTrainerMap(Map<Long, Trainer> trainerMap) {
         this.trainerMap = trainerMap;
     }
 
-    @Autowired
+//    @Autowired
     public void setUsernameToTrainee(Map<String, Long> usernameToId) {
         this.usernameToId = usernameToId;
     }
 
-    @Autowired
+//    @Autowired
     public void setCurrentMaxId(long[] currentMaxId) {
         this.currentMaxId = currentMaxId;
     }

@@ -1,4 +1,4 @@
-package com.epam.wca.gym.repository.database;
+package com.epam.wca.gym.repository.in_memory_database;
 
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
@@ -15,7 +15,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -25,8 +24,24 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+/**
+ * This class is responsible for initializing an in-memory database with data from a CSV file.
+ *
+ * @deprecated This approach has been deprecated as the project has moved to a PostgreSQL database
+ * using JPA and Hibernate for persistent storage.
+ *
+ * <p>Instead of relying on an in-memory database, please use the  and other
+ * relevant JPA-based components to interact with the PostgreSQL database.</p>
+ *
+ * @since 1.1
+ *
+ * <p>Note: This class is slated for removal in version 2.0. Please migrate any remaining functionality
+ * to the new persistent database solution before that release.</p>
+ */
+
+@Deprecated(since = "1.1", forRemoval = false)
+
 @Slf4j
-@DependsOn({"counterOfId", "counterOfIdForTrainings"})
 public class DatabaseInitializationPostProcessor implements BeanPostProcessor {
     private Resource dataFileResource;
     private long[] maxUserId;
