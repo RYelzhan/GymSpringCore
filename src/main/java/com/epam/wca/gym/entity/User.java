@@ -1,0 +1,26 @@
+package com.epam.wca.gym.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    private String firstName;
+    private String lastName;
+    private String userName;
+    private String password;
+    private boolean isActive;
+
+    @Override
+    public String toString() {
+        return "firstName = " + firstName + '\n' +
+                "lastName = " + lastName + '\n' +
+                "userName = " + userName + '\n' +
+                "isActive = " + isActive + '\n';
+    }
+}
