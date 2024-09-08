@@ -1,10 +1,10 @@
 package com.epam.wca.gym.facade;
 
 import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.facade.service.AuthenticationService;
 import com.epam.wca.gym.facade.service.TrainingFacadeService;
 import com.epam.wca.gym.facade.service.UserFacadeService;
+import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.util.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -98,9 +98,9 @@ public class GymFacade {
     }
 
     private void delete() {
-        Trainee trainee = traineeService.findByUsername(username);
+        Trainee trainee = traineeService.findByUniqueName(username);
         if (trainee != null) {
-            traineeService.deleteByUsername(username);
+            traineeService.deleteById(trainee.getId());
             loggedIn = false;
         } else {
             log.info("You are not Trainee.");

@@ -3,7 +3,8 @@ package com.epam.wca.gym.facade.service;
 import com.epam.wca.gym.dto.TrainingDTO;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.service.TrainingService;
+import com.epam.wca.gym.service.impl.TrainingService;
+import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
@@ -18,10 +19,11 @@ import java.util.Scanner;
 @RequiredArgsConstructor
 public class TrainingFacadeService {
     private final TrainingService trainingService;
+    private final TrainingTypeService trainingTypeService;
 
     public void createTraining(Scanner scanner) {
         String trainingName = InputHandler.promptForInput(scanner, "Enter training name:");
-        TrainingType trainingType = InputHandler.selectTrainingType(scanner);
+        TrainingType trainingType = selectTrainingType(scanner);
         Long traineeId = InputHandler.promptForLong(scanner, "Enter trainee ID:");
         Long trainerId = InputHandler.promptForLong(scanner, "Enter trainer ID:");
         LocalDate trainingDate = DateParser.parseDate(scanner,
@@ -30,9 +32,9 @@ public class TrainingFacadeService {
 
         TrainingDTO trainingDTO = new TrainingDTO(traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
         try {
-            Training newTraining = trainingService.createTraining(trainingDTO);
+            Training newTraining = trainingService.save(trainingDTO);
 
-            log.info("Training created successfully. ID: " + newTraining.getTrainingId());
+            log.info("Training created successfully. ID: " + newTraining.getId());
         } catch (IllegalStateException e) {
             log.info("Invalid participant details. Try Again.");
         }
@@ -46,6 +48,24 @@ public class TrainingFacadeService {
             log.info("Training found: " + training);
         } else {
             log.info("Training with ID " + trainingId + " not found.");
+        }
+    }
+
+    public TrainingType selectTrainingType(Scanner scanner) {
+        while (true) {
+            log.info("Select training type:");
+            int i = 1;
+            for (TrainingType type : trainingTypeService.findAll()) {
+                log.info(i + 1 + " - " + type.getType());
+                i++;
+            }
+            String choice = scanner.nextLine();
+
+            try {
+                return trainingTypeService.findAll().get(Integer.parseInt(choice) - 1);
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                log.info("Invalid training type choice. Please try again.");
+            }
         }
     }
 }

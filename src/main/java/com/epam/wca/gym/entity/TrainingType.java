@@ -14,7 +14,16 @@ import lombok.Setter;
 public class TrainingType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(name = "TYPE", nullable = false)
     private String type;
+
+    public TrainingType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return type;
+    }
 }

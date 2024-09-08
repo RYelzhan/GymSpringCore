@@ -18,10 +18,10 @@ public class Trainer extends User {
     private static ProfileService profileService;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TRAINING_TYPE_ID")
+    @JoinColumn(name = "TRAINING_TYPE_ID", nullable = false)
     private TrainingType specialization;
 
-    @OneToMany(mappedBy = "trainer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "trainer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Training> trainings;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -30,18 +30,17 @@ public class Trainer extends User {
             inverseJoinColumns = @JoinColumn(name = "TRAINEE_ID"))
     private Set<Trainee> traineesAssigned;
 
-    public Trainer(long id,
-                   String firstName,
+    public Trainer(String firstName,
                    String lastName,
                    TrainingType specialization) {
-        super(id,
-                firstName,
+        super(firstName,
                 lastName,
                 profileService.createUserName(firstName, lastName),
                 profileService.createPassword(),
                 true);
 
         this.specialization = specialization;
+        this.trainings = new HashSet<>();
         this.traineesAssigned = new HashSet<>();
     }
 

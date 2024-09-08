@@ -24,7 +24,7 @@ public class Trainee extends User {
     @Column(name = "ADDRESS")
     private String address;
 
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "trainee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Training> trainings;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -33,14 +33,12 @@ public class Trainee extends User {
             inverseJoinColumns = @JoinColumn(name = "TRAINER_ID"))
     private Set<Trainer> trainersAssigned;
 
-    public Trainee(long id,
-                   String firstName,
+    public Trainee(String firstName,
                    String lastName,
                    LocalDate dateOfBirth,
                    String address) {
 
-        super(id,
-                firstName,
+        super(firstName,
                 lastName,
                 profileService.createUserName(firstName, lastName),
                 profileService.createPassword(),

@@ -6,9 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +16,7 @@ import javax.persistence.InheritanceType;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(name = "FIRSTNAME", nullable = false)
     private String firstName;
     @Column(name = "LASTNAME", nullable = false)
@@ -30,6 +27,14 @@ public class User {
     private String password;
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
+
+    public User(String firstName, String lastName, String userName, String password, boolean isActive) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.password = password;
+        this.isActive = isActive;
+    }
 
     @Override
     public String toString() {

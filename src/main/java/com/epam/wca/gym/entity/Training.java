@@ -17,21 +17,21 @@ import java.time.LocalDate;
 public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRAINEE_D")
+    @JoinColumn(name = "TRAINEE_ID", nullable = false)
     private Trainee trainee;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRAINER_ID")
+    @JoinColumn(name = "TRAINER_ID", nullable = false)
     private Trainer trainer;
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     private String trainingName;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TRAINING_TYPE_ID")
+    @JoinColumn(name = "TRAINING_TYPE_ID", nullable = false)
     private TrainingType trainingType;
-    @Column(name = "DATE")
+    @Column(name = "DATE", nullable = false)
     private LocalDate trainingDate;
-    @Column(name = "DURATION")
+    @Column(name = "DURATION", nullable = false)
     private int trainingDuration;
 
     public Training(Trainee trainee,
@@ -53,7 +53,7 @@ public class Training {
         return "id = " + id + '\n' +
                 "traineeId = " + trainee.getId() + '\n' +
                 "trainerId = " + trainer.getId() +'\n' +
-                "trainingName = '" + trainingName + '\n' +
+                "trainingName = " + trainingName + '\n' +
                 "trainingType = " + trainingType + '\n' +
                 "trainingDate = " + trainingDate + '\n' +
                 "trainingDuration = " + trainingDuration + '\n';

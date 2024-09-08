@@ -3,8 +3,9 @@ package com.epam.wca.gym.facade.service;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.service.TraineeService;
-import com.epam.wca.gym.service.TrainerService;
+import com.epam.wca.gym.service.impl.TraineeService;
+import com.epam.wca.gym.service.impl.TrainerService;
+import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
@@ -14,16 +15,18 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Scanner;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserFacadeService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
+    private final TrainingTypeService trainingTypeService;
 
     public void updateUserInformation(String username, Scanner scanner) {
-        Trainee trainee = traineeService.findByUsername(username);
-        Trainer trainer = trainerService.findByUsername(username);
+        Trainee trainee = traineeService.findByUniqueName(username);
+        Trainer trainer = trainerService.findByUniqueName(username);
 
         if (trainee != null) {
             updateTrainee(scanner, trainee);
@@ -49,25 +52,25 @@ public class UserFacadeService {
             trainee.setAddress(newAddress);
         }
 
-        traineeService.updateByUsername(trainee.getUserName(), trainee);
+        traineeService.update(trainee);
 
         log.info("Trainee information updated successfully!");
     }
 
     private void updateTrainer(Scanner scanner, Trainer trainer) {
-        TrainingType newSpecialization = InputHandler.selectTrainingType(scanner);
+        TrainingType newSpecialization = selectTrainingType(scanner);
         if (newSpecialization != null) {
             trainer.setSpecialization(newSpecialization);
         }
 
-        trainerService.updateByUsername(trainer.getUserName(), trainer);
+        trainerService.update(trainer);
 
         log.info("Trainer information updated successfully!");
     }
 
     public void getUserInformation(String username) {
-        Trainee trainee = traineeService.findByUsername(username);
-        Trainer trainer = trainerService.findByUsername(username);
+        Trainee trainee = traineeService.findByUniqueName(username);
+        Trainer trainer = trainerService.findByUniqueName(username);
 
         if (trainee != null) {
             displayTraineeInfo(trainee);
@@ -85,4 +88,23 @@ public class UserFacadeService {
     private void displayTrainerInfo(Trainer trainer) {
         log.info("Trainer Information:\n" + trainer);
     }
+
+    public TrainingType selectTrainingType(Scanner scanner) {
+        while (true) {
+            log.info("Select training type:");
+            int i = 1;
+            for (TrainingType type : trainingTypeService.findAll()) {
+                log.info(i + 1 + " - " + type.getType());
+                i++;
+            }
+            String choice = scanner.nextLine();
+
+            try {
+                return trainingTypeService.findAll().get(Integer.parseInt(choice) - 1);
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                log.info("Invalid training type choice. Please try again.");
+            }
+        }
+    }
+
 }
