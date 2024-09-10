@@ -24,8 +24,6 @@ public abstract class GenericDAOImpl<T, I> implements GenericDAO<T, I> {
         try {
             transaction.begin();
 
-            System.out.println(entity);
-
             entityManager.persist(entity);
 
             transaction.commit();
@@ -85,8 +83,6 @@ public abstract class GenericDAOImpl<T, I> implements GenericDAO<T, I> {
             transaction.begin();
 
             T entity = entityManager.find(entityClass, id);
-
-            entityManager.detach(entity);
 
             transaction.commit();
 

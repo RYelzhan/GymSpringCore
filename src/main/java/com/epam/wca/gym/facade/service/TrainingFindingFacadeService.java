@@ -1,6 +1,5 @@
 package com.epam.wca.gym.facade.service;
 
-import com.epam.wca.gym.dto.TrainingDTO;
 import com.epam.wca.gym.entity.*;
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
@@ -22,32 +21,13 @@ import java.util.Set;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TrainingFacadeService {
+public class TrainingFindingFacadeService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final TrainingTypeService trainingTypeService;
     private final UserSession userSession;
     private final Scanner scanner;
-
-    public void createTraining() {
-        String trainingName = InputHandler.promptForInput(scanner, "Enter training name:");
-        TrainingType trainingType = selectTrainingType();
-        Long traineeId = InputHandler.promptForLong(scanner, "Enter trainee ID:");
-        Long trainerId = InputHandler.promptForLong(scanner, "Enter trainer ID:");
-        ZonedDateTime trainingDate = DateParser.parseDate(scanner,
-                "Enter training date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
-        Integer trainingDuration = InputHandler.promptForInt(scanner, "Enter duration (in minutes):");
-
-        TrainingDTO trainingDTO = new TrainingDTO(traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
-        try {
-            Training newTraining = trainingService.save(trainingDTO);
-
-            log.info("Training created successfully. ID: " + newTraining.getId());
-        } catch (IllegalStateException e) {
-            log.info("Invalid participant details. Try Again.");
-        }
-    }
 
     public void findAllTrainings() {
         User user = userSession.getUser();
@@ -69,10 +49,10 @@ public class TrainingFacadeService {
 
     public void findTrainingByCriteria() {
         ZonedDateTime fromDateInput = DateParser.parseDate(scanner,
-                        "Enter the start date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
+                "Enter the start date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
 
         ZonedDateTime toDateInput = DateParser.parseDate(scanner,
-                        "Enter the end date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
+                "Enter the end date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
 
         TrainingType trainingType = selectTrainingType();
 
@@ -124,7 +104,7 @@ public class TrainingFacadeService {
             int i = 1;
             for (TrainingType type : trainingTypeService.findAll()) {
                 log.info(i + " - " + type.getType());
-                i ++;
+                i++;
             }
             String choice = scanner.nextLine();
 

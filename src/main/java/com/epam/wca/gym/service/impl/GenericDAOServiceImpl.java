@@ -24,7 +24,11 @@ public abstract class GenericDAOServiceImpl<T, K, I> implements GenericDAOServic
 
     @Override
     public T findById(I id) {
-        return genericDAO.findById(id);
+        try {
+            return genericDAO.findById(id);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     @Override

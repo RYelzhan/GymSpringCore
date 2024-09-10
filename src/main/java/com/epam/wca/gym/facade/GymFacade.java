@@ -1,11 +1,14 @@
 package com.epam.wca.gym.facade;
 
 import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.facade.service.AuthenticationService;
-import com.epam.wca.gym.facade.service.TrainingFacadeService;
+import com.epam.wca.gym.facade.service.TrainingCreatingFacadeService;
+import com.epam.wca.gym.facade.service.TrainingFindingFacadeService;
 import com.epam.wca.gym.facade.service.UserFacadeService;
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
+import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.util.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +24,15 @@ public class GymFacade {
     @NonNull
     private AuthenticationService authenticationService;
     @NonNull
-    private TrainingFacadeService trainingFacadeService;
+    private TrainingCreatingFacadeService trainingCreatingFacadeService;
+    @NonNull
+    private TrainingFindingFacadeService trainingFindingFacadeService;
     @NonNull
     private UserFacadeService userFacadeService;
     @NonNull
     private final TraineeService traineeService;
+    @NonNull
+    private final TrainerService trainerService;
     @NonNull
     private final UserSession userSession;
     private boolean appRunning;
@@ -68,7 +75,8 @@ public class GymFacade {
     private void handleLoggedInState(Scanner scanner) {
         log.info("Choose action:");
         log.info("c - create training");
-        log.info("u - update user information");
+        log.info("ut - assign new Trainer");
+        log.info("uu - update user information");
         log.info("g - get user information");
         log.info("d - delete Trainee");
         log.info("f - find Training Info");
@@ -79,14 +87,24 @@ public class GymFacade {
         String choice = scanner.nextLine();
 
         switch (choice) {
-            case "c" -> trainingFacadeService.createTraining();
-            case "u" -> userFacadeService.updateUserInformation();
+            case "c" -> trainingCreatingFacadeService.createTraining();
+            case "ut" -> trainingCreatingFacadeService.addTrainer();
+            case "uu" -> userFacadeService.updateUserInformation();
             case "g" -> userFacadeService.getUserInformation();
             case "d" -> delete();
-            case "f" -> trainingFacadeService.findTrainingInfo();
-            case "ta" -> trainingFacadeService.findAllTrainings();
-            case "tc" -> trainingFacadeService.findTrainingByCriteria();
-            case "l" -> userSession.logOut();
+            case "f" -> trainingFindingFacadeService.findTrainingInfo();
+            case "ta" -> trainingFindingFacadeService.findAllTrainings();
+            case "tc" -> trainingFindingFacadeService.findTrainingByCriteria();
+            case "l" -> {
+                if (userSession.getUser() instanceof Trainee trainee) {
+                    // detached by uniqueName search, so attaching/merging back
+                    traineeService.update(trainee);
+                } else if (userSession.getUser() instanceof Trainer trainer) {
+                    // detached by uniqueName search, so attaching/merging back
+                    trainerService.update(trainer);
+                }
+                userSession.logOut();
+            }
             default -> log.info("Invalid option, please try again.");
         }
     }
