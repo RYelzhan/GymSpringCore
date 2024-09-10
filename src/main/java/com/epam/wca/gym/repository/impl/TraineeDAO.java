@@ -1,16 +1,24 @@
 package com.epam.wca.gym.repository.impl;
 
 import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Training;
+import com.epam.wca.gym.facade.user.UserSession;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Set;
+
 @Repository
 public class TraineeDAO extends GenericDAOImpl<Trainee, Long> {
+    private final UserSession userSession;
     @Autowired
-    public TraineeDAO(EntityManagerFactory entityManagerFactory) {
-        super(entityManagerFactory.createEntityManager(), Trainee.class);
+    public TraineeDAO(EntityManagerFactory entityManagerFactory,
+                      UserSession userSession) {
+        super(entityManagerFactory.createEntityManager(),
+                Trainee.class);
+        this.userSession = userSession;
     }
 
     @Override
@@ -29,6 +37,29 @@ public class TraineeDAO extends GenericDAOImpl<Trainee, Long> {
             transaction.commit();
 
             return trainee;
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+
+            throw new IllegalArgumentException("Entity was not found");
+        }
+    }
+
+    public Set<Training> findAllTrainingsById(long id) {
+        // right now id is not necessary, but in future it may be
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            transaction.begin();
+
+            Trainee trainee = entityManager.find(entityClass, id);
+            Set<Training> trainings = trainee.getTrainings();
+            userSession.setUser(trainee);
+
+            transaction.commit();
+
+            return trainings;
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();

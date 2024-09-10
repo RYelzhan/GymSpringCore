@@ -28,7 +28,11 @@ public class User {
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
 
-    public User(String firstName, String lastName, String userName, String password, boolean isActive) {
+    public User(String firstName,
+                String lastName,
+                String userName,
+                String password,
+                boolean isActive) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.userName = userName;

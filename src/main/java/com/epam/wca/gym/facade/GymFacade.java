@@ -4,6 +4,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.facade.service.AuthenticationService;
 import com.epam.wca.gym.facade.service.TrainingFacadeService;
 import com.epam.wca.gym.facade.service.UserFacadeService;
+import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.util.InputHandler;
 import lombok.NonNull;
@@ -25,8 +26,8 @@ public class GymFacade {
     private UserFacadeService userFacadeService;
     @NonNull
     private final TraineeService traineeService;
-    private boolean loggedIn = false;
-    private String username;
+    @NonNull
+    private final UserSession userSession;
     private boolean appRunning;
 
     public void run() {
@@ -36,7 +37,7 @@ public class GymFacade {
             appRunning = true;
 
             while (appRunning) {
-                if (loggedIn) {
+                if (userSession.isLoggedIn()) {
                     handleLoggedInState(scanner);
                 } else {
                     handleLoggedOutState(scanner);
@@ -54,8 +55,8 @@ public class GymFacade {
         String choice = scanner.nextLine();
 
         switch (choice) {
-            case "l" -> loggedIn = login(scanner);
-            case "r" -> authenticationService.registerUser(scanner);
+            case "l" -> login(scanner);
+            case "r" -> authenticationService.registerUser();
             case "q" -> {
                 log.info("Exiting...");
                 appRunning = false;
@@ -71,39 +72,34 @@ public class GymFacade {
         log.info("g - get user information");
         log.info("d - delete Trainee");
         log.info("f - find Training Info");
+        log.info("t - list all trainings");
         log.info("l - log out");
 
         String choice = scanner.nextLine();
 
         switch (choice) {
-            case "c" -> trainingFacadeService.createTraining(scanner);
-            case "u" -> userFacadeService.updateUserInformation(username, scanner);
-            case "g" -> userFacadeService.getUserInformation(username);
+            case "c" -> trainingFacadeService.createTraining();
+            case "u" -> userFacadeService.updateUserInformation();
+            case "g" -> userFacadeService.getUserInformation();
             case "d" -> delete();
-            case "f" -> trainingFacadeService.findTrainingInfo(scanner);
-            case "l" -> loggedIn = false;
+            case "f" -> trainingFacadeService.findTrainingInfo();
+            case "t" -> trainingFacadeService.findAllTrainings();
+            case "l" -> userSession.logOut();
             default -> log.info("Invalid option, please try again.");
         }
     }
 
-    private boolean login(Scanner scanner) {
+    private void login(Scanner scanner) {
         String authenticatedUsername = InputHandler.promptForInput(scanner, "Enter username:");
 
-        loggedIn = authenticationService.login(scanner, authenticatedUsername);
-        if (loggedIn) {
-            this.username = authenticatedUsername;
-        }
-
-        return loggedIn;
+        userSession.setUser(authenticationService.login(authenticatedUsername));
     }
 
     private void delete() {
-        Trainee trainee = traineeService.findByUniqueName(username);
-        if (trainee != null) {
-            traineeService.deleteById(trainee.getId());
-            loggedIn = false;
-        } else {
+        if (! (userSession.getUser() instanceof Trainee)) {
             log.info("You are not Trainee.");
+            return;
         }
+        traineeService.deleteById(userSession.getUser().getId());
     }
 }

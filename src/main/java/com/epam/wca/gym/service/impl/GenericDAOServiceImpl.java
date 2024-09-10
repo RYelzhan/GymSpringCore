@@ -29,7 +29,11 @@ public abstract class GenericDAOServiceImpl<T, K, I> implements GenericDAOServic
 
     @Override
     public T findByUniqueName(String uniqueName) {
-        return genericDAO.findByUniqueName(uniqueName);
+        try {
+            return genericDAO.findByUniqueName(uniqueName);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     @Override

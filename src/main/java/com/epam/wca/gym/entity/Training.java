@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -30,7 +30,7 @@ public class Training {
     @JoinColumn(name = "TRAINING_TYPE_ID", nullable = false)
     private TrainingType trainingType;
     @Column(name = "DATE", nullable = false)
-    private LocalDate trainingDate;
+    private ZonedDateTime trainingDate;
     @Column(name = "DURATION", nullable = false)
     private int trainingDuration;
 
@@ -38,7 +38,7 @@ public class Training {
                     Trainer trainer,
                     String trainingName,
                     TrainingType trainingType,
-                    LocalDate trainingDate,
+                    ZonedDateTime trainingDate,
                     int trainingDuration) {
         this.trainee = trainee;
         this.trainer = trainer;

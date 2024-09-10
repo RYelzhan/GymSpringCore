@@ -26,7 +26,7 @@ public class InputHandler {
             try {
                 return Long.parseLong(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                log.info("Invalid input. Please try again.");
+                log.info("Invalid number. Please try again.");
             }
         }
     }
@@ -37,6 +37,34 @@ public class InputHandler {
             try {
                 return Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
+                log.info("Invalid input. Please try again.");
+            }
+        }
+    }
+
+    public static boolean promptForBoolean(Scanner scanner) {
+        String prompt = "Change activity: (True|False)";
+        while (true) {
+            log.info(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.equals("True")) {
+                return true;
+            } else if (input.equals("False")) {
+                return false;
+            } else {
+                log.info("Invalid active type. Please try again.");
+            }
+        }
+    }
+
+    public static String promptForPassword(Scanner scanner) {
+        String prompt = "Enter new Password: ";
+        while (true) {
+            log.info(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.length() > 9) {
+                return input;
+            } else {
                 log.info("Invalid input. Please try again.");
             }
         }

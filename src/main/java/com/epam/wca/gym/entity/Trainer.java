@@ -21,7 +21,10 @@ public class Trainer extends User {
     @JoinColumn(name = "TRAINING_TYPE_ID", nullable = false)
     private TrainingType specialization;
 
-    @OneToMany(mappedBy = "trainer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "trainer",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
     private Set<Training> trainings;
 
     @ManyToMany(fetch = FetchType.LAZY)

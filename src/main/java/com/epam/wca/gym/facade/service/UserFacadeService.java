@@ -3,6 +3,8 @@ package com.epam.wca.gym.facade.service;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
+import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingTypeService;
@@ -13,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Scanner;
 
 @Slf4j
@@ -23,58 +25,74 @@ public class UserFacadeService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final TrainingTypeService trainingTypeService;
+    private final UserSession userSession;
+    private final Scanner scanner;
 
-    public void updateUserInformation(String username, Scanner scanner) {
-        Trainee trainee = traineeService.findByUniqueName(username);
-        Trainer trainer = trainerService.findByUniqueName(username);
-
-        if (trainee != null) {
-            updateTrainee(scanner, trainee);
-        } else if (trainer != null) {
-            updateTrainer(scanner, trainer);
+    public void updateUserInformation() {
+        if (userSession.getUser() instanceof Trainee trainee) {
+            updateTrainee(trainee);
+        } else if (userSession.getUser() instanceof Trainer trainer) {
+            updateTrainer(trainer);
         } else {
             log.info("User not found.");
         }
     }
 
-    private void updateTrainee(Scanner scanner, Trainee trainee) {
+    private void updatePassword(User user) {
+        log.info("Current Password: " + user.getPassword());
+        String newPassword = InputHandler.promptForPassword(scanner);
+
+        user.setPassword(newPassword);
+    }
+
+    private void updateTrainee(Trainee trainee) {
+        updatePassword(trainee);
+
+        updateActivity(trainee);
+
         log.info("Current date of birth: " + trainee.getDateOfBirth());
-        LocalDate newDateOfBirth = DateParser.parseDate(scanner,
+        ZonedDateTime newDateOfBirth = DateParser.parseDate(scanner,
                 "Enter new date of birth: (" + AppConstants.DEFAULT_DATE_FORMAT + ")");
-        if (newDateOfBirth != null) {
-            trainee.setDateOfBirth(newDateOfBirth);
-        }
+
+        trainee.setDateOfBirth(newDateOfBirth);
 
         log.info("Current address: " + trainee.getAddress());
         String newAddress = InputHandler.promptForInput(scanner,
                 "Enter new address:");
-        if (!newAddress.isEmpty()) {
-            trainee.setAddress(newAddress);
-        }
+
+        trainee.setAddress(newAddress);
 
         traineeService.update(trainee);
 
         log.info("Trainee information updated successfully!");
     }
 
-    private void updateTrainer(Scanner scanner, Trainer trainer) {
-        TrainingType newSpecialization = selectTrainingType(scanner);
-        if (newSpecialization != null) {
-            trainer.setSpecialization(newSpecialization);
-        }
+    private void updateTrainer(Trainer trainer) {
+        updatePassword(trainer);
+
+        updateActivity(trainer);
+
+        log.info("Current Specialization: " + trainer.getSpecialization());
+        TrainingType newSpecialization = selectTrainingType();
+
+        trainer.setSpecialization(newSpecialization);
 
         trainerService.update(trainer);
 
         log.info("Trainer information updated successfully!");
     }
 
-    public void getUserInformation(String username) {
-        Trainee trainee = traineeService.findByUniqueName(username);
-        Trainer trainer = trainerService.findByUniqueName(username);
+    private void updateActivity(User user) {
+        log.info("Active: " + user.isActive());
+        boolean activity = InputHandler.promptForBoolean(scanner);
 
-        if (trainee != null) {
+        user.setActive(activity);
+    }
+
+    public void getUserInformation() {
+        if (userSession.getUser() instanceof Trainee trainee) {
             displayTraineeInfo(trainee);
-        } else if (trainer != null) {
+        } else if (userSession.getUser() instanceof Trainer trainer) {
             displayTrainerInfo(trainer);
         } else {
             log.info("No user found with the provided username.");
@@ -89,13 +107,13 @@ public class UserFacadeService {
         log.info("Trainer Information:\n" + trainer);
     }
 
-    public TrainingType selectTrainingType(Scanner scanner) {
+    public TrainingType selectTrainingType() {
         while (true) {
             log.info("Select training type:");
             int i = 1;
             for (TrainingType type : trainingTypeService.findAll()) {
-                log.info(i + 1 + " - " + type.getType());
-                i++;
+                log.info(i + " - " + type.getType());
+                i ++;
             }
             String choice = scanner.nextLine();
 

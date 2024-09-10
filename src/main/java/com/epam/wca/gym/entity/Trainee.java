@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,12 +19,15 @@ public class Trainee extends User {
     private static ProfileService profileService;
 
     @Column(name = "DATE_OF_BIRTH")
-    private LocalDate dateOfBirth;
+    private ZonedDateTime dateOfBirth;
 
     @Column(name = "ADDRESS")
     private String address;
 
-    @OneToMany(mappedBy = "trainee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "trainee",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
     private Set<Training> trainings;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -35,7 +38,7 @@ public class Trainee extends User {
 
     public Trainee(String firstName,
                    String lastName,
-                   LocalDate dateOfBirth,
+                   ZonedDateTime dateOfBirth,
                    String address) {
 
         super(firstName,

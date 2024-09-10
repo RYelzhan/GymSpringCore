@@ -10,7 +10,7 @@ import java.util.List;
 @Slf4j
 public abstract class GenericDAOImpl<T, I> implements GenericDAO<T, I> {
     protected final EntityManager entityManager;
-    private final Class<T> entityClass;
+    protected final Class<T> entityClass;
 
     protected GenericDAOImpl(EntityManager entityManager, Class<T> entityClass) {
         this.entityManager = entityManager;

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,8 +27,9 @@ public class AuthenticationService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final TrainingTypeService trainingTypeService;
+    private final Scanner scanner;
 
-    public boolean login(Scanner scanner, String username) {
+    public User login(String username) {
         String password = InputHandler.promptForInput(scanner, "Enter password:");
 
         User user = userService.findByUniqueName(username);
@@ -38,48 +39,44 @@ public class AuthenticationService {
 
             log.info("User authenticated: " + username);
 
-            return true;
+            return user;
         }
 
         log.info("Unsuccessful authentication attempt!");
 
         log.info("Invalid user information. Please try again.");
 
-        return false;
+        return null;
     }
 
-    public void registerUser(Scanner scanner) {
+    public void registerUser() {
         log.info("Register as:");
         log.info("1 - Trainee");
         log.info("2 - Trainer");
         String choice = scanner.nextLine();
 
         switch (choice) {
-            case "1" -> registerTrainee(scanner);
-            case "2" -> registerTrainer(scanner);
+            case "1" -> registerTrainee();
+            case "2" -> registerTrainer();
             default -> log.info("Invalid choice, please try again.");
         }
     }
 
-    private void registerTrainee(Scanner scanner) {
+    private void registerTrainee() {
         String firstName = InputHandler.promptForInput(scanner, "Enter first name:");
         String lastName = InputHandler.promptForInput(scanner, "Enter last name:");
-        LocalDate dateOfBirth = DateParser.parseDate(scanner,
+        ZonedDateTime dateOfBirth = DateParser.parseDate(scanner,
                 "Enter date of birth (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
         String address = InputHandler.promptForInput(scanner, "Enter address:");
 
-        if (dateOfBirth != null) {
-            TraineeDTO traineeDTO = new TraineeDTO(firstName, lastName, dateOfBirth, address);
-            printUserDetails(traineeService.save(traineeDTO));
-        } else {
-            log.info("Invalid Date Format. Trainee not created");
-        }
+        TraineeDTO traineeDTO = new TraineeDTO(firstName, lastName, dateOfBirth, address);
+        printUserDetails(traineeService.save(traineeDTO));
     }
 
-    private void registerTrainer(Scanner scanner) {
+    private void registerTrainer() {
         String firstName = InputHandler.promptForInput(scanner, "Enter first name:");
         String lastName = InputHandler.promptForInput(scanner, "Enter last name:");
-        TrainingType trainingType = selectTrainingType(scanner);
+        TrainingType trainingType = selectTrainingType();
 
         if (trainingType != null) {
             TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
@@ -96,7 +93,7 @@ public class AuthenticationService {
         log.info("New User Registered: " + newUser.getUserName());
     }
 
-    public TrainingType selectTrainingType(Scanner scanner) {
+    public TrainingType selectTrainingType() {
         while (true) {
             log.info("Select training type:");
             int i = 1;
