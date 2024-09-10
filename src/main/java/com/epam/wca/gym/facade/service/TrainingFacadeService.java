@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -59,7 +60,51 @@ public class TrainingFacadeService {
             return;
         }
 
-        log.info("All trainings: " + allTrainings.toString());
+        if (allTrainings.isEmpty()) {
+            log.info("No trainings found.");
+        } else {
+            log.info("Found trainings: " + allTrainings);
+        }
+    }
+
+    public void findTrainingByCriteria() {
+        ZonedDateTime fromDateInput = DateParser.parseDate(scanner,
+                        "Enter the start date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
+
+        ZonedDateTime toDateInput = DateParser.parseDate(scanner,
+                        "Enter the end date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
+
+        TrainingType trainingType = selectTrainingType();
+
+        User user = userSession.getUser();
+        List<Training> trainings;
+        if (user instanceof Trainee trainee) {
+            String trainerName = InputHandler.promptForInput(scanner,
+                    "Enter the trainer's username:");
+
+            trainings = traineeService.findTrainingByCriteria(trainee.getUserName(),
+                    fromDateInput,
+                    toDateInput,
+                    trainerName,
+                    trainingType);
+        } else if (user instanceof Trainer trainer) {
+            String traineeName = InputHandler.promptForInput(scanner,
+                    "Enter the trainee's username:");
+
+            trainings = trainerService.findTrainingByCriteria(trainer.getUserName(),
+                    fromDateInput,
+                    toDateInput,
+                    traineeName,
+                    trainingType);
+        } else {
+            return;
+        }
+
+        if (trainings.isEmpty()) {
+            log.info("No trainings found for the given criteria.");
+        } else {
+            log.info("Found trainings: " + trainings);
+        }
     }
 
     public void findTrainingInfo() {
@@ -78,8 +123,8 @@ public class TrainingFacadeService {
             log.info("Select training type:");
             int i = 1;
             for (TrainingType type : trainingTypeService.findAll()) {
-                log.info(i + 1 + " - " + type.getType());
-                i++;
+                log.info(i + " - " + type.getType());
+                i ++;
             }
             String choice = scanner.nextLine();
 

@@ -24,7 +24,7 @@ public class DateParser {
 
                 return dateInput;
             } catch (Exception e) {
-                log.info("Invalid Date format. Please try again.");
+                log.info("Invalid Date format. Please use the correct format: dd-MM-yyyy HH:mm:ss");
             }
         }
     }

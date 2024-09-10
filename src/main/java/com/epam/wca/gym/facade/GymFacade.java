@@ -72,7 +72,8 @@ public class GymFacade {
         log.info("g - get user information");
         log.info("d - delete Trainee");
         log.info("f - find Training Info");
-        log.info("t - list all trainings");
+        log.info("ta - list all trainings");
+        log.info("tc - list trainings with criteria");
         log.info("l - log out");
 
         String choice = scanner.nextLine();
@@ -83,7 +84,8 @@ public class GymFacade {
             case "g" -> userFacadeService.getUserInformation();
             case "d" -> delete();
             case "f" -> trainingFacadeService.findTrainingInfo();
-            case "t" -> trainingFacadeService.findAllTrainings();
+            case "ta" -> trainingFacadeService.findAllTrainings();
+            case "tc" -> trainingFacadeService.findTrainingByCriteria();
             case "l" -> userSession.logOut();
             default -> log.info("Invalid option, please try again.");
         }
