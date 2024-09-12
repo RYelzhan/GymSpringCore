@@ -95,16 +95,7 @@ public class GymFacade {
             case "f" -> trainingFindingFacadeService.findTrainingInfo();
             case "ta" -> trainingFindingFacadeService.findAllTrainings();
             case "tc" -> trainingFindingFacadeService.findTrainingByCriteria();
-            case "l" -> {
-                if (userSession.getUser() instanceof Trainee trainee) {
-                    // detached by uniqueName search, so attaching/merging back
-                    traineeService.update(trainee);
-                } else if (userSession.getUser() instanceof Trainer trainer) {
-                    // detached by uniqueName search, so attaching/merging back
-                    trainerService.update(trainer);
-                }
-                userSession.logOut();
-            }
+            case "l" -> logout();
             default -> log.info("Invalid option, please try again.");
         }
     }
@@ -115,11 +106,24 @@ public class GymFacade {
         userSession.setUser(authenticationService.login(authenticatedUsername));
     }
 
+    private void logout() {
+        if (userSession.getUser() instanceof Trainee trainee) {
+            // detached by uniqueName search, so attaching/merging back
+            traineeService.update(trainee);
+        } else if (userSession.getUser() instanceof Trainer trainer) {
+            // detached by uniqueName search, so attaching/merging back
+            trainerService.update(trainer);
+        }
+
+        userSession.logOut();
+    }
+
     private void delete() {
         if (! (userSession.getUser() instanceof Trainee)) {
             log.info("You are not Trainee.");
             return;
         }
+        logout();
         traineeService.deleteById(userSession.getUser().getId());
     }
 }

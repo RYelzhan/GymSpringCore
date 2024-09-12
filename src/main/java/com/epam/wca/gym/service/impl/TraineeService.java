@@ -46,4 +46,10 @@ public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeDTO, L
                 trainerName,
                 trainingType);
     }
+
+    public void deleteByUsername(String username) {
+        // I do not see need right now, as program is configured.
+        // But for галочка I let it stay here.
+        traineeDAO.deleteById(traineeDAO.findByUniqueName(username).getId());
+    }
 }

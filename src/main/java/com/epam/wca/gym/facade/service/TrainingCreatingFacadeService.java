@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -31,40 +32,64 @@ public class TrainingCreatingFacadeService {
     private final UserSession userSession;
     private final Scanner scanner;
 
-    public void listAllTrainers(Trainee trainee) {
-        List<Trainer> allTrainers = trainerService.findAll();
-        Set<Trainer> assignedTrainers = trainee.getTrainersAssigned();
-
+    public List<Trainer> getListOfNotAssignedTrainers(Set<Trainer> assignedTrainers,
+                                                      List<Trainer> allTrainers) {
+        List<Trainer> listOfTrainers = new ArrayList<>();
         for (Trainer trainer : allTrainers) {
-            log.info("Trainer: " + trainer +
-                    " Assigned: " + assignedTrainers.contains(trainer));
+            if (!assignedTrainers.contains(trainer)) {
+                listOfTrainers.add(trainer);
+            }
         }
+
+        return listOfTrainers;
     }
 
     public void addTrainer() {
         if (userSession.getUser() instanceof Trainee trainee) {
-            listAllTrainers(trainee);
+            List<Trainer> listOfTrainers = getListOfNotAssignedTrainers(trainee.getTrainersAssigned(),
+                    trainerService.findAll());
 
-            Long trainerId = InputHandler.promptForLong(scanner, "Enter trainer ID to add: ");
-            Trainer trainer = trainerService.findById(trainerId);
-            if (trainer == null) {
-                log.info("No such Trainer!");
-                return;
+            Trainer newTrainer = chooseAvailableTrainer(listOfTrainers);
+
+            if (newTrainer != null) {
+                trainee.getTrainersAssigned().add(newTrainer);
+            } else {
+                log.info("No Available Trainers.");
+            }
+        } else {
+            log.info("Trainer Can not add Trainer.");
+        }
+    }
+
+    private Trainer chooseAvailableTrainer(List<Trainer> listOfTrainers) {
+        if (listOfTrainers.isEmpty()) {
+            return null;
+        }
+
+        while (true) {
+            log.info("Available Trainers: ");
+
+            for (int i = 0; i < listOfTrainers.size(); i++) {
+                log.info("Number: " + (i + 1) + "\nTrainer Information:\n" + listOfTrainers.get(i));
             }
 
-            trainee.getTrainersAssigned().add(trainer);
+            int trainerNumber = InputHandler.promptForInt(scanner, "Enter trainer number:");
+            if (trainerNumber <= 0 || listOfTrainers.size() < trainerNumber) {
+                log.info("Wrong Number. Try Again.");
+            } else {
+                return listOfTrainers.get(trainerNumber - 1);
+            }
         }
     }
 
-    public void listAvailableTrainers(Trainee trainee) {
+    public Trainer chooseAssignedTrainer(Trainee trainee) {
         Set<Trainer> assignedTrainers = trainee.getTrainersAssigned();
 
-        log.info("Available Trainers: ");
+        List<Trainer> listOfTrainers = new ArrayList<>(assignedTrainers);
 
-        for (Trainer trainer : assignedTrainers) {
-            log.info("Trainer: " + trainer);
-        }
+        return chooseAvailableTrainer(listOfTrainers);
     }
+
     public void createTraining() {
         if (userSession.getUser() instanceof Trainee trainee) {
             if (trainee.getTrainersAssigned().isEmpty()) {
@@ -72,12 +97,11 @@ public class TrainingCreatingFacadeService {
                 return;
             }
 
+            Trainer trainer = chooseAssignedTrainer(trainee);
+
             String trainingName = InputHandler.promptForInput(scanner, "Enter training name:");
 
-            TrainingType trainingType = selectTrainingType();
-
-            listAvailableTrainers(trainee);
-            Long trainerId = InputHandler.promptForLong(scanner, "Enter trainer ID:");
+            TrainingType trainingType = trainer.getSpecialization();
 
             ZonedDateTime trainingDate = DateParser.parseDate(scanner,
                     "Enter training date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
@@ -85,7 +109,7 @@ public class TrainingCreatingFacadeService {
             Integer trainingDuration = InputHandler.promptForInt(scanner, "Enter duration (in minutes):");
 
             TrainingDTO trainingDTO = new TrainingDTO(trainee.getId(),
-                    trainerId,
+                    trainer.getId(),
                     trainingName,
                     trainingType,
                     trainingDate,
@@ -100,24 +124,6 @@ public class TrainingCreatingFacadeService {
             }
         } else {
             log.info("You're not a Trainee");
-        }
-    }
-
-    public TrainingType selectTrainingType() {
-        while (true) {
-            log.info("Select training type:");
-            int i = 1;
-            for (TrainingType type : trainingTypeService.findAll()) {
-                log.info(i + " - " + type.getType());
-                i ++;
-            }
-            String choice = scanner.nextLine();
-
-            try {
-                return trainingTypeService.findAll().get(Integer.parseInt(choice) - 1);
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                log.info("Invalid training type choice. Please try again.");
-            }
         }
     }
 }

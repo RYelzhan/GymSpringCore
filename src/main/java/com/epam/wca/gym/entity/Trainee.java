@@ -30,7 +30,8 @@ public class Trainee extends User {
             orphanRemoval = true)
     private Set<Training> trainings;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
             joinColumns = @JoinColumn(name = "TRAINEE_ID"),
             inverseJoinColumns = @JoinColumn(name = "TRAINER_ID"))
