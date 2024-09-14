@@ -1,7 +1,7 @@
 package com.epam.wca.gym.app;
 
 import com.epam.wca.gym.config.AppConfig;
-import com.epam.wca.gym.facade.GymFacade;
+import com.epam.wca.gym.facade.AppRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -9,8 +9,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class GymApplication {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        GymFacade gymFacade = context.getBean(GymFacade.class);
-        gymFacade.run();
+        AppRunner appRunner = context.getBean(AppRunner.class);
+        appRunner.run();
         log.info("Application Closing...");
         context.close();
     }

@@ -1,5 +1,6 @@
 package com.epam.wca.gym.facade;
 
+import com.epam.wca.gym.aop.ActiveUser;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.facade.service.AuthenticationService;
@@ -35,25 +36,10 @@ public class GymFacade {
     private final TrainerService trainerService;
     @NonNull
     private final UserSession userSession;
-    private boolean appRunning;
+    @NonNull
+    private final Scanner scanner;
 
-    public void run() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            log.info("Application Started Successfully!");
-
-            appRunning = true;
-
-            while (appRunning) {
-                if (userSession.isLoggedIn()) {
-                    handleLoggedInState(scanner);
-                } else {
-                    handleLoggedOutState(scanner);
-                }
-            }
-        }
-    }
-
-    private void handleLoggedOutState(Scanner scanner) {
+    public boolean handleLoggedOutState() {
         log.info("Choose action:");
         log.info("l - login");
         log.info("r - register");
@@ -66,13 +52,16 @@ public class GymFacade {
             case "r" -> authenticationService.registerUser();
             case "q" -> {
                 log.info("Exiting...");
-                appRunning = false;
+                return false;
             }
             default -> log.info("Invalid option, please try again.");
         }
+
+        return true;
     }
 
-    private void handleLoggedInState(Scanner scanner) {
+    @ActiveUser
+    public void handleLoggedInState() {
         log.info("Choose action:");
         log.info("c - create training");
         log.info("ut - assign new Trainer");
