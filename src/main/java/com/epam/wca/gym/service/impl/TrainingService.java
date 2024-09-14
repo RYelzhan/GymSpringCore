@@ -14,12 +14,14 @@ import java.util.List;
 
 @Service
 public class TrainingService extends GenericDAOServiceImpl<Training, TrainingDTO, Long> {
+    private final TrainingDAO trainingDAO;
     private final TraineeDAO traineeDAO;
     private final TrainerDAO trainerDAO;
 
     @Autowired
     public TrainingService(TrainingDAO trainingDAO, TraineeDAO traineeDAO, TrainerDAO trainerDAO) {
         super(trainingDAO);
+        this.trainingDAO = trainingDAO;
         this.traineeDAO = traineeDAO;
         this.trainerDAO = trainerDAO;
     }
@@ -36,7 +38,7 @@ public class TrainingService extends GenericDAOServiceImpl<Training, TrainingDTO
                 dto.trainingDate(),
                 dto.trainingDuration());
 
-        genericDAO.save(training);
+        trainingDAO.save(training);
 
         return training;
     }

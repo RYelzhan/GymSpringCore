@@ -26,7 +26,7 @@ public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerDTO, L
     public Trainer save(TrainerDTO dto) {
         Trainer trainer = UserFactory.createTrainer(dto);
 
-        genericDAO.save(trainer);
+        trainerDAO.save(trainer);
 
         return trainer;
     }

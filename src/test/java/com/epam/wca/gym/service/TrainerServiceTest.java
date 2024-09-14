@@ -1,78 +1,101 @@
 package com.epam.wca.gym.service;
 
+import com.epam.wca.gym.dto.TrainerDTO;
+import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.entity.Training;
+import com.epam.wca.gym.entity.TrainingType;
+import com.epam.wca.gym.repository.impl.TrainerDAO;
+import com.epam.wca.gym.service.impl.TrainerService;
+import com.epam.wca.gym.util.UserFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
-public class TrainerServiceTest {
-    /*
+class TrainerServiceTest {
     @Mock
     private TrainerDAO trainerDAO;
+
     @Mock
     private ProfileService profileService;
+
+    private TrainerDTO trainerDTO;
+
     @InjectMocks
     private TrainerService trainerService;
-    private TrainerDTO trainerDTO;
-    private Trainer trainer;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Trainer.setProfileService(profileService);
-        when(profileService.createUserName(anyString(), anyString()))
-                .thenReturn("John.Doe");
 
-        trainer = new Trainer("Jane",
-                "Smith",
-                TrainingType.YOGA);
-        trainer.setUserId(1L);
+        trainerDTO = new TrainerDTO("John",
+                "Doe",
+                new TrainingType("POWERLIFTING"));
+    }
 
-        trainerDTO = new TrainerDTO("Jane",
-                "Smith",
-                TrainingType.YOGA);
+
+    @Test
+    void testSave() {
+        Trainer trainer = UserFactory.createTrainer(trainerDTO);  // Mock trainer created from dto
+
+        // When
+        doNothing().when(trainerDAO).save(trainer);
+
+        // Act
+        Trainer savedTrainer = trainerService.save(trainerDTO);
+
+        // Then
+        Mockito.verify(trainerDAO, times(1)).save(trainer);
+        assertEquals(trainer, savedTrainer);  // Ensure the saved trainer is the one returned
     }
 
     @Test
-    void testCreateTrainer() {
-        when(trainerDAO.save(any(Trainer.class)))
-                .thenReturn(trainer);
+    void testFindAllTrainingsById() {
+        // Given
+        long trainerId = 1L;
+        Set<Training> mockTrainings = Set.of(new Training());  // Create mock data
 
-        Trainer createdTrainer = trainerService.create(trainerDTO);
+        // When
+        when(trainerDAO.findAllTrainingsById(trainerId)).thenReturn(mockTrainings);
 
-        assertEquals("Jane", createdTrainer.getFirstName());
-        Mockito.verify(trainerDAO, times(1))
-                .save(any(Trainer.class));
+        // Act
+        Set<Training> foundTrainings = trainerService.findAllTrainingsById(trainerId);
+
+        // Then
+        verify(trainerDAO, times(1)).findAllTrainingsById(trainerId);
+        assertEquals(mockTrainings, foundTrainings);
     }
 
     @Test
-    void testUpdateTrainer() {
-        doNothing()
-                .when(trainerDAO).updateByUsername(anyString(), any(Trainer.class));
+    void testFindTrainingByCriteria() {
+        // Given
+        String username = "john.doe";
+        ZonedDateTime fromDate = ZonedDateTime.now().minusDays(5);
+        ZonedDateTime toDate = ZonedDateTime.now();
+        String trainerName = "Jane";
+        TrainingType trainingType = new TrainingType("YOGA");
+        List<Training> mockTrainings = List.of(new Training());  // Mock data
 
-        trainerService.updateByUsername("jane.doe", trainer);
+        // When
+        when(trainerDAO.findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType))
+                .thenReturn(mockTrainings);
 
-        verify(trainerDAO, times(1))
-                .updateByUsername(anyString(), any(Trainer.class));
+        // Act
+        List<Training> foundTrainings = trainerService.findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
+
+        // Then
+        verify(trainerDAO, times(1)).findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
+        assertEquals(mockTrainings, foundTrainings);
     }
-
-    @Test
-    void testFindByUsername() {
-        when(trainerDAO.findByUsername(anyString()))
-                .thenReturn(trainer);
-
-        Trainer foundTrainer = trainerService.findByUsername("jane.doe");
-
-        assertEquals("Jane", foundTrainer.getFirstName());
-    }
-
-    @Test
-    void testFindById() {
-        when(trainerDAO.findById(anyLong()))
-                .thenReturn(trainer);
-
-        Trainer foundTrainer = trainerService.findById(1L);
-
-        assertEquals(1L, foundTrainer.getUserId());
-    }
-
-     */
 }

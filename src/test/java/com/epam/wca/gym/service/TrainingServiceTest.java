@@ -1,96 +1,99 @@
 package com.epam.wca.gym.service;
 
+import com.epam.wca.gym.dto.TrainingDTO;
+import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.entity.Training;
+import com.epam.wca.gym.entity.TrainingType;
+import com.epam.wca.gym.repository.impl.TraineeDAO;
+import com.epam.wca.gym.repository.impl.TrainerDAO;
+import com.epam.wca.gym.repository.impl.TrainingDAO;
+import com.epam.wca.gym.service.impl.TrainingService;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZonedDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
-public class TrainingServiceTest {
-    /*
+class TrainingServiceTest {
     @Mock
     private TrainingDAO trainingDAO;
 
     @Mock
-    private TraineeService traineeService;
+    private TraineeDAO traineeDAO;
 
     @Mock
-    private TrainerService trainerService;
+    private TrainerDAO trainerDAO;
 
     @InjectMocks
     private TrainingService trainingService;
 
-    private TrainingDTO trainingDTO;
-    private Training training;
+    @Test
+    void testSave() {
+        // Given
+        long traineeId = 1L;
+        long trainerId = 2L;
 
-    @BeforeEach
-    void setUp() {
-        trainingDTO = new TrainingDTO(1L,
-                2L,
-                "Yoga",
-                TrainingType.POWERLIFTING,
-                LocalDate.parse("2024.08.31", DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
+        TrainingDTO dto = new TrainingDTO(traineeId,
+                trainerId,
+                "Strength Training",
+                new TrainingType("POWERLIFTING"),
+                ZonedDateTime.now(),
                 60);
+        Trainee mockTrainee = new Trainee();  // Mock trainee
+        Trainer mockTrainer = new Trainer();  // Mock trainer
+        Training mockTraining = new Training(mockTrainee,
+                mockTrainer,
+                dto.trainingName(),
+                dto.trainingType(),
+                dto.trainingDate(),
+                dto.trainingDuration());
 
-        training = new Training(1L,
-                2L,
-                "Yoga",
-                TrainingType.POWERLIFTING,
-                LocalDate.parse("2024.08.31", DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
-                60);
+        // When
+        when(traineeDAO.findById(traineeId)).thenReturn(mockTrainee);
+        when(trainerDAO.findById(trainerId)).thenReturn(mockTrainer);
+
+        // Act
+        Training savedTraining = trainingService.save(dto);
+
+        // Then
+        Mockito.verify(traineeDAO, times(1)).findById(traineeId);
+        Mockito.verify(trainerDAO, times(1)).findById(trainerId);
+        assertEquals(mockTraining.getTrainee(), savedTraining.getTrainee());
+        assertEquals(mockTraining.getTrainer(), savedTraining.getTrainer());
     }
 
     @Test
-    void testCreateTraining_Success() {
-        when(traineeService.findById(1L))
-                .thenReturn(new Trainee());
+    void testUnsupportedOperations() {
+        // Test update operation
+        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> trainingService.update(new Training()));
+        assertEquals(UnsupportedOperationException.class, exception.getClass());
 
-        when(trainerService.findById(2L))
-                .thenReturn(new Trainer());
+        // Test deleteById operation
+        exception = assertThrows(UnsupportedOperationException.class,
+                () -> trainingService.deleteById(1L));
+        assertEquals(UnsupportedOperationException.class, exception.getClass());
 
-        when(trainingDAO.save(any(Training.class)))
-                .thenReturn(new Training());
+        // Test findByUniqueName operation
+        exception = assertThrows(UnsupportedOperationException.class,
+                () -> trainingService.findByUniqueName("Strength Training"));
+        assertEquals(UnsupportedOperationException.class, exception.getClass());
 
-        Training createdTraining = trainingService.createTraining(trainingDTO);
+        // Test findAll operation
+        exception = assertThrows(UnsupportedOperationException.class,
+                () -> trainingService.findAll());
 
-        assertNotNull(createdTraining);
-        assertEquals("Yoga", createdTraining.getTrainingName());
-
-        verify(trainingDAO, times(1))
-                .save(any(Training.class));
+        assertEquals(UnsupportedOperationException.class,
+                exception.getClass());
     }
-
-    @Test
-    void testCreateTraining_TraineeNotFound() {
-        when(traineeService.findById(1L))
-                .thenReturn(null);
-
-        assertThrows(IllegalStateException.class, () -> trainingService.createTraining(trainingDTO));
-
-        verify(trainingDAO, never()).save(any(Training.class));
-    }
-
-    @Test
-    void testCreateTraining_TrainerNotFound() {
-        when(traineeService.findById(1L))
-                .thenReturn(new Trainee());
-
-        when(trainerService.findById(2L))
-                .thenReturn(null);
-
-        assertThrows(IllegalStateException.class, () -> trainingService.createTraining(trainingDTO));
-
-        verify(trainingDAO, never()).save(any(Training.class));
-    }
-
-    @Test
-    void testFindById() {
-        when(trainingDAO.findById(1L))
-                .thenReturn(training);
-
-        Training foundTraining = trainingService.findById(1L);
-
-        assertNotNull(foundTraining);
-        assertEquals("Yoga", foundTraining.getTrainingName());
-    }
-
-     */
 }

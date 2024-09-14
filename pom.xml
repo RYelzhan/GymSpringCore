@@ -174,12 +174,14 @@
                 <version>${jacoco.version}</version>
                 <configuration>
                     <excludes>
+                        <exclude>com/epam/gym/aop/*</exclude>
                         <exclude>com/epam/gym/app/*</exclude>
                         <exclude>com/epam/gym/config/*</exclude>
                         <exclude>com/epam/gym/dto/*</exclude>
                         <exclude>com/epam/gym/entity/*</exclude>
                         <exclude>com/epam/gym/facade/*</exclude>
                         <exclude>com/epam/gym/repository/*</exclude>
+                        <exclude>com/epam/gym/service/impl/GenericDAOServiceImpl</exclude>
                         <exclude>com/epam/gym/utils/*</exclude>
                     </excludes>
                 </configuration>

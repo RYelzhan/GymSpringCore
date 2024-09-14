@@ -14,7 +14,25 @@ public class UserService extends GenericDAOServiceImpl<User, User, Long> {
 
     @Override
     public User save(User dto) {
-        // can not save just user right now
-        return null;
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void update(User entity) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public User findById(Long id) {
+        // No use right now
+        throw new UnsupportedOperationException();
     }
 }

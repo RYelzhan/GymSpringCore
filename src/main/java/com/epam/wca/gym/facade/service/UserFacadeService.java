@@ -5,8 +5,6 @@ import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.facade.user.UserSession;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
@@ -22,10 +20,6 @@ import java.util.Scanner;
 @Component
 @RequiredArgsConstructor
 public class UserFacadeService {
-    @NonNull
-    private final TraineeService traineeService;
-    @NonNull
-    private final TrainerService trainerService;
     @NonNull
     private final TrainingTypeFacadeService trainingTypeFacadeService;
     @NonNull
