@@ -123,7 +123,7 @@ public class GymFacade {
             log.info("You are not Trainee.");
             return;
         }
-        logout();
         traineeService.deleteById(userSession.getUser().getId());
+        userSession.logOut();
     }
 }
