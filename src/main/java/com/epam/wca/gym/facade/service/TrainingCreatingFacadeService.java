@@ -8,10 +8,10 @@ import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,10 +26,13 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class TrainingCreatingFacadeService {
+    @NonNull
     private final TrainerService trainerService;
+    @NonNull
     private final TrainingService trainingService;
-    private final TrainingTypeService trainingTypeService;
+    @NonNull
     private final UserSession userSession;
+    @NonNull
     private final Scanner scanner;
 
     public List<Trainer> getListOfNotAssignedTrainers(Set<Trainer> assignedTrainers,

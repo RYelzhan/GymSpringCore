@@ -7,10 +7,10 @@ import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,10 +22,15 @@ import java.util.Scanner;
 @Component
 @RequiredArgsConstructor
 public class UserFacadeService {
+    @NonNull
     private final TraineeService traineeService;
+    @NonNull
     private final TrainerService trainerService;
-    private final TrainingTypeService trainingTypeService;
+    @NonNull
+    private final TrainingTypeFacadeService trainingTypeFacadeService;
+    @NonNull
     private final UserSession userSession;
+    @NonNull
     private final Scanner scanner;
 
     public void updateUserInformation() {
@@ -62,8 +67,6 @@ public class UserFacadeService {
 
         trainee.setAddress(newAddress);
 
-        traineeService.update(trainee);
-
         log.info("Trainee information updated successfully!");
     }
 
@@ -73,11 +76,9 @@ public class UserFacadeService {
         updateActivity(trainer);
 
         log.info("Current Specialization: " + trainer.getSpecialization());
-        TrainingType newSpecialization = selectTrainingType();
+        TrainingType newSpecialization = trainingTypeFacadeService.selectTrainingType();
 
         trainer.setSpecialization(newSpecialization);
-
-        trainerService.update(trainer);
 
         log.info("Trainer information updated successfully!");
     }
@@ -105,23 +106,5 @@ public class UserFacadeService {
 
     private void displayTrainerInfo(Trainer trainer) {
         log.info("Trainer Information:\n" + trainer);
-    }
-
-    public TrainingType selectTrainingType() {
-        while (true) {
-            log.info("Select training type:");
-            int i = 1;
-            for (TrainingType type : trainingTypeService.findAll()) {
-                log.info(i + " - " + type.getType());
-                i ++;
-            }
-            String choice = scanner.nextLine();
-
-            try {
-                return trainingTypeService.findAll().get(Integer.parseInt(choice) - 1);
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                log.info("Invalid training type choice. Please try again.");
-            }
-        }
     }
 }

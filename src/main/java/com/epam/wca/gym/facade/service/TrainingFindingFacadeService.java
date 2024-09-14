@@ -5,10 +5,10 @@ import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,11 +22,17 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class TrainingFindingFacadeService {
+    @NonNull
     private final TraineeService traineeService;
+    @NonNull
     private final TrainerService trainerService;
+    @NonNull
     private final TrainingService trainingService;
-    private final TrainingTypeService trainingTypeService;
+    @NonNull
+    private final TrainingTypeFacadeService trainingTypeFacadeService;
+    @NonNull
     private final UserSession userSession;
+    @NonNull
     private final Scanner scanner;
 
     public void findAllTrainings() {
@@ -54,7 +60,7 @@ public class TrainingFindingFacadeService {
         ZonedDateTime toDateInput = DateParser.parseDate(scanner,
                 "Enter the end date (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
 
-        TrainingType trainingType = selectTrainingType();
+        TrainingType trainingType = trainingTypeFacadeService.selectTrainingType();
 
         User user = userSession.getUser();
         List<Training> trainings;
@@ -95,24 +101,6 @@ public class TrainingFindingFacadeService {
             log.info("Training found: " + training);
         } else {
             log.info("Training with ID " + trainingId + " not found.");
-        }
-    }
-
-    public TrainingType selectTrainingType() {
-        while (true) {
-            log.info("Select training type:");
-            int i = 1;
-            for (TrainingType type : trainingTypeService.findAll()) {
-                log.info(i + " - " + type.getType());
-                i++;
-            }
-            String choice = scanner.nextLine();
-
-            try {
-                return trainingTypeService.findAll().get(Integer.parseInt(choice) - 1);
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                log.info("Invalid training type choice. Please try again.");
-            }
         }
     }
 }

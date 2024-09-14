@@ -10,6 +10,8 @@ import com.epam.wca.gym.repository.impl.TrainingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TrainingService extends GenericDAOServiceImpl<Training, TrainingDTO, Long> {
     private final TraineeDAO traineeDAO;
@@ -37,5 +39,29 @@ public class TrainingService extends GenericDAOServiceImpl<Training, TrainingDTO
         genericDAO.save(training);
 
         return training;
+    }
+
+    @Override
+    public void update(Training entity) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Training findByUniqueName(String uniqueName) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Training> findAll() {
+        // No use right now
+        throw new UnsupportedOperationException();
     }
 }

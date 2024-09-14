@@ -1,5 +1,6 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.gym.aop.SecuredAnnotation;
 import com.epam.wca.gym.repository.GenericDAO;
 import com.epam.wca.gym.service.GenericDAOService;
 
@@ -13,11 +14,13 @@ public abstract class GenericDAOServiceImpl<T, K, I> implements GenericDAOServic
     }
 
     @Override
+    @SecuredAnnotation
     public void update(T entity) {
         genericDAO.update(entity);
     }
 
     @Override
+    @SecuredAnnotation
     public void deleteById(I id) {
         genericDAO.deleteById(id);
     }

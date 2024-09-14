@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,6 +40,26 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.isActive = isActive;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof User otherUser)) {
+            return false;
+        }
+
+        return Objects.equals(this.id, otherUser.id) &&
+                Objects.equals(this.userName, otherUser.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        // asked by SonarLink
+        return super.hashCode();
     }
 
     @Override

@@ -14,9 +14,31 @@ public class TrainingTypeService extends GenericDAOServiceImpl<TrainingType, Tra
 
     @Override
     public TrainingType save(TrainingType dto) {
-        // used for set-up
-        genericDAO.save(dto);
         // No use right now
-        return null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void update(TrainingType entity) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TrainingType findById(Long id) {
+        // No use right now
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TrainingType findByUniqueName(String uniqueName) {
+        // No use right now
+        throw new UnsupportedOperationException();
     }
 }

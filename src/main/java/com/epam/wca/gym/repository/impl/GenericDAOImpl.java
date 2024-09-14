@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -98,7 +99,7 @@ public abstract class GenericDAOImpl<T, I> implements GenericDAO<T, I> {
 
     @Override
     public List<T> findAll() {
-        return entityManager.createQuery("SELECT t FROM " + entityClass.getSimpleName() + " t", entityClass)
-                .getResultList();
+        return Collections.unmodifiableList(entityManager.createQuery("SELECT t FROM " + entityClass.getSimpleName() + " t", entityClass)
+                .getResultList());
     }
 }

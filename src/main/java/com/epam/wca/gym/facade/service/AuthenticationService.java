@@ -6,27 +6,31 @@ import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.service.impl.UserService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DateParser;
 import com.epam.wca.gym.util.InputHandler;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Scanner;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationService {
+    @NonNull
     private final UserService userService;
+    @NonNull
     private final TraineeService traineeService;
+    @NonNull
     private final TrainerService trainerService;
-    private final TrainingTypeService trainingTypeService;
+    @NonNull
+    private final TrainingTypeFacadeService trainingTypeFacadeService;
+    @NonNull
     private final Scanner scanner;
 
     public User login(String username) {
@@ -76,7 +80,7 @@ public class AuthenticationService {
     private void registerTrainer() {
         String firstName = InputHandler.promptForInput(scanner, "Enter first name:");
         String lastName = InputHandler.promptForInput(scanner, "Enter last name:");
-        TrainingType trainingType = selectTrainingType();
+        TrainingType trainingType = trainingTypeFacadeService.selectTrainingType();
 
         if (trainingType != null) {
             TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
@@ -91,26 +95,5 @@ public class AuthenticationService {
         log.info("Username: " + newUser.getUserName());
         log.info("Password: " + newUser.getPassword());
         log.info("New User Registered: " + newUser.getUserName());
-    }
-
-    public TrainingType selectTrainingType() {
-        while (true) {
-            log.info("Select training type:");
-            int i = 1;
-
-            List<TrainingType> trainingTypes = trainingTypeService.findAll();
-
-            for (TrainingType type : trainingTypes) {
-                log.info(i + " - " + type.getType());
-                i ++;
-            }
-            String choice = scanner.nextLine();
-
-            try {
-                return trainingTypes.get(Integer.parseInt(choice) - 1);
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                log.info("Invalid training type choice. Please try again.");
-            }
-        }
     }
 }
