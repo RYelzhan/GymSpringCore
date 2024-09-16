@@ -8,10 +8,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 @Slf4j
 public class GymApplication {
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        AppRunner appRunner = context.getBean(AppRunner.class);
-        appRunner.run();
-        log.info("Application Closing...");
-        context.close();
+        try (AnnotationConfigApplicationContext context =
+                     new AnnotationConfigApplicationContext(AppConfig.class)) {
+            AppRunner appRunner = context.getBean(AppRunner.class);
+            appRunner.run();
+            log.info("Application Closing...");
+        }
     }
 }

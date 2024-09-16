@@ -16,6 +16,7 @@ import java.util.Set;
 @Service
 public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeDTO, Long> {
     private final TraineeDAO traineeDAO;
+
     @Autowired
     public TraineeService(TraineeDAO traineeDAO) {
         super(traineeDAO);

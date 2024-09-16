@@ -9,6 +9,7 @@ import com.epam.wca.gym.repository.impl.TraineeDAO;
 import com.epam.wca.gym.repository.impl.TrainerDAO;
 import com.epam.wca.gym.repository.impl.TrainingDAO;
 import com.epam.wca.gym.service.impl.TrainingService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +37,13 @@ class TrainingServiceTest {
 
     @InjectMocks
     private TrainingService trainingService;
+
+    private Training training;
+
+    @BeforeEach
+    public void setUp() {
+        training = new Training();
+    }
 
     @Test
     void testSave() {
@@ -76,7 +84,7 @@ class TrainingServiceTest {
     void testUnsupportedOperations() {
         // Test update operation
         UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> trainingService.update(new Training()));
+                () -> trainingService.update(training));
         assertEquals(UnsupportedOperationException.class, exception.getClass());
 
         // Test deleteById operation

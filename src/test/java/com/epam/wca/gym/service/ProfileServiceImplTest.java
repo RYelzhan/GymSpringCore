@@ -27,8 +27,8 @@ class ProfileServiceImplTest {
     @ParameterizedTest
     @CsvSource({"John, Doe, John.Doe2", "Jane, Smith, Jane.Smith2"})
     void testCreateUserName_WhenUsernameExists(String firstName,
-                                                      String lastName,
-                                                      String expected) {
+                                               String lastName,
+                                               String expected) {
         String baseUsername = firstName + "." + lastName;
 
         // Given
@@ -49,8 +49,8 @@ class ProfileServiceImplTest {
     @ParameterizedTest
     @CsvSource({"John, Doe, John.Doe", "Jane, Smith, Jane.Smith"})
     void testCreateUserName_WhenUsernameDoesNotExist(String firstName,
-                                                            String lastName,
-                                                            String expected) {
+                                                     String lastName,
+                                                     String expected) {
         // Given
         String baseUsername = firstName + "." + lastName;
 

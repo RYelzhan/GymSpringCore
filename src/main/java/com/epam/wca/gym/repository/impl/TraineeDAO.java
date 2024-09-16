@@ -17,6 +17,7 @@ import java.util.Set;
 @Repository
 public class TraineeDAO extends GenericDAOImpl<Trainee, Long> {
     private final UserSession userSession;
+
     @Autowired
     public TraineeDAO(EntityManagerFactory entityManagerFactory,
                       UserSession userSession) {

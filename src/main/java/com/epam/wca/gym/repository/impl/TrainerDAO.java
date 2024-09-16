@@ -17,6 +17,7 @@ import java.util.Set;
 @Repository
 public class TrainerDAO extends GenericDAOImpl<Trainer, Long> {
     private final UserSession userSession;
+
     @Autowired
     public TrainerDAO(EntityManagerFactory entityManagerFactory,
                       UserSession userSession) {

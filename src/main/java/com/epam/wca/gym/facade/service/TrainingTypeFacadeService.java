@@ -19,6 +19,7 @@ public class TrainingTypeFacadeService {
     private final TrainingTypeService trainingTypeService;
     @NonNull
     private final Scanner scanner;
+
     public TrainingType selectTrainingType() {
         List<TrainingType> trainingTypes = trainingTypeService.findAll();
 
@@ -28,7 +29,7 @@ public class TrainingTypeFacadeService {
 
             for (TrainingType type : trainingTypes) {
                 log.info(i + " - " + type.getType());
-                i ++;
+                i++;
             }
             int trainingTypeNumberNumber = InputHandler.promptForInt(scanner, "Select training type:");
 

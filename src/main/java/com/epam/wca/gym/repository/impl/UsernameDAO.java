@@ -24,6 +24,12 @@ public class UsernameDAO extends GenericDAOImpl<Username, Long> {
             Username username = (Username) entityManager.createQuery("SELECT t FROM Username t WHERE t.baseUserName = ?1")
                     .setParameter(1, baseUsername)
                     .getSingleResult();
+            /*
+            TODO: Replace above code with:
+                TypedQuery<Username> query = entityManager.createQuery("SELECT t FROM Username t WHERE t.baseUserName = :baseUserName", Username.class);
+                query.setParameter("baseUserName", baseUserName);
+                List<Username> usernames = query.getResultList();
+             */
 
             entityManager.detach(username);
 

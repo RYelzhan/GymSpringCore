@@ -23,8 +23,17 @@ public class ActiveUserAspect {
     @NonNull
     private final Scanner scanner;
 
+    /**
+     * Pointcut for methods annotated with {@link ActiveUser}.
+     *
+     * <p>This method is intentionally left empty as it only serves as a
+     * pointcut definition. It allows advice to be applied to any method
+     * annotated with {@code @ActiveUser}.</p>
+     */
     @Pointcut("@annotation(ActiveUser)")
-    public void callAtActiveUserAnnotation() { }
+    public void callAtActiveUserAnnotation() {
+        // This method is empty because it serves as a pointcut definition.
+    }
 
     @Around(value = "callAtActiveUserAnnotation()", argNames = "pjp")
     public void aroundCallAt(ProceedingJoinPoint pjp) throws Throwable {

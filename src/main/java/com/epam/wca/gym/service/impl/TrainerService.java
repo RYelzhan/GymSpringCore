@@ -16,6 +16,7 @@ import java.util.Set;
 @Service
 public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerDTO, Long> {
     private final TrainerDAO trainerDAO;
+
     @Autowired
     public TrainerService(TrainerDAO trainerDAO) {
         super(trainerDAO);

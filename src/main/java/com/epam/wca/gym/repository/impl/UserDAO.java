@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserDAO extends GenericDAOImpl<User, Long>{
+public class UserDAO extends GenericDAOImpl<User, Long> {
     @Autowired
     public UserDAO(EntityManagerFactory entityManagerFactory) {
         super(entityManagerFactory.createEntityManager(), User.class);

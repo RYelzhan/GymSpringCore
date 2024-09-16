@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TrainingTypeDAO extends GenericDAOImpl<TrainingType, Long>{
+public class TrainingTypeDAO extends GenericDAOImpl<TrainingType, Long> {
     @Autowired
     public TrainingTypeDAO(EntityManagerFactory entityManagerFactory) {
         super(entityManagerFactory.createEntityManager(), TrainingType.class);

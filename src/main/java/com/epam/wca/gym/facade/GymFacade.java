@@ -22,7 +22,7 @@ import java.util.Scanner;
 @Component
 @RequiredArgsConstructor
 public class GymFacade {
-    @NonNull
+    @NonNull // TODO: is NonNull not needed here?
     private AuthenticationService authenticationService;
     @NonNull
     private TrainingCreatingFacadeService trainingCreatingFacadeService;
@@ -108,7 +108,7 @@ public class GymFacade {
     }
 
     private void delete() {
-        if (! (userSession.getUser() instanceof Trainee)) {
+        if (!(userSession.getUser() instanceof Trainee)) {
             log.info("You are not Trainee.");
             return;
         }
