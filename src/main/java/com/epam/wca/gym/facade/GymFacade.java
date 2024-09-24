@@ -1,10 +1,15 @@
 package com.epam.wca.gym.facade;
 
+import com.epam.wca.gym.aop.ActiveUser;
 import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.service.TraineeService;
+import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.facade.service.AuthenticationService;
-import com.epam.wca.gym.facade.service.TrainingFacadeService;
+import com.epam.wca.gym.facade.service.TrainingCreatingFacadeService;
+import com.epam.wca.gym.facade.service.TrainingFindingFacadeService;
 import com.epam.wca.gym.facade.service.UserFacadeService;
+import com.epam.wca.gym.facade.user.UserSession;
+import com.epam.wca.gym.service.impl.TraineeService;
+import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.util.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,35 +22,24 @@ import java.util.Scanner;
 @Component
 @RequiredArgsConstructor
 public class GymFacade {
-    @NonNull
+    @NonNull // TODO: is NonNull not needed here?
     private AuthenticationService authenticationService;
     @NonNull
-    private TrainingFacadeService trainingFacadeService;
+    private TrainingCreatingFacadeService trainingCreatingFacadeService;
+    @NonNull
+    private TrainingFindingFacadeService trainingFindingFacadeService;
     @NonNull
     private UserFacadeService userFacadeService;
     @NonNull
     private final TraineeService traineeService;
-    private boolean loggedIn = false;
-    private String username;
-    private boolean appRunning;
+    @NonNull
+    private final TrainerService trainerService;
+    @NonNull
+    private final UserSession userSession;
+    @NonNull
+    private final Scanner scanner;
 
-    public void run() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            log.info("Application Started Successfully!");
-
-            appRunning = true;
-
-            while (appRunning) {
-                if (loggedIn) {
-                    handleLoggedInState(scanner);
-                } else {
-                    handleLoggedOutState(scanner);
-                }
-            }
-        }
-    }
-
-    private void handleLoggedOutState(Scanner scanner) {
+    public boolean handleLoggedOutState() {
         log.info("Choose action:");
         log.info("l - login");
         log.info("r - register");
@@ -54,56 +48,71 @@ public class GymFacade {
         String choice = scanner.nextLine();
 
         switch (choice) {
-            case "l" -> loggedIn = login(scanner);
-            case "r" -> authenticationService.registerUser(scanner);
+            case "l" -> login(scanner);
+            case "r" -> authenticationService.registerUser();
             case "q" -> {
                 log.info("Exiting...");
-                appRunning = false;
+                return false;
             }
             default -> log.info("Invalid option, please try again.");
         }
+
+        return true;
     }
 
-    private void handleLoggedInState(Scanner scanner) {
+    @ActiveUser
+    public void handleLoggedInState() {
         log.info("Choose action:");
         log.info("c - create training");
-        log.info("u - update user information");
+        log.info("ut - assign new Trainer");
+        log.info("uu - update user information");
         log.info("g - get user information");
         log.info("d - delete Trainee");
         log.info("f - find Training Info");
+        log.info("ta - list all trainings");
+        log.info("tc - list trainings with criteria");
         log.info("l - log out");
 
         String choice = scanner.nextLine();
 
         switch (choice) {
-            case "c" -> trainingFacadeService.createTraining(scanner);
-            case "u" -> userFacadeService.updateUserInformation(username, scanner);
-            case "g" -> userFacadeService.getUserInformation(username);
+            case "c" -> trainingCreatingFacadeService.createTraining();
+            case "ut" -> trainingCreatingFacadeService.addTrainer();
+            case "uu" -> userFacadeService.updateUserInformation();
+            case "g" -> userFacadeService.getUserInformation();
             case "d" -> delete();
-            case "f" -> trainingFacadeService.findTrainingInfo(scanner);
-            case "l" -> loggedIn = false;
+            case "f" -> trainingFindingFacadeService.findTrainingInfo();
+            case "ta" -> trainingFindingFacadeService.findAllTrainings();
+            case "tc" -> trainingFindingFacadeService.findTrainingByCriteria();
+            case "l" -> logout();
             default -> log.info("Invalid option, please try again.");
         }
     }
 
-    private boolean login(Scanner scanner) {
+    private void login(Scanner scanner) {
         String authenticatedUsername = InputHandler.promptForInput(scanner, "Enter username:");
 
-        loggedIn = authenticationService.login(scanner, authenticatedUsername);
-        if (loggedIn) {
-            this.username = authenticatedUsername;
+        userSession.setUser(authenticationService.login(authenticatedUsername));
+    }
+
+    private void logout() {
+        if (userSession.getUser() instanceof Trainee trainee) {
+            // detached by uniqueName search, so attaching/merging back
+            traineeService.update(trainee);
+        } else if (userSession.getUser() instanceof Trainer trainer) {
+            // detached by uniqueName search, so attaching/merging back
+            trainerService.update(trainer);
         }
 
-        return loggedIn;
+        userSession.logOut();
     }
 
     private void delete() {
-        Trainee trainee = traineeService.findByUsername(username);
-        if (trainee != null) {
-            traineeService.deleteByUsername(username);
-            loggedIn = false;
-        } else {
+        if (!(userSession.getUser() instanceof Trainee)) {
             log.info("You are not Trainee.");
+            return;
         }
+        traineeService.deleteById(userSession.getUser().getId());
+        userSession.logOut();
     }
 }

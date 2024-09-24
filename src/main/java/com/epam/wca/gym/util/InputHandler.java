@@ -1,6 +1,5 @@
 package com.epam.wca.gym.util;
 
-import com.epam.wca.gym.entity.TrainingType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +26,7 @@ public class InputHandler {
             try {
                 return Long.parseLong(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                log.info("Invalid input. Please try again.");
+                log.info("Invalid number. Please try again.");
             }
         }
     }
@@ -43,18 +42,30 @@ public class InputHandler {
         }
     }
 
-    public static TrainingType selectTrainingType(Scanner scanner) {
+    public static boolean promptForBoolean(Scanner scanner) {
+        String prompt = "Change activity: (True|False)";
         while (true) {
-            log.info("Select training type:");
-            for (TrainingType type : TrainingType.values()) {
-                log.info(type.ordinal() + 1 + " - " + type.name());
+            log.info(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.equals("True")) {
+                return true;
+            } else if (input.equals("False")) {
+                return false;
+            } else {
+                log.info("Invalid active type. Please try again.");
             }
-            String choice = scanner.nextLine();
+        }
+    }
 
-            try {
-                return TrainingType.values()[Integer.parseInt(choice) - 1];
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                log.info("Invalid training type choice. Please try again.");
+    public static String promptForPassword(Scanner scanner) {
+        String prompt = "Enter new Password: ";
+        while (true) {
+            log.info(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.length() > 9) {
+                return input;
+            } else {
+                log.info("Invalid input. Please try again.");
             }
         }
     }

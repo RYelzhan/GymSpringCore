@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,19 +17,26 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class TrainingType {
+@Table(name = "USERNAMES")
+public class Username {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "TYPE", nullable = false)
-    private String type;
+    @Column(name = "BASE_USERNAME")
+    private String baseUserName;
+    @Column(name = "COUNTER", nullable = false)
+    private Long counter;
 
-    public TrainingType(String type) {
-        this.type = type;
+    public Username(String baseUserName, Long counter) {
+        this.baseUserName = baseUserName;
+        this.counter = counter;
     }
 
     @Override
     public String toString() {
-        return type;
+        return "Username{" +
+                "baseUserName='" + baseUserName + '\'' +
+                ", counter=" + counter +
+                '}';
     }
 }

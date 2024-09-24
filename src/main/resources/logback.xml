@@ -26,13 +26,15 @@
         <appender-ref ref="USER_CONSOLE"/>
     </logger>
 
+    <logger name="com.epam.wca.gym.aop" level="INFO" additivity="false">
+        <appender-ref ref="USER_CONSOLE"/>
+    </logger>
+
     <logger name="com.epam.wca.gym.util" level="INFO" additivity="false">
         <appender-ref ref="USER_CONSOLE"/>
     </logger>
 
-    <!-- Logger for your application -->
     <logger name="com.epam.wca.gym" level="WARN" additivity="false">
-        <!--- Application Configuration -->
         <appender-ref ref="APP_CONSOLE" />
     </logger>
 

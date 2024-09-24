@@ -1,25 +1,55 @@
 package com.epam.wca.gym.entity;
 
 import com.epam.wca.gym.service.ProfileService;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
+@Table(name = "TRAINEES")
 public class Trainee extends User {
     private static ProfileService profileService;
 
-    private LocalDate dateOfBirth;
+    @Column(name = "DATE_OF_BIRTH")
+    private ZonedDateTime dateOfBirth;
+
+    @Column(name = "ADDRESS")
     private String address;
-    private long userId;
+
+    @OneToMany(mappedBy = "trainee",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
+    private Set<Training> trainings;
+
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
+            joinColumns = @JoinColumn(name = "TRAINEE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TRAINER_ID"))
+    private Set<Trainer> trainersAssigned;
 
     public Trainee(String firstName,
                    String lastName,
-                   LocalDate dateOfBirth,
+                   ZonedDateTime dateOfBirth,
                    String address) {
 
         super(firstName,
@@ -30,26 +60,8 @@ public class Trainee extends User {
 
         this.dateOfBirth = dateOfBirth;
         this.address = address;
-    }
-
-    public Trainee(String firstName,
-                   String lastName,
-                   String userName,
-                   String password,
-                   boolean isActive,
-                   LocalDate dateOfBirth,
-                   String address,
-                   long userId) {
-
-        super(firstName,
-                lastName,
-                userName,
-                password,
-                isActive);
-
-        this.dateOfBirth = dateOfBirth;
-        this.address = address;
-        this.userId = userId;
+        this.trainings = new HashSet<>();
+        this.trainersAssigned = new HashSet<>();
     }
 
     public static void setProfileService(ProfileService profileService) {
@@ -60,7 +72,6 @@ public class Trainee extends User {
     public String toString() {
         return super.toString() +
                 "dateOfBirth = " + dateOfBirth + '\n' +
-                "address = " + address + '\n' +
-                "userId = " + userId + '\n';
+                "address = " + address + '\n';
     }
 }
