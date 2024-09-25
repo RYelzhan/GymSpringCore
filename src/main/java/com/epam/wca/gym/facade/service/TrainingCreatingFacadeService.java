@@ -22,6 +22,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
 @Slf4j
 @Component
 @RequiredArgsConstructor

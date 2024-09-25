@@ -3,6 +3,10 @@ package com.epam.wca.gym.facade.user;
 import com.epam.wca.gym.entity.User;
 import org.springframework.stereotype.Component;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
 @Component
 public class UserSession {
     private User user;

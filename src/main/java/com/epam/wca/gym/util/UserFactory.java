@@ -6,6 +6,12 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import lombok.experimental.UtilityClass;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
 @UtilityClass
 public class UserFactory {
 

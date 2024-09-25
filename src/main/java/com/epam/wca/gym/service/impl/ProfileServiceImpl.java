@@ -33,7 +33,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public String createUserName(String firstName, String lastName) {
         String baseUsername = firstName + "." + lastName;
-        Username username = null;
+        Username username;
         try {
             username = usernameDAO.findByUniqueName(baseUsername);
 

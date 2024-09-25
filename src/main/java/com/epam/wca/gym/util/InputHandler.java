@@ -5,6 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Scanner;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
 @Slf4j
 @UtilityClass
 public class InputHandler {
@@ -44,16 +50,17 @@ public class InputHandler {
 
     public static boolean promptForBoolean(Scanner scanner) {
         String prompt = "Change activity: (True|False)";
+
         while (true) {
             log.info(prompt);
             String input = scanner.nextLine().trim();
-            if (input.equals("True")) {
+
+            if ("TruE".equalsIgnoreCase(input)) {
                 return true;
-            } else if (input.equals("False")) {
+            } else if ("False".equalsIgnoreCase(input)) {
                 return false;
-            } else {
-                log.info("Invalid active type. Please try again.");
             }
+            log.info("Invalid active type. Please try again.");
         }
     }
 

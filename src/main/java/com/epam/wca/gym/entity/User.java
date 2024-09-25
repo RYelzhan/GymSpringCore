@@ -37,6 +37,7 @@ public class User {
     private String password;
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
+    // delete column
 
     public User(String firstName,
                 String lastName,

@@ -18,6 +18,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
