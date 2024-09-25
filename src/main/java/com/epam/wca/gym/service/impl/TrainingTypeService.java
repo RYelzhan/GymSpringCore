@@ -35,10 +35,4 @@ public class TrainingTypeService extends GenericDAOServiceImpl<TrainingType, Tra
         // No use right now
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public TrainingType findByUniqueName(String uniqueName) {
-        // No use right now
-        throw new UnsupportedOperationException();
-    }
 }

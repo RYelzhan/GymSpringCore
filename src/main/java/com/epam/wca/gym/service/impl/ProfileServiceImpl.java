@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             username.setCounter(username.getCounter() + 1);
 
-            usernameDAO.save(username);
+            usernameDAO.update(username);
 
             return username.getBaseUserName() + username.getCounter();
         } catch (Exception e) {

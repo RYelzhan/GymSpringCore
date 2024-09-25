@@ -14,7 +14,7 @@ import java.util.Scanner;
 @ComponentScan(basePackages = "com.epam.wca.gym")
 @PropertySource("classpath:application.properties")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@Import({JPAConfig.class, WebConfig.class})
+@Import({JPAConfig.class, WebConfig.class, JacksonConfig.class})
 @EnableTransactionManagement
 //  TODO: Transaction Testing
 public class AppConfig {

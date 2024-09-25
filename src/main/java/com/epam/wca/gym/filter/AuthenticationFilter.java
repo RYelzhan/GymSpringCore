@@ -16,11 +16,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationFilter extends HttpFilter {
+    private static final String REGISTRATION_URI = "/gym/register";
     @NonNull
     private UserService userService;
 
@@ -29,6 +31,15 @@ public class AuthenticationFilter extends HttpFilter {
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+
+        Optional<String> uri = Optional.ofNullable(httpRequest.getRequestURI());
+
+        // excluding registration URI from checking
+        if (uri.isPresent() && httpRequest.getRequestURI().startsWith(REGISTRATION_URI)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         String authHeader = httpRequest.getHeader("Authorization");

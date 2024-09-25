@@ -1,7 +1,6 @@
 package com.epam.wca.gym.facade.service;
 
 import com.epam.wca.gym.dto.TraineeDTO;
-import com.epam.wca.gym.dto.TrainerDTO;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.TraineeService;
@@ -89,8 +88,8 @@ public class AuthenticationService {
         TrainingType trainingType = trainingTypeFacadeService.selectTrainingType();
 
         if (trainingType != null) {
-            TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
-            printUserDetails(trainerService.save(trainerDTO));
+//            TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
+ //           printUserDetails(trainerService.save(trainerDTO));
         } else {
             log.info("Invalid Date Format. Trainer not created");
         }

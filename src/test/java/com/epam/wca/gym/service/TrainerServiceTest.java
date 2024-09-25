@@ -1,6 +1,6 @@
 package com.epam.wca.gym.service;
 
-import com.epam.wca.gym.dto.TrainerDTO;
+import com.epam.wca.gym.dto.TrainerSavingDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
@@ -33,7 +33,7 @@ class TrainerServiceTest {
     @Mock
     private ProfileService profileService;
 
-    private TrainerDTO trainerDTO;
+    private TrainerSavingDTO trainerDTO;
 
     @InjectMocks
     private TrainerService trainerService;
@@ -42,7 +42,7 @@ class TrainerServiceTest {
     void setUp() {
         Trainer.setProfileService(profileService);
 
-        trainerDTO = new TrainerDTO("John",
+        trainerDTO = new TrainerSavingDTO("John",
                 "Doe",
                 new TrainingType("POWERLIFTING"));
     }

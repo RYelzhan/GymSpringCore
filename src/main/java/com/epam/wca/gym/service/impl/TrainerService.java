@@ -1,6 +1,6 @@
 package com.epam.wca.gym.service.impl;
 
-import com.epam.wca.gym.dto.TrainerDTO;
+import com.epam.wca.gym.dto.TrainerSavingDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerDTO, Long> {
+public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerSavingDTO, Long> {
     private final TrainerDAO trainerDAO;
 
     @Autowired
@@ -24,7 +24,7 @@ public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerDTO, L
     }
 
     @Override
-    public Trainer save(TrainerDTO dto) {
+    public Trainer save(TrainerSavingDTO dto) {
         Trainer trainer = UserFactory.createTrainer(dto);
 
         trainerDAO.save(trainer);
