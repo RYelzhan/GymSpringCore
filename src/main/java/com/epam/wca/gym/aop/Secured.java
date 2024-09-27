@@ -6,6 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
+/**
  * Intended to check before any update action on entities
  * whether User requesting change have privileges to do so.
  *

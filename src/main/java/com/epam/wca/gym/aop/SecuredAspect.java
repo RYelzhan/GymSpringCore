@@ -11,6 +11,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
 @Slf4j
 @Aspect
 @Component

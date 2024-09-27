@@ -6,6 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
+
+/**
  *  Indicates that that method can only be used by active users
  *
  *  <p> This method should be used on methods that require user

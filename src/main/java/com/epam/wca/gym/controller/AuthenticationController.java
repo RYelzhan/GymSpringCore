@@ -1,8 +1,9 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.aop.Validate;
 import com.epam.wca.gym.dto.AuthenticatedUserDTO;
-import com.epam.wca.gym.dto.TraineeDTO;
-import com.epam.wca.gym.dto.TrainerDTO;
+import com.epam.wca.gym.dto.TraineeGettingDTO;
+import com.epam.wca.gym.dto.TrainerGettingDTO;
 import com.epam.wca.gym.dto.TrainerSavingDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
@@ -26,12 +27,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthenticationController {
     @NonNull
@@ -50,37 +53,30 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticatedUser.getUserName());
     }
 
-    @PostMapping(value = "/register/trainee",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AuthenticatedUserDTO> registerTrainee(@Valid @RequestBody TraineeDTO traineeDto,
-                                                                BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error ->
-                    errors.put(error.getField(), error.getDefaultMessage()));
-            // Throwing custom ValidationException
-            throw new ValidationException(errors);
-        }
-
-        Trainee trainee = traineeService.save(traineeDto);
+    @PostMapping(value = "/register/trainee")
+    @Validate
+    public ResponseEntity<AuthenticatedUserDTO> registerTrainee(@Valid @RequestBody TraineeGettingDTO traineeGettingDto,
+                                                                BindingResult bindingResult /* used for aspect */) {
+        Trainee trainee = traineeService.save(traineeGettingDto);
         var newUser = new AuthenticatedUserDTO(trainee.getUserName(), trainee.getPassword());
 
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/register/trainer",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AuthenticatedUserDTO> registerTrainer(@Valid @RequestBody TrainerDTO trainerDTO,
-                                                                BindingResult bindingResult) {
-        TrainingType trainingType = trainingTypeService.findByUniqueName(trainerDTO.trainingType());
+    @PostMapping(value = "/register/trainer")
+    @Validate
+    public ResponseEntity<AuthenticatedUserDTO> registerTrainer(@Valid @RequestBody TrainerGettingDTO trainerGettingDTO,
+                                                                BindingResult bindingResult /* used for aspect */) {
+        TrainingType trainingType = trainingTypeService.findByUniqueName(trainerGettingDTO.trainingType());
 
         if (trainingType == null) {
-            throw new IllegalArgumentException("Invalid Training Type choice");
+            Map<String, String> error = new HashMap<>();
+            error.put("trainingType", "Invalid Training Type choice");
+            throw new ValidationException(error);
         }
 
-        TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerDTO.firstName(),
-                trainerDTO.lastName(),
+        TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerGettingDTO.firstName(),
+                trainerGettingDTO.lastName(),
                 trainingType);
 
         Trainer trainer = trainerService.save(trainerSavingDTO);

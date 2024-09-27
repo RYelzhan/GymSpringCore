@@ -28,26 +28,14 @@ public class TraineeDAO extends GenericDAOImpl<Trainee, Long> {
 
     @Override
     public Trainee findByUniqueName(String username) {
-        EntityTransaction transaction = entityManager.getTransaction();
-
         try {
-            transaction.begin();
+            TypedQuery<Trainee> query = entityManager.createQuery(
+                    "SELECT t FROM Trainee t WHERE t.userName = :username", Trainee.class);
+            query.setParameter("username", username);
 
-            Trainee trainee = (Trainee) entityManager.createQuery("SELECT t FROM Trainee t WHERE t.userName = ?1")
-                    .setParameter(1, username)
-                    .getSingleResult();
-
-            entityManager.detach(trainee);
-
-            transaction.commit();
-
-            return trainee;
+            return query.getSingleResult();
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-
-            throw new IllegalArgumentException("Entity was not found");
+            return null;
         }
     }
 

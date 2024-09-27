@@ -7,6 +7,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Scanner;
 
@@ -18,10 +19,24 @@ import java.util.Scanner;
 @EnableTransactionManagement
 //  TODO: Transaction Testing
 public class AppConfig {
+
+    /**
+     * Was used to insert Scanner into facade service classes
+     * @return Scanner object
+     */
+    @Deprecated(since = "2.0")
     @Bean
-//    @Scope()
     public Scanner scanner() {
         //  TODO: delete it in future and just use Scanner
         return new Scanner(System.in);
+    }
+
+    /**
+     * To process @Valid annotation
+     * @return LocalValidatorFactoryBean
+     */
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        return new LocalValidatorFactoryBean();
     }
 }
