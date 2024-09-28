@@ -1,7 +1,7 @@
 package com.epam.wca.gym.util;
 
-import com.epam.wca.gym.dto.TraineeRegistrationDTO;
-import com.epam.wca.gym.dto.TrainerSavingDTO;
+import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
+import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import lombok.experimental.UtilityClass;

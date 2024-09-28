@@ -1,4 +1,4 @@
-package com.epam.wca.gym.dto;
+package com.epam.wca.gym.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

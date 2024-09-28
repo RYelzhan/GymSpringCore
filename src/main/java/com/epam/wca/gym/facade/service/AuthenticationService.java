@@ -1,6 +1,6 @@
 package com.epam.wca.gym.facade.service;
 
-import com.epam.wca.gym.dto.TraineeRegistrationDTO;
+import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.TraineeService;

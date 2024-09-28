@@ -1,4 +1,6 @@
-package com.epam.wca.gym.dto;
+package com.epam.wca.gym.dto.trainer;
+
+import com.epam.wca.gym.dto.trainee.TraineeBasicDTO;
 
 import java.util.Set;
 

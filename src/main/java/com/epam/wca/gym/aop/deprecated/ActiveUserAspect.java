@@ -1,4 +1,4 @@
-package com.epam.wca.gym.aop;
+package com.epam.wca.gym.aop.deprecated;
 
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.util.InputHandler;
@@ -36,7 +36,7 @@ public class ActiveUserAspect {
      * pointcut definition. It allows advice to be applied to any method
      * annotated with {@code @ActiveUser}.</p>
      */
-    @Pointcut("@annotation(ActiveUser)")
+    @Pointcut("@annotation(com.epam.wca.gym.aop.deprecated.ActiveUser)")
     public void callAtActiveUserAnnotation() {
         // This method is empty because it serves as a pointcut definition.
     }

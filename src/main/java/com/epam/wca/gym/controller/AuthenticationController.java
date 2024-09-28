@@ -1,10 +1,10 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.AuthenticatedUserDTO;
-import com.epam.wca.gym.dto.TraineeRegistrationDTO;
-import com.epam.wca.gym.dto.TrainerRegistrationDTO;
-import com.epam.wca.gym.dto.TrainerSavingDTO;
-import com.epam.wca.gym.dto.UserLoginDTO;
+import com.epam.wca.gym.dto.user.AuthenticatedUserDTO;
+import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
+import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
+import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
+import com.epam.wca.gym.dto.user.UserLoginDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;

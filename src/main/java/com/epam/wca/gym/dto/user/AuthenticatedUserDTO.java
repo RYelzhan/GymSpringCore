@@ -1,4 +1,4 @@
-package com.epam.wca.gym.dto;
+package com.epam.wca.gym.dto.user;
 
 public record AuthenticatedUserDTO(
         String username,

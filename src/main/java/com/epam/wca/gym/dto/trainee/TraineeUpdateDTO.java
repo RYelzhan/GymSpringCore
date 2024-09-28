@@ -1,4 +1,4 @@
-package com.epam.wca.gym.dto;
+package com.epam.wca.gym.dto.trainee;
 
 import com.epam.wca.gym.util.AppConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -1,6 +1,6 @@
 package com.epam.wca.gym.facade;
 
-import com.epam.wca.gym.aop.ActiveUser;
+import com.epam.wca.gym.aop.deprecated.ActiveUser;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.facade.service.AuthenticationService;

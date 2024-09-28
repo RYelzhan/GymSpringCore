@@ -1,8 +1,8 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.TrainerSendDTO;
-import com.epam.wca.gym.dto.TrainerUpdateDTO;
-import com.epam.wca.gym.dto.UsernameGetDTO;
+import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
+import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
+import com.epam.wca.gym.dto.user.UsernameGetDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;

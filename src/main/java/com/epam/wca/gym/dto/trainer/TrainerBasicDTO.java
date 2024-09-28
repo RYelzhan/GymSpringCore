@@ -1,4 +1,4 @@
-package com.epam.wca.gym.dto;
+package com.epam.wca.gym.dto.trainer;
 
 public record TrainerBasicDTO(
         String username,

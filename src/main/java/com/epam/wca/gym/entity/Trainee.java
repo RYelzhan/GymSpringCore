@@ -18,6 +18,7 @@ import lombok.Setter;
 
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -66,6 +67,10 @@ public class Trainee extends User {
 
     public static void setProfileService(ProfileService profileService) {
         Trainee.profileService = profileService;
+    }
+
+    public void addTrainers(List<Trainer> trainerList) {
+        trainersAssigned.addAll(trainerList);
     }
 
     @Override

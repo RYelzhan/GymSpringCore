@@ -1,9 +1,9 @@
 package com.epam.wca.gym.util;
 
-import com.epam.wca.gym.dto.TraineeBasicDTO;
-import com.epam.wca.gym.dto.TrainerBasicDTO;
-import com.epam.wca.gym.dto.TraineeSendDTO;
-import com.epam.wca.gym.dto.TrainerSendDTO;
+import com.epam.wca.gym.dto.trainee.TraineeBasicDTO;
+import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
+import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
+import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 

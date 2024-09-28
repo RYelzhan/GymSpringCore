@@ -1,4 +1,6 @@
-package com.epam.wca.gym.dto;
+package com.epam.wca.gym.dto.trainee;
+
+import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 
 import java.time.ZonedDateTime;
 import java.util.Set;

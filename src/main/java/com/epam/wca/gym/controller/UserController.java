@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.UserUpdateDTO;
+import com.epam.wca.gym.dto.user.UserUpdateDTO;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.UserService;
 import jakarta.servlet.http.HttpServletRequest;

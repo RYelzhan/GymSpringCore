@@ -1,7 +1,7 @@
 package com.epam.wca.gym.service.impl;
 
-import com.epam.wca.gym.dto.TrainerSavingDTO;
-import com.epam.wca.gym.dto.TrainerUpdateDTO;
+import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
+import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;

@@ -1,15 +1,19 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.TraineeSendDTO;
-import com.epam.wca.gym.dto.TraineeUpdateDTO;
-import com.epam.wca.gym.dto.TrainerBasicDTO;
-import com.epam.wca.gym.dto.UsernameGetDTO;
+import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
+import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
+import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
+import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
+import com.epam.wca.gym.dto.user.UsernameGetDTO;
 import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.TraineeService;
+import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.util.DTOFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,6 +35,8 @@ import java.util.List;
 public class TraineeController {
     @NonNull
     private TraineeService traineeService;
+    @NonNull
+    private TrainerService trainerService;
 
     @GetMapping("/profile")
     public ResponseEntity<TraineeSendDTO> getTraineeProfile(
@@ -79,7 +86,7 @@ public class TraineeController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/available/trainers")
+    @GetMapping("/trainers/available")
     public ResponseEntity<List<TrainerBasicDTO>> getNotAssignedTrainers(
             @RequestBody @Valid UsernameGetDTO usernameGetDTO,
             HttpServletRequest request
@@ -92,5 +99,41 @@ public class TraineeController {
         }
 
         return new ResponseEntity<>(traineeService.getListOfNotAssignedTrainers(trainee), HttpStatus.OK);
+    }
+
+    @PutMapping("/trainers/add")
+    public ResponseEntity<List<TrainerBasicDTO>> updateTrainerList(
+            @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
+            HttpServletRequest request
+            ) {
+        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+
+        if (!(authenticatedUser instanceof Trainee trainee) ||
+                !authenticatedUser.getUserName().equals(traineeTrainersUpdateDTO.username())) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        List<Trainer> trainerList = new ArrayList<>();
+        traineeTrainersUpdateDTO.trainerUsernames()
+                .forEach(trainerUsername -> {
+                Trainer trainer = trainerService.findByUniqueName(trainerUsername);
+
+                if (trainer == null) {
+                    throw new ValidationException(trainerUsername + " -> no such trainer found." +
+                            "No trainers added");
+                }
+
+                trainerList.add(trainer);
+        });
+
+        trainee.addTrainers(trainerList);
+        traineeService.update(trainee);
+
+        List<TrainerBasicDTO> addedTrainers = new ArrayList<>();
+        trainerList.forEach((trainer) -> {
+            addedTrainers.add(DTOFactory.createBasicTrainerDTO(trainer));
+        });
+
+        return new ResponseEntity<>(addedTrainers, HttpStatus.OK);
     }
 }
