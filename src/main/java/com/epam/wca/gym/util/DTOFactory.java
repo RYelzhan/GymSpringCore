@@ -4,8 +4,10 @@ import com.epam.wca.gym.dto.trainee.TraineeBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
+import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.entity.Training;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -61,5 +63,21 @@ public class DTOFactory {
         return new TraineeBasicDTO(trainee.getUserName(),
                 trainee.getFirstName(),
                 trainee.getLastName());
+    }
+
+    public static TrainingBasicDTO createTraineeBasicTrainingDTO(Training training) {
+        return new TrainingBasicDTO(training.getTrainingName(),
+                training.getTrainingDate(),
+                training.getTrainingType().toString(),
+                training.getTrainingDuration(),
+                training.getTrainer().getUserName());
+    }
+
+    public static TrainingBasicDTO createTrainerBasicTrainingDTO(Training training) {
+        return new TrainingBasicDTO(training.getTrainingName(),
+                training.getTrainingDate(),
+                training.getTrainingType().toString(),
+                training.getTrainingDuration(),
+                training.getTrainee().getUserName());
     }
 }

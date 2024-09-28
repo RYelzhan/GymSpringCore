@@ -2,6 +2,8 @@ package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
+import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
+import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UsernameGetDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
@@ -10,6 +12,7 @@ import com.epam.wca.gym.exception.ValidationException;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
+import com.epam.wca.gym.util.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.NonNull;
@@ -23,6 +26,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "user/trainer", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -85,5 +91,26 @@ public class TrainerController {
         trainerService.deleteById(authenticatedUser.getId());
 
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/trainings/filter")
+    public ResponseEntity<List<TrainingBasicDTO>> getTraineeTrainingsList(
+            @RequestBody @Valid TrainerTrainingDTO trainerTrainingDTO,
+            HttpServletRequest request
+    ) {
+        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+
+        if (!(authenticatedUser instanceof Trainer trainer) ||
+                !authenticatedUser.getUserName().equals(trainerTrainingDTO.username())) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        List<TrainingBasicDTO> result = Filter.filterTrainerTrainings(trainer.getTrainings(),
+                        trainerTrainingDTO)
+                .stream()
+                .map(DTOFactory::createTrainerBasicTrainingDTO)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
