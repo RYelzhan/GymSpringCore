@@ -1,7 +1,7 @@
 package com.epam.wca.gym.util;
 
-import com.epam.wca.gym.dto.EmbeddedTraineeDTO;
-import com.epam.wca.gym.dto.EmbeddedTrainerDTO;
+import com.epam.wca.gym.dto.TraineeBasicDTO;
+import com.epam.wca.gym.dto.TrainerBasicDTO;
 import com.epam.wca.gym.dto.TraineeSendDTO;
 import com.epam.wca.gym.dto.TrainerSendDTO;
 import com.epam.wca.gym.entity.Trainee;
@@ -18,21 +18,21 @@ public class DTOFactory {
                 trainee.getDateOfBirth(),
                 trainee.getAddress(),
                 trainee.isActive(),
-                createEmbeddedTrainerDTOSet(trainee.getTrainersAssigned()));
+                createBasicTrainerDTOSet(trainee.getTrainersAssigned()));
     }
 
-    public static Set<EmbeddedTrainerDTO> createEmbeddedTrainerDTOSet(Set<Trainer> trainerSet) {
-        Set<EmbeddedTrainerDTO> result = new HashSet<>();
+    public static Set<TrainerBasicDTO> createBasicTrainerDTOSet(Set<Trainer> trainerSet) {
+        Set<TrainerBasicDTO> result = new HashSet<>();
 
         trainerSet.forEach(trainer -> {
-            result.add(createEmbeddedTrainerDTO(trainer));
+            result.add(createBasicTrainerDTO(trainer));
         });
 
         return result;
     }
 
-    public static EmbeddedTrainerDTO createEmbeddedTrainerDTO(Trainer trainer) {
-        return new EmbeddedTrainerDTO(trainer.getUserName(),
+    public static TrainerBasicDTO createBasicTrainerDTO(Trainer trainer) {
+        return new TrainerBasicDTO(trainer.getUserName(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
                 trainer.getSpecialization().toString());
@@ -44,21 +44,21 @@ public class DTOFactory {
                 trainer.getLastName(),
                 trainer.getSpecialization().toString(),
                 trainer.isActive(),
-                createEmbeddedTraineeDTOSet(trainer.getTraineesAssigned()));
+                createBasicTraineeDTOSet(trainer.getTraineesAssigned()));
     }
 
-    public static Set<EmbeddedTraineeDTO> createEmbeddedTraineeDTOSet(Set<Trainee> traineeSet) {
-        Set<EmbeddedTraineeDTO> result = new HashSet<>();
+    public static Set<TraineeBasicDTO> createBasicTraineeDTOSet(Set<Trainee> traineeSet) {
+        Set<TraineeBasicDTO> result = new HashSet<>();
 
         traineeSet.forEach(trainee -> {
-            result.add(createEmbeddedTraineeDTO(trainee));
+            result.add(createBasicTraineeDTO(trainee));
         });
 
         return result;
     }
 
-    public static EmbeddedTraineeDTO createEmbeddedTraineeDTO(Trainee trainee) {
-        return new EmbeddedTraineeDTO(trainee.getUserName(),
+    public static TraineeBasicDTO createBasicTraineeDTO(Trainee trainee) {
+        return new TraineeBasicDTO(trainee.getUserName(),
                 trainee.getFirstName(),
                 trainee.getLastName());
     }

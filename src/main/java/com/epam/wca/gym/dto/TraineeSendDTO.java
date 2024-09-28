@@ -9,6 +9,6 @@ public record TraineeSendDTO(
         ZonedDateTime dateOfBirth,
         String address,
         Boolean isActive,
-        Set<EmbeddedTrainerDTO> trainersAssigned
+        Set<TrainerBasicDTO> trainersAssigned
 ) {
 }

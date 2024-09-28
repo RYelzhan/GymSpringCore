@@ -19,12 +19,6 @@ public class UserService extends GenericDAOServiceImpl<User, User, Long> {
     }
 
     @Override
-    public void update(User entity) {
-        // No use right now
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void deleteById(Long id) {
         // No use right now
         throw new UnsupportedOperationException();

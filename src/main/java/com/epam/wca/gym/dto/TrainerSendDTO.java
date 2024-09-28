@@ -8,6 +8,6 @@ public record TrainerSendDTO(
         String lastName,
         String trainingType,
         Boolean isActive,
-        Set<EmbeddedTraineeDTO> traineeAssigned
+        Set<TraineeBasicDTO> traineeAssigned
 ) {
 }

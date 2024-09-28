@@ -1,6 +1,5 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.aop.Validate;
 import com.epam.wca.gym.dto.AuthenticatedUserDTO;
 import com.epam.wca.gym.dto.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.TrainerRegistrationDTO;
@@ -23,16 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -50,9 +45,9 @@ public class AuthenticationController {
     private UsernameDAO usernameDAO;
 
     @GetMapping("/login")
-    @Validate
-    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDTO userLoginDTO,
-                                        BindingResult bindingResult /* used for aspect */) {
+    public ResponseEntity<String> login(
+            @RequestBody @Valid UserLoginDTO userLoginDTO
+    ) {
         User user = userService.findByUniqueName(userLoginDTO.username());
 
         if (user == null || !user.getPassword().equals(userLoginDTO.password())) {
@@ -63,11 +58,9 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/register/trainee")
-    @Validate
     public ResponseEntity<AuthenticatedUserDTO> registerTrainee(
-            @RequestBody @Valid TraineeRegistrationDTO traineeRegistrationDto,
-            BindingResult bindingResult /* used for aspect */) {
-
+            @RequestBody @Valid TraineeRegistrationDTO traineeRegistrationDto
+    ) {
         Trainee trainee = traineeService.save(traineeRegistrationDto);
         var newUser = new AuthenticatedUserDTO(trainee.getUserName(), trainee.getPassword());
 
@@ -75,17 +68,13 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/register/trainer")
-    @Validate
     public ResponseEntity<AuthenticatedUserDTO> registerTrainer(
-            @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO,
-            BindingResult bindingResult /* used for aspect */) {
-
+            @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO
+    ) {
         TrainingType trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
 
         if (trainingType == null) {
-            Map<String, String> error = new HashMap<>();
-            error.put("trainingType", "Invalid Training Type choice");
-            throw new ValidationException(error);
+            throw new ValidationException("Invalid Training Type choice");
         }
 
         TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerRegistrationDTO.firstName(),
@@ -99,7 +88,9 @@ public class AuthenticationController {
     }
 
     @GetMapping("/register/username/availability/{baseUsername}")
-    public ResponseEntity<Username> findUsernameAvailable(@PathVariable("baseUsername") String baseUsername) {
+    public ResponseEntity<Username> findUsernameAvailable(
+            @PathVariable("baseUsername") String baseUsername
+    ) {
         Username usernameAvailable = usernameDAO.findByUniqueName(baseUsername);
 
         return new ResponseEntity<>(usernameAvailable, HttpStatus.OK);

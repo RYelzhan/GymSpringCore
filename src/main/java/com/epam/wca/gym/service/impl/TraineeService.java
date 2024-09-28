@@ -2,16 +2,20 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.dto.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.TraineeUpdateDTO;
+import com.epam.wca.gym.dto.TrainerBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.repository.impl.TraineeDAO;
 import com.epam.wca.gym.service.ProfileService;
+import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,13 +23,16 @@ import java.util.Set;
 public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeRegistrationDTO, Long> {
     private final TraineeDAO traineeDAO;
     private final ProfileService profileService;
+    private final TrainerService trainerService;
 
     @Autowired
     public TraineeService(TraineeDAO traineeDAO,
-                          ProfileService profileService) {
+                          ProfileService profileService,
+                          TrainerService trainerService) {
         super(traineeDAO);
         this.traineeDAO = traineeDAO;
         this.profileService = profileService;
+        this.trainerService = trainerService;
     }
 
     @Override
@@ -61,6 +68,7 @@ public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeRegist
 
     public Trainee update(Trainee trainee,
                           TraineeUpdateDTO traineeUpdateDTO) {
+
         trainee.setUserName(profileService.createUsername(traineeUpdateDTO.username()));
         trainee.setFirstName(traineeUpdateDTO.firstName());
         trainee.setLastName(traineeUpdateDTO.lastName());
@@ -71,5 +79,26 @@ public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeRegist
         traineeDAO.update(trainee);
 
         return traineeDAO.findById(trainee.getId());
+    }
+
+    public List<TrainerBasicDTO> getListOfNotAssignedTrainers(Trainee trainee) {
+        traineeDAO.update(trainee);
+
+        return getListOfNotAssignedTrainers(trainee.getTrainersAssigned(),
+                trainerService.findAll());
+    }
+
+    private List<TrainerBasicDTO> getListOfNotAssignedTrainers(Set<Trainer> assignedTrainers,
+                                                               List<Trainer> allTrainers) {
+
+        List<TrainerBasicDTO> listOfTrainers = new ArrayList<>();
+
+        for (Trainer trainer : allTrainers) {
+            if (!assignedTrainers.contains(trainer) && trainer.isActive()) {
+                listOfTrainers.add(DTOFactory.createBasicTrainerDTO(trainer));
+            }
+        }
+
+        return listOfTrainers;
     }
 }

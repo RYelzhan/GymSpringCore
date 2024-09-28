@@ -1,6 +1,5 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.aop.Validate;
 import com.epam.wca.gym.dto.UserUpdateDTO;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.UserService;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,12 +30,11 @@ public class UserController {
         return ResponseEntity.ok(authenticatedUser.getUserName());
     }
 
-    // TODO: Put method's problem
     @PutMapping("/change/password")
-    @Validate
-    public ResponseEntity<String> changeUserPassword(@RequestBody @Valid UserUpdateDTO userUpdateDTO,
-                                                     HttpServletRequest request,
-                                                     BindingResult bindingResult /* used for aspect */) {
+    public ResponseEntity<String> changeUserPassword(
+            @RequestBody @Valid UserUpdateDTO userUpdateDTO,
+            HttpServletRequest request
+    ) {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
         if (!authenticatedUser.getUserName().equals(userUpdateDTO.username()) ||

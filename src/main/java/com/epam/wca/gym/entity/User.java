@@ -68,7 +68,7 @@ public class User {
     @Override
     public int hashCode() {
         // asked by SonarLink
-        return super.hashCode();
+        return id.hashCode();
     }
 
     @Override

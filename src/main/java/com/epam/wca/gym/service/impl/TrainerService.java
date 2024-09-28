@@ -1,10 +1,12 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.dto.TrainerSavingDTO;
+import com.epam.wca.gym.dto.TrainerUpdateDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.repository.impl.TrainerDAO;
+import com.epam.wca.gym.service.ProfileService;
 import com.epam.wca.gym.util.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,14 @@ import java.util.Set;
 @Service
 public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerSavingDTO, Long> {
     private final TrainerDAO trainerDAO;
+    private final ProfileService profileService;
 
     @Autowired
-    public TrainerService(TrainerDAO trainerDAO) {
+    public TrainerService(TrainerDAO trainerDAO,
+                          ProfileService profileService) {
         super(trainerDAO);
         this.trainerDAO = trainerDAO;
+        this.profileService = profileService;
     }
 
     @Override
@@ -46,5 +51,20 @@ public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerSaving
                 toDate,
                 trainerName,
                 trainingType);
+    }
+
+    public Trainer update(Trainer trainer,
+                          TrainerUpdateDTO traineeUpdateDTO,
+                          TrainingType trainingType) {
+
+        trainer.setUserName(profileService.createUsername(traineeUpdateDTO.username()));
+        trainer.setFirstName(traineeUpdateDTO.firstName());
+        trainer.setLastName(traineeUpdateDTO.lastName());
+        trainer.setSpecialization(trainingType);
+        trainer.setActive(traineeUpdateDTO.isActive());
+
+        trainerDAO.update(trainer);
+
+        return trainer;
     }
 }

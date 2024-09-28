@@ -13,15 +13,15 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Map<String, String>> handleMethodArgumentValidationExceptions(ValidationException ex) {
-        return new ResponseEntity<>(ex.getErrors(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleMethodArgumentValidationExceptions(ValidationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), ex.getMessage()));
+                errors.put(error.getField(), error.getDefaultMessage()));
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }
