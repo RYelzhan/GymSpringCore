@@ -1,6 +1,6 @@
 package com.epam.wca.gym.facade.service;
 
-import com.epam.wca.gym.dto.TraineeGettingDTO;
+import com.epam.wca.gym.dto.TraineeRegistrationDTO;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.TraineeService;
@@ -78,8 +78,8 @@ public class AuthenticationService {
                 "Enter date of birth (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
         String address = InputHandler.promptForInput(scanner, "Enter address:");
 
-        TraineeGettingDTO traineeGettingDTO = new TraineeGettingDTO(firstName, lastName, dateOfBirth, address);
-        printUserDetails(traineeService.save(traineeGettingDTO));
+        TraineeRegistrationDTO traineeRegistrationDTO = new TraineeRegistrationDTO(firstName, lastName, dateOfBirth, address);
+        printUserDetails(traineeService.save(traineeRegistrationDTO));
     }
 
     private void registerTrainer() {

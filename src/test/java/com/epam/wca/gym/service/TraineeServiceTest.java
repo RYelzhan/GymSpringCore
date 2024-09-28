@@ -1,6 +1,6 @@
 package com.epam.wca.gym.service;
 
-import com.epam.wca.gym.dto.TraineeGettingDTO;
+import com.epam.wca.gym.dto.TraineeRegistrationDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
@@ -35,13 +35,13 @@ class TraineeServiceTest {
     @InjectMocks
     private TraineeService traineeService;
 
-    private TraineeGettingDTO traineeGettingDTO;
+    private TraineeRegistrationDTO traineeRegistrationDTO;
 
     @BeforeEach
     void setUp() {
         Trainee.setProfileService(profileService);
 
-        traineeGettingDTO = new TraineeGettingDTO("John",
+        traineeRegistrationDTO = new TraineeRegistrationDTO("John",
                 "Doe",
                 ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
@@ -51,10 +51,10 @@ class TraineeServiceTest {
     @Test
     void testSave() {
         // Given // Create a TraineeDTO object
-        Trainee trainee = UserFactory.createTrainee(traineeGettingDTO);  // Mock trainee created from dto
+        Trainee trainee = UserFactory.createTrainee(traineeRegistrationDTO);  // Mock trainee created from dto
 
         // Act
-        Trainee savedTrainee = traineeService.save(traineeGettingDTO);
+        Trainee savedTrainee = traineeService.save(traineeRegistrationDTO);
 
         // Then
         Mockito.verify(traineeDAO, times(1)).save(trainee);

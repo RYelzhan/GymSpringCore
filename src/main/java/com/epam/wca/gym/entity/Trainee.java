@@ -54,7 +54,7 @@ public class Trainee extends User {
 
         super(firstName,
                 lastName,
-                profileService.createUserName(firstName, lastName),
+                profileService.createUsername(firstName, lastName),
                 profileService.createPassword(),
                 true);
 

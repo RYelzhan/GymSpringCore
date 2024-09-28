@@ -2,9 +2,10 @@ package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.aop.Validate;
 import com.epam.wca.gym.dto.AuthenticatedUserDTO;
-import com.epam.wca.gym.dto.TraineeGettingDTO;
-import com.epam.wca.gym.dto.TrainerGettingDTO;
+import com.epam.wca.gym.dto.TraineeRegistrationDTO;
+import com.epam.wca.gym.dto.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.TrainerSavingDTO;
+import com.epam.wca.gym.dto.UserLoginDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
@@ -15,7 +16,7 @@ import com.epam.wca.gym.repository.impl.UsernameDAO;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingTypeService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.epam.wca.gym.service.impl.UserService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthenticationController {
+    @NonNull
+    private UserService userService;
     @NonNull
     private TraineeService traineeService;
     @NonNull
@@ -46,18 +49,26 @@ public class AuthenticationController {
     @NonNull
     private UsernameDAO usernameDAO;
 
-    @GetMapping("/info")
-    public ResponseEntity<String> getUserInfo(HttpServletRequest request) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+    @GetMapping("/login")
+    @Validate
+    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDTO userLoginDTO,
+                                        BindingResult bindingResult /* used for aspect */) {
+        User user = userService.findByUniqueName(userLoginDTO.username());
 
-        return ResponseEntity.ok(authenticatedUser.getUserName());
+        if (user == null || !user.getPassword().equals(userLoginDTO.password())) {
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok("Login Successful");
     }
 
     @PostMapping(value = "/register/trainee")
     @Validate
-    public ResponseEntity<AuthenticatedUserDTO> registerTrainee(@Valid @RequestBody TraineeGettingDTO traineeGettingDto,
-                                                                BindingResult bindingResult /* used for aspect */) {
-        Trainee trainee = traineeService.save(traineeGettingDto);
+    public ResponseEntity<AuthenticatedUserDTO> registerTrainee(
+            @RequestBody @Valid TraineeRegistrationDTO traineeRegistrationDto,
+            BindingResult bindingResult /* used for aspect */) {
+
+        Trainee trainee = traineeService.save(traineeRegistrationDto);
         var newUser = new AuthenticatedUserDTO(trainee.getUserName(), trainee.getPassword());
 
         return new ResponseEntity<>(newUser, HttpStatus.OK);
@@ -65,9 +76,11 @@ public class AuthenticationController {
 
     @PostMapping(value = "/register/trainer")
     @Validate
-    public ResponseEntity<AuthenticatedUserDTO> registerTrainer(@Valid @RequestBody TrainerGettingDTO trainerGettingDTO,
-                                                                BindingResult bindingResult /* used for aspect */) {
-        TrainingType trainingType = trainingTypeService.findByUniqueName(trainerGettingDTO.trainingType());
+    public ResponseEntity<AuthenticatedUserDTO> registerTrainer(
+            @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO,
+            BindingResult bindingResult /* used for aspect */) {
+
+        TrainingType trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
 
         if (trainingType == null) {
             Map<String, String> error = new HashMap<>();
@@ -75,8 +88,8 @@ public class AuthenticationController {
             throw new ValidationException(error);
         }
 
-        TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerGettingDTO.firstName(),
-                trainerGettingDTO.lastName(),
+        TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerRegistrationDTO.firstName(),
+                trainerRegistrationDTO.lastName(),
                 trainingType);
 
         Trainer trainer = trainerService.save(trainerSavingDTO);

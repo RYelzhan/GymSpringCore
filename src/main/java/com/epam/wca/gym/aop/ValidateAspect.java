@@ -21,13 +21,17 @@ public class ValidateAspect {
 
     @Around(value = "callAtSecuredAnnotationUser(bindingResult)", argNames = "pjp,bindingResult")
     public Object validate(ProceedingJoinPoint pjp, BindingResult bindingResult) throws Throwable {
+        System.out.println("Shit happens 1");
         if (bindingResult.hasErrors()) {
+            System.out.println("Shit happens 2");
+
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach((error) -> {
                 errors.put(error.getField(), error.getDefaultMessage());
             });
             throw new ValidationException(errors);
         }
+        System.out.println("Shit happens 3");
         return pjp.proceed();
     }
 }
