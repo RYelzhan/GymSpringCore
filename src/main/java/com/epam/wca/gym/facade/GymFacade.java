@@ -10,7 +10,7 @@ import com.epam.wca.gym.facade.service.UserFacadeService;
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.util.InputHandler;
+import com.epam.wca.gym.util.deprecated.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

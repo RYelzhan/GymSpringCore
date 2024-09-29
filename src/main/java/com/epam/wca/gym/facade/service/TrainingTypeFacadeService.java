@@ -2,7 +2,7 @@ package com.epam.wca.gym.facade.service;
 
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.service.impl.TrainingTypeService;
-import com.epam.wca.gym.util.InputHandler;
+import com.epam.wca.gym.util.deprecated.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

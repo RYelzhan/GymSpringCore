@@ -1,4 +1,4 @@
-package com.epam.wca.gym.util;
+package com.epam.wca.gym.util.deprecated;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;

@@ -10,8 +10,8 @@ import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingService;
 import com.epam.wca.gym.util.AppConstants;
-import com.epam.wca.gym.util.DateParser;
-import com.epam.wca.gym.util.InputHandler;
+import com.epam.wca.gym.util.deprecated.DateParser;
+import com.epam.wca.gym.util.deprecated.InputHandler;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

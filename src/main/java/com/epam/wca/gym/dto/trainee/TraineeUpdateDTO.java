@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.time.ZonedDateTime;
 
 public record TraineeUpdateDTO(
-        @NotBlank(message = "First name is required")
+        @NotBlank(message = "Username is required")
         @Size(min = 2, max = 50, message = "Username must be between 2 and 50 characters")
         String username,
         @NotBlank(message = "First name is required")
