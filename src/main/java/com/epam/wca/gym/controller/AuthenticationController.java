@@ -1,9 +1,10 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.gym.aop.Logging;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
+import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
@@ -45,6 +46,7 @@ public class AuthenticationController {
     private UsernameDAO usernameDAO;
 
     @GetMapping("/login")
+    @Logging
     public ResponseEntity<String> login(
             @RequestBody @Valid UserLoginDTO userLoginDTO
     ) {

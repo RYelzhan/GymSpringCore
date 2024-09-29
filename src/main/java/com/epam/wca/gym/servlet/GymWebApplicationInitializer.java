@@ -32,10 +32,12 @@ public class GymWebApplicationInitializer implements WebApplicationInitializer {
                 new DelegatingFilterProxy("authenticationFilter"));
         authenticationFilter.addMappingForUrlPatterns(null, false, "/gym/*");
 
+        /*
         // Register the Spring-managed filter for access logging
         FilterRegistration.Dynamic loggerFilter = servletContext.addFilter("loggerFilter",
                 new DelegatingFilterProxy("loggerFilter"));
         loggerFilter.addMappingForUrlPatterns(null, false, "/gym/*");
+ */
 
         //add specific encoding (e.g. UTF-8) via CharacterEncodingFilter
         FilterRegistration.Dynamic encodingFilter =

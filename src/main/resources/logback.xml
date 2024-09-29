@@ -44,7 +44,7 @@
         <appender-ref ref="USER_CONSOLE"/>
     </logger>
 
-    <logger name="com.epam.wca.gym.filter" level="INFO" additivity="false">
+    <logger name="com.epam.wca.gym.filter" level="WARN" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
 

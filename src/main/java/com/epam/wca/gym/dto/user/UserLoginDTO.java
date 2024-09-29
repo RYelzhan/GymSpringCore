@@ -11,4 +11,8 @@ public record UserLoginDTO(
         @Size(min = 10, max = 10, message = "Password must be exactly 10 characters")
         String password
 ){
+        @Override
+        public String toString() {
+                return "User[username=" + username + ", password=****]";
+        }
 }

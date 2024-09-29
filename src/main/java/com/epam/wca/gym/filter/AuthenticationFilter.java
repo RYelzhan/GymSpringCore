@@ -2,7 +2,6 @@ package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.AuthSService;
-import com.epam.wca.gym.transaction.TransactionDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -51,12 +49,6 @@ public class AuthenticationFilter extends HttpFilter {
 
             // Store user in the request attributes
             httpRequest.setAttribute("authenticatedUser", user);
-
-            TransactionDetails transactionDetails = new TransactionDetails();
-            transactionDetails.setId(UUID.randomUUID().toString());
-
-            // transaction details in request attributes
-            httpRequest.setAttribute("transactionDetails", transactionDetails);
 
             // Continue the request if authentication is successful
             filterChain.doFilter(servletRequest, servletResponse);
