@@ -90,7 +90,7 @@ public class TrainerController {
 
         trainerService.deleteById(authenticatedUser.getId());
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok("Trainee Profile Deleted Successfully");
     }
 
     @GetMapping("/trainings/filter")

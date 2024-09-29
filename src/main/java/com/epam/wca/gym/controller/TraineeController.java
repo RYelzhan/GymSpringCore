@@ -123,8 +123,9 @@ public class TraineeController {
                 Trainer trainer = trainerService.findByUniqueName(trainerUsername);
 
                 if (trainer == null) {
-                    throw new ValidationException(trainerUsername + " -> no such trainer found." +
-                            "No trainers added");
+                    throw new ValidationException("No Trainer Found with Username " +
+                            trainerUsername +
+                            ". No Trainers Added");
                 }
 
                 trainerList.add(trainer);

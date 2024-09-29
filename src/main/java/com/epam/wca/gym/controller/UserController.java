@@ -1,6 +1,7 @@
 package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.dto.training.TrainingGettingDTO;
+import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,13 +57,13 @@ public class UserController {
         if (!authenticatedUser.getUserName().equals(userUpdateDTO.username()) ||
             !authenticatedUser.getPassword().equals(userUpdateDTO.oldPassword())) {
             // authenticated as other user and trying to change password details of other user
-            return new ResponseEntity<>("Not authorised", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
         }
 
         authenticatedUser.setPassword(userUpdateDTO.newPassword());
         userService.update(authenticatedUser);
 
-        return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Password Changed Successfully", HttpStatus.OK);
     }
 
     @PostMapping("/create/training")
@@ -71,26 +73,48 @@ public class UserController {
             ) {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
-        if (authenticatedUser instanceof Trainee trainee) {
-            if (authenticatedUser.getUserName().equals(trainingGettingDTO.traineeUsername())) {
-                Trainer trainer = trainerService.findByUniqueName(trainingGettingDTO.trainerUsername());
-                if (trainer != null) {
-                    trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
-                    return ResponseEntity.ok(null);
-                }
-                throw new ValidationException("No trainer found with such username");
+        if (authenticatedUser instanceof Trainee trainee &&
+                authenticatedUser.getUserName().equals(trainingGettingDTO.traineeUsername())) {
+            Trainer trainer = trainerService.findByUniqueName(trainingGettingDTO.trainerUsername());
+
+            if (trainer != null) {
+                trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
+                return ResponseEntity.ok(null);
             }
-        } else if (authenticatedUser instanceof Trainer trainer) {
-            if (authenticatedUser.getUserName().equals(trainingGettingDTO.trainerUsername())) {
-                Trainee trainee = traineeService.findByUniqueName(trainingGettingDTO.traineeUsername());
-                if (trainee != null) {
-                    trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
-                    return ResponseEntity.ok(null);
-                }
-                throw new ValidationException("No trainee found with such username");
+
+            throw new ValidationException("No Trainer Found With Username"
+                    + trainingGettingDTO.trainerUsername());
+        } else if (authenticatedUser instanceof Trainer trainer &&
+                authenticatedUser.getUserName().equals(trainingGettingDTO.trainerUsername())) {
+            Trainee trainee = traineeService.findByUniqueName(trainingGettingDTO.traineeUsername());
+
+            if (trainee != null) {
+                trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
+                return ResponseEntity.ok(null);
             }
+
+            throw new ValidationException("No Trainee Found With Username"
+                    + trainingGettingDTO.traineeUsername());
         }
 
-        return new ResponseEntity<>("Not authorised", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
+    }
+
+    @PatchMapping("/change/active")
+    public ResponseEntity<String> activateDeactivateUser(
+            @RequestBody @Valid UserActivationDTO userActivationDTO,
+            HttpServletRequest request
+            ) {
+        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+
+        if (!authenticatedUser.getUserName().equals(userActivationDTO.username())) {
+            // authenticated as other user and trying to change active details of other user
+            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
+        }
+
+        authenticatedUser.setActive(userActivationDTO.isActive());
+        userService.update(authenticatedUser);
+
+        return ResponseEntity.ok("Is Active Updated Successfully");
     }
 }

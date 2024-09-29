@@ -1,6 +1,6 @@
 package com.epam.wca.gym.dto.user;
 
-public record AuthenticatedUserDTO(
+public record UserAuthenticatedDTO(
         String username,
         String password
 ) {

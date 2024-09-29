@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.user.AuthenticatedUserDTO;
+import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
@@ -51,24 +51,24 @@ public class AuthenticationController {
         User user = userService.findByUniqueName(userLoginDTO.username());
 
         if (user == null || !user.getPassword().equals(userLoginDTO.password())) {
-            return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Invalid Username or Password", HttpStatus.BAD_REQUEST);
         }
 
         return ResponseEntity.ok("Login Successful");
     }
 
     @PostMapping(value = "/register/trainee")
-    public ResponseEntity<AuthenticatedUserDTO> registerTrainee(
+    public ResponseEntity<UserAuthenticatedDTO> registerTrainee(
             @RequestBody @Valid TraineeRegistrationDTO traineeRegistrationDto
     ) {
         Trainee trainee = traineeService.save(traineeRegistrationDto);
-        var newUser = new AuthenticatedUserDTO(trainee.getUserName(), trainee.getPassword());
+        var newUser = new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
 
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
 
     @PostMapping(value = "/register/trainer")
-    public ResponseEntity<AuthenticatedUserDTO> registerTrainer(
+    public ResponseEntity<UserAuthenticatedDTO> registerTrainer(
             @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO
     ) {
         TrainingType trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
@@ -82,7 +82,7 @@ public class AuthenticationController {
                 trainingType);
 
         Trainer trainer = trainerService.save(trainerSavingDTO);
-        var newUser = new AuthenticatedUserDTO(trainer.getUserName(), trainer.getPassword());
+        var newUser = new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
 
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
