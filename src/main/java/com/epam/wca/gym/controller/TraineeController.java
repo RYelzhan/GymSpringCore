@@ -68,6 +68,10 @@ public class TraineeController {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
+        if (!authenticatedUser.getUserName().equals(traineeUpdateDTO.username())) {
+            throw new com.epam.wca.gym.exception.ValidationException("Can not change username");
+        }
+
         trainee = traineeService.update(trainee, traineeUpdateDTO);
 
         return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(trainee), HttpStatus.OK);
