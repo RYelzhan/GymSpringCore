@@ -4,7 +4,9 @@ import com.epam.wca.gym.dto.training.TrainingGettingDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class TrainingFactory {
     public static Training createTraining(TrainingGettingDTO trainingGettingDTO,
                                              Trainee trainee,

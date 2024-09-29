@@ -10,10 +10,12 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
+import lombok.experimental.UtilityClass;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@UtilityClass
 public class DTOFactory {
 
     public static TraineeSendDTO createTraineeSendDTO(Trainee trainee) {

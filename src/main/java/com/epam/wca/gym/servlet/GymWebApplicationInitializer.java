@@ -27,10 +27,15 @@ public class GymWebApplicationInitializer implements WebApplicationInitializer {
         registration.setLoadOnStartup(1);
         registration.addMapping("/gym/*"); // Map all requests to the DispatcherServlet
 
-        // Register the Spring-managed filter
-        FilterRegistration.Dynamic springFilter = servletContext.addFilter("authenticationFilter",
+        // Register the Spring-managed filter for authentication
+        FilterRegistration.Dynamic authenticationFilter = servletContext.addFilter("authenticationFilter",
                 new DelegatingFilterProxy("authenticationFilter"));
-        springFilter.addMappingForUrlPatterns(null, false, "/gym/*");
+        authenticationFilter.addMappingForUrlPatterns(null, false, "/gym/*");
+
+        // Register the Spring-managed filter for access logging
+        FilterRegistration.Dynamic loggerFilter = servletContext.addFilter("loggerFilter",
+                new DelegatingFilterProxy("loggerFilter"));
+        loggerFilter.addMappingForUrlPatterns(null, false, "/gym/*");
 
         //add specific encoding (e.g. UTF-8) via CharacterEncodingFilter
         FilterRegistration.Dynamic encodingFilter =

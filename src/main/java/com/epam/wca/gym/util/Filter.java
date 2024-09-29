@@ -3,11 +3,13 @@ package com.epam.wca.gym.util;
 import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.entity.Training;
+import lombok.experimental.UtilityClass;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class Filter {
     public static List<Training> filterTraineeTrainings(Set<Training> trainings,
                                                         TraineeTrainingDTO traineeTrainingDTO) {
