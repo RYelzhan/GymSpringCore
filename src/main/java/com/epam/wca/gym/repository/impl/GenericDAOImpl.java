@@ -78,21 +78,9 @@ public abstract class GenericDAOImpl<T, I> implements GenericDAO<T, I> {
 
     @Override
     public T findById(I id) {
-        EntityTransaction transaction = entityManager.getTransaction();
-
         try {
-            transaction.begin();
-
-            T entity = entityManager.find(entityClass, id);
-
-            transaction.commit();
-
-            return entity;
+            return entityManager.find(entityClass, id);
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-
             throw new IllegalArgumentException("Entity was not found");
         }
     }

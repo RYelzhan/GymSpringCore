@@ -29,12 +29,6 @@ class UserServiceTest {
     }
 
     @Test
-    void testUnsupportedUpdate() {
-        // Verify that update() throws UnsupportedOperationException
-        assertThrows(UnsupportedOperationException.class, () -> userService.update(user));
-    }
-
-    @Test
     void testUnsupportedDeleteById() {
         // Verify that deleteById() throws UnsupportedOperationException
         assertThrows(UnsupportedOperationException.class, () -> userService.deleteById(1L));

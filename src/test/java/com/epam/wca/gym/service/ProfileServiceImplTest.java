@@ -43,7 +43,7 @@ class ProfileServiceImplTest {
         // Then
         assertEquals(expected, generatedUsername); // Check if the counter was incremented
         Mockito.verify(usernameDAO).findByUniqueName(baseUsername);
-        Mockito.verify(usernameDAO).save(existingUsername); // Make sure it was saved
+        Mockito.verify(usernameDAO).update(existingUsername); // Make sure it was saved
     }
 
     @ParameterizedTest

@@ -36,8 +36,6 @@ public class TransactionAspect {
             transactionDetails.setId(generateTransactionId());
         }
 
-        System.out.println("Transaction  ID: " + transactionDetails.getId());
-
         // Proceed with the method call
         return pjp.proceed();
     }

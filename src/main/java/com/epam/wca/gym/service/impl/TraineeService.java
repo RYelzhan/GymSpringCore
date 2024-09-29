@@ -73,12 +73,10 @@ public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeRegist
 
         traineeDAO.update(trainee);
 
-        return traineeDAO.findById(trainee.getId());
+        return trainee;
     }
 
     public List<TrainerBasicDTO> getListOfNotAssignedTrainers(Trainee trainee) {
-        traineeDAO.update(trainee);
-
         return getListOfNotAssignedTrainers(trainee.getTrainersAssigned(),
                 trainerService.findAll());
     }
