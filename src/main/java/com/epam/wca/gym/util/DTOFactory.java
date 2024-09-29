@@ -5,9 +5,11 @@ import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
+import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
+import com.epam.wca.gym.entity.TrainingType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,12 +17,14 @@ import java.util.Set;
 public class DTOFactory {
 
     public static TraineeSendDTO createTraineeSendDTO(Trainee trainee) {
-        return new TraineeSendDTO(trainee.getFirstName(),
+        return new TraineeSendDTO(
+                trainee.getFirstName(),
                 trainee.getLastName(),
                 trainee.getDateOfBirth(),
                 trainee.getAddress(),
                 trainee.isActive(),
-                createBasicTrainerDTOSet(trainee.getTrainersAssigned()));
+                createBasicTrainerDTOSet(trainee.getTrainersAssigned())
+        );
     }
 
     public static Set<TrainerBasicDTO> createBasicTrainerDTOSet(Set<Trainer> trainerSet) {
@@ -34,19 +38,23 @@ public class DTOFactory {
     }
 
     public static TrainerBasicDTO createBasicTrainerDTO(Trainer trainer) {
-        return new TrainerBasicDTO(trainer.getUserName(),
+        return new TrainerBasicDTO(
+                trainer.getUserName(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
-                trainer.getSpecialization().toString());
+                trainer.getSpecialization().toString()
+        );
     }
 
     public static TrainerSendDTO createTrainerSendDTO(Trainer trainer) {
-        return new TrainerSendDTO(trainer.getUserName(),
+        return new TrainerSendDTO(
+                trainer.getUserName(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
                 trainer.getSpecialization().toString(),
                 trainer.isActive(),
-                createBasicTraineeDTOSet(trainer.getTraineesAssigned()));
+                createBasicTraineeDTOSet(trainer.getTraineesAssigned())
+        );
     }
 
     public static Set<TraineeBasicDTO> createBasicTraineeDTOSet(Set<Trainee> traineeSet) {
@@ -60,24 +68,37 @@ public class DTOFactory {
     }
 
     public static TraineeBasicDTO createBasicTraineeDTO(Trainee trainee) {
-        return new TraineeBasicDTO(trainee.getUserName(),
+        return new TraineeBasicDTO(
+                trainee.getUserName(),
                 trainee.getFirstName(),
-                trainee.getLastName());
+                trainee.getLastName()
+        );
     }
 
     public static TrainingBasicDTO createTraineeBasicTrainingDTO(Training training) {
-        return new TrainingBasicDTO(training.getTrainingName(),
+        return new TrainingBasicDTO(
+                training.getTrainingName(),
                 training.getTrainingDate(),
                 training.getTrainingType().toString(),
                 training.getTrainingDuration(),
-                training.getTrainer().getUserName());
+                training.getTrainer().getUserName()
+        );
     }
 
     public static TrainingBasicDTO createTrainerBasicTrainingDTO(Training training) {
-        return new TrainingBasicDTO(training.getTrainingName(),
+        return new TrainingBasicDTO(
+                training.getTrainingName(),
                 training.getTrainingDate(),
                 training.getTrainingType().toString(),
                 training.getTrainingDuration(),
-                training.getTrainee().getUserName());
+                training.getTrainee().getUserName()
+        );
+    }
+
+    public static TrainingTypeBasicDTO createBasicTrainingTypeDTO(TrainingType trainingType) {
+        return new TrainingTypeBasicDTO(
+                trainingType.getType(),
+                trainingType.getId()
+        );
     }
 }
