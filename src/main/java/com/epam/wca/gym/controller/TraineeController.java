@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -44,12 +45,12 @@ public class TraineeController {
 
     @GetMapping("/profile")
     public ResponseEntity<TraineeSendDTO> getTraineeProfile(
-            @RequestBody @Valid UsernameGetDTO usernameGetDTO,
+            @RequestParam("username") String username,
             HttpServletRequest request
     ) {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedUser.getUserName().equals(usernameGetDTO.username()) ||
+        if (!authenticatedUser.getUserName().equals(username) ||
                 !(authenticatedUser instanceof Trainee trainee)) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
@@ -96,13 +97,13 @@ public class TraineeController {
 
     @GetMapping("/trainers/available")
     public ResponseEntity<List<TrainerBasicDTO>> getNotAssignedTrainers(
-            @RequestBody @Valid UsernameGetDTO usernameGetDTO,
+            @RequestParam("username") String username,
             HttpServletRequest request
     ) {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
         if (!(authenticatedUser instanceof Trainee trainee) ||
-                !authenticatedUser.getUserName().equals(usernameGetDTO.username())) {
+                !authenticatedUser.getUserName().equals(username)) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 

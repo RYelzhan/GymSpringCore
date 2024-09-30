@@ -1,0 +1,985 @@
+openapi: 3.0.1
+info:
+  title: Gym Management API
+  description: API for managing trainers, trainees, and trainings in the gym management system.
+  version: 2.0.0
+servers:
+  - url: http://localhost:8080/gym
+    description: Local Development Server
+
+paths:
+  /authenticate/login:
+    get:
+      summary: User login authentication
+      description: Authenticates the user based on their unique username and password provided as query parameters.
+      operationId: loginUser
+      tags:
+        - User
+      parameters:
+        - in: query
+          name: username
+          required: true
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 50
+          description: The username of the user
+        - in: query
+          name: password
+          required: true
+          schema:
+            type: string
+            minLength: 10
+            maxLength: 10
+          description: The password of the user, must be exactly 10 characters long
+      responses:
+        '200':
+          description: Login successful
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Login Successful
+        '400':
+          description: Invalid username or password
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid Username or Password
+
+  /authenticate/register/trainee:
+    post:
+      summary: Register a new trainee
+      description: Registers a new trainee and returns their username and password.
+      operationId: registerTrainee
+      tags:
+        - User
+      requestBody:
+        description: Trainee registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraineeRegistrationDTO'
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAuthenticatedDTO'
+        '400':
+          description: Invalid input data
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Invalid request data"
+
+  /authenticate/register/trainer:
+    post:
+      summary: Register a new trainer
+      description: Registers a new trainer and returns their username and password.
+      operationId: registerTrainer
+      tags:
+        - User
+      requestBody:
+        description: Trainer registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerRegistrationDTO'
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAuthenticatedDTO'
+        '400':
+          description: Invalid input data
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Invalid Training Type choice"
+
+  /user/trainee/profile:
+    get:
+      summary: Get Trainee Profile
+      description: Retrieves the profile information of a trainee by username.
+      operationId: getTraineeProfile
+      tags:
+        - Trainee
+      parameters:
+        - name: username
+          in: query
+          required: true
+          description: The username of the trainee whose profile is to be retrieved.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved trainee profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraineeSendDTO'
+        '401':
+          description: Unauthorized access
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Unauthorized"
+    put:
+      summary: Update Trainee Profile
+      description: Updates the profile of a trainee. The request must include the username to authenticate the trainee. The username cannot be changed.
+      operationId: updateTraineeProfile
+      tags:
+        - Trainee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraineeUpdateDTO'
+      responses:
+        '200':
+          description: Successfully updated the trainee profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraineeSendDTO'
+        '401':
+          description: Unauthorized. The user is not authenticated or trying to update a different user profile.
+        '400':
+          description: Bad Request. Validation errors occurred.
+    delete:
+      summary: Delete Trainee Profile
+      description: Deletes the profile of a trainee. The request must include the username to authenticate the trainee. The trainee can only delete their own profile.
+      operationId: deleteTrainee
+      tags:
+        - Trainee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsernameGetDTO'
+      responses:
+        '200':
+          description: Successfully deleted the trainee profile.
+        '401':
+          description: Unauthorized. The user is not authenticated or trying to delete a different user profile.
+        '400':
+          description: Bad Request. Validation errors occurred.
+
+  /user/trainee/trainers/available:
+    get:
+      summary: Get Available Trainers for a Trainee
+      description: Retrieves a list of trainers that are not assigned to the specified trainee. The trainee must be authenticated to access this information.
+      operationId: getNotAssignedTrainers
+      tags:
+        - Trainee
+      parameters:
+        - name: username
+          in: query
+          required: true
+          description: The username of the trainee requesting the list of available trainers.
+          schema:
+            type: string
+            example: "john_doe"
+      responses:
+        '200':
+          description: Successfully retrieved the list of available trainers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrainerBasicDTO'
+        '401':
+          description: Unauthorized. The user is not authenticated or trying to access a different trainee's data.
+
+  /user/trainee/trainers/add:
+    put:
+      summary: Update Trainer List for a Trainee
+      description: Adds specified trainers to the trainee's profile. The trainee must be authenticated and can only modify their own trainer list.
+      operationId: updateTrainerList
+      tags:
+        - Trainee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraineeTrainersUpdateDTO'
+      responses:
+        '200':
+          description: Successfully updated the trainer list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrainerBasicDTO'
+        '401':
+          description: Unauthorized. The user is not authenticated or trying to access a different trainee's data.
+        '400':
+          description: Bad Request. Validation errors occurred (e.g., invalid trainer username).
+
+  /user/trainee/trainings/filter:
+    get:
+      summary: Retrieve a list of trainings for a specific trainee based on filter criteria.
+      operationId: getTraineeTrainingsList
+      tags:
+        - Trainee
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+            description: The username of the trainee requesting the trainings.
+            example: "traineeUser"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraineeTrainingDTO'
+      responses:
+        '200':
+          description: A list of filtered trainings for the trainee.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrainingBasicDTO'
+        '401':
+          description: Unauthorized - user is not a trainee or username does not match.
+        '400':
+          description: Bad Request - validation error.
+
+  /user/trainer/profile:
+    get:
+      summary: Retrieve the profile of a specific trainer.
+      operationId: getTrainerProfile
+      tags:
+        - Trainer
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+            description: The username of the trainer whose profile is being requested.
+            example: "trainerUser"
+      responses:
+        '200':
+          description: Trainer profile details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainerSendDTO'
+        '401':
+          description: Unauthorized - user is not the requested trainer or not a trainer.
+    put:
+      summary: Update Trainer Profile
+      operationId: updateTrainerProfile
+      tags:
+        - Trainer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerUpdateDTO'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainerSendDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Unauthorized"
+        '400':
+          description: Bad Request (Validation Errors)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Username is required"
+    delete:
+      summary: Delete Trainer Profile
+      operationId: deleteTrainerProfile
+      tags:
+        - Trainer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsernameGetDTO'
+      responses:
+        '200':
+          description: Trainee profile deleted successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Trainee Profile Deleted Successfully"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Unauthorized"
+        '404':
+          description: Not Found (if the trainee doesn't exist)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Trainee not found"
+  
+  /user/trainer/trainings/filter:
+    get:
+      summary: Get Trainer Trainings List
+      operationId: getTrainerTrainingsList
+      tags:
+        - Trainer
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "Lev.Ian"
+            description: "Username of the trainer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerTrainingDTO'
+      responses:
+        '200':
+          description: Successfully retrieved list of trainings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrainingBasicDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Unauthorized"
+        '400':
+          description: Bad Request (Validation Errors)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Username is required"
+
+  /training/types:
+    get:
+      summary: Get Training Types
+      operationId: getTrainingTypes
+      tags:
+        - Training Type
+      responses:
+        '200':
+          description: Successfully retrieved list of training types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrainingTypeBasicDTO'
+
+  /user/change/password:
+    put:
+      summary: Change User Password
+      operationId: changeUserPassword
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDTO'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Password Changed Successfully"
+        '401':
+          description: Unauthorized (Invalid credentials)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Not Authorised"
+        '400':
+          description: Bad Request (Validation Errors)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Username is required"
+
+  /user/create/training:
+    post:
+      summary: Create New Training
+      operationId: createNewTraining
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingGettingDTO'
+      responses:
+        '200':
+          description: Training created successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Training created successfully"
+        '401':
+          description: Unauthorized (Invalid credentials)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Not Authorised"
+        '400':
+          description: Bad Request (Validation Errors)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Trainee username is required"
+  /user/change/active:
+    patch:
+      summary: Activate or Deactivate User
+      operationId: activateDeactivateUser
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserActivationDTO'
+      responses:
+        '200':
+          description: User activation status updated successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Is Active Updated Successfully"
+        '401':
+          description: Unauthorized (Invalid credentials)
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Not Authorised"
+        '400':
+          description: Bad Request (Validation Errors)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Username is required"
+
+
+components:
+  schemas:
+    TraineeRegistrationDTO:
+      type: object
+      required:
+        - firstName
+        - lastName
+      properties:
+        firstName:
+          type: string
+          description: The first name of the trainee
+          minLength: 2
+          maxLength: 25
+          example: "Yelzhan"
+        lastName:
+          type: string
+          description: The last name of the trainee
+          minLength: 2
+          maxLength: 25
+          example: "Rakhimzhanov"
+        dateOfBirth:
+          type: string
+          format: date-time
+          description: The date of birth of the trainee (must be in the past)
+          example: "01.01.2000 00:00:00 UTC"
+        address:
+          type: string
+          description: The address of the trainee
+          minLength: 5
+          maxLength: 50
+          example: "123 Main St"
+    
+    TrainerRegistrationDTO:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - trainingType
+      properties:
+        firstName:
+          type: string
+          description: The first name of the trainer
+          minLength: 2
+          maxLength: 50
+          example: "Lev"
+        lastName:
+          type: string
+          description: The last name of the trainer
+          minLength: 2
+          maxLength: 50
+          example: "Ian"
+        trainingType:
+          type: string
+          description: The training type chosen by the trainer
+          minLength: 2
+          maxLength: 20
+          example: "CALISTHENICS"
+    
+    UserAuthenticatedDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The trainee's username
+          example: "Yelzhan.Rakhimzhanov"
+        password:
+          type: string
+          description: The trainee's password (should be securely stored and handled)
+          example: "Abfm14sdsa"
+    
+    TraineeSendDTO:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The first name of the trainee
+          example: "Yelzhan"
+        lastName:
+          type: string
+          description: The last name of the trainee
+          example: "Rakhimzhanov"
+        dateOfBirth:
+          type: string
+          format: zoned-date-time
+          description: The date of birth of the trainee
+          example: "01.01.2000 00:00:00 UTC"
+        address:
+          type: string
+          description: The address of the trainee
+          example: "123 Main St"
+        isActive:
+          type: boolean
+          description: Indicates whether the trainee is currently active
+        trainersAssigned:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainerBasicDTO'
+    
+    TraineeUpdateDTO:
+      type: object
+      required:
+        - username
+        - firstName
+        - lastName
+        - isActive
+      properties:
+        username:
+          type: string
+          description: The username of the trainee (must be unique)
+          example: "Yelzhan.rakhimzhanov"
+        firstName:
+          type: string
+          description: The first name of the trainee
+          example: "Yelzhan"
+        lastName:
+          type: string
+          description: The last name of the trainee
+          example: "Rakhimzhanov"
+        dateOfBirth:
+          type: string
+          format: date-time
+          description: The date of birth of the trainee in ISO 8601 format (e.g., 2024-09-30T14:30:00Z)
+          example: "01.01.2000 00:00:00 UTC"
+        address:
+          type: string
+          description: The address of the trainee
+          example: "123 Main St"
+        isActive:
+          type: boolean
+          description: Indicates whether the trainee is currently active
+          example: true
+    
+    TrainerBasicDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username of the trainer
+          example: "Lev.Ian"
+        firstName:
+          type: string
+          description: The first name of the trainer
+          example: "Lev"
+        lastName:
+          type: string
+          description: The last name of the trainer
+          example: "Ian"
+        trainingType:
+          type: string
+          description: The type of training that the trainer specializes in
+          example: "CALISTHENICS"
+    
+    UsernameGetDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username of the trainee. This field is required and must be between 2 and 50 characters.
+          example: "Yelzhan.Rakhimzhanov"
+      required:
+        - username
+    
+    TraineeTrainersUpdateDTO:
+      type: object
+      required:
+        - username
+        - trainerUsernames
+      properties:
+        username:
+          type: string
+          description: The username of the trainee.
+          minLength: 2
+          maxLength: 50
+          example: "Yelzhan.Rakhimzhanov"
+        trainerUsernames:
+          type: array
+          items:
+            type: string
+            description: The usernames of the trainers to be added.
+            minLength: 2
+            maxLength: 50
+            example: "Lev.Ian"
+    
+    TraineeTrainingDTO:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          description: The username of the trainee.
+          minLength: 2
+          maxLength: 50
+          example: "Yelzhan.Rakhimzhanov"
+        dateFrom:
+          type: string
+          format: date-time
+          description: The start date for filtering trainings.
+          example: "10.12.2020 00:00:00 UTC"
+        dateTo:
+          type: string
+          format: date-time
+          description: The end date for filtering trainings.
+          example: "18.12.2020 23:00:00 UTC"
+        trainerName:
+          type: string
+          description: The name of the trainer to filter by.
+          minLength: 2
+          maxLength: 50
+          example: "Lev.Ian"
+        trainingType:
+          type: string
+          description: The type of training to filter by.
+          minLength: 2
+          maxLength: 20
+          example: "CALISTHENICS"
+
+    TrainingBasicDTO:
+      type: object
+      properties:
+        trainingName:
+          type: string
+          description: The name of the training session.
+          example: "Morning Calisthenics"
+        trainingDate:
+          type: string
+          format: date-time
+          description: The date of the training session.
+          example: "15.12.2020 15:00:00 UTC"
+        trainingType:
+          type: string
+          description: The type of training.
+          example: "CALISTHENICS"
+        trainingDuration:
+          type: integer
+          description: The duration of the training in minutes.
+          example: 60
+        partnerName:
+          type: string
+          description: The name of the partner for the training session, if applicable.
+          example: "Lev.Ian"
+    
+    TrainerSendDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username of the trainer.
+          example: "Lev.Ian"
+        firstName:
+          type: string
+          description: The first name of the trainer.
+          example: "Lev"
+        lastName:
+          type: string
+          description: The last name of the trainer.
+          example: "Ian"
+        trainingType:
+          type: string
+          description: The specialization type of the trainer.
+          example: "CALISTHENICS"
+        isActive:
+          type: boolean
+          description: Indicates if the trainer is currently active.
+          example: true
+        traineeAssigned:
+          type: array
+          items:
+            $ref: '#/components/schemas/TraineeBasicDTO'
+          description: A list of trainees assigned to the trainer.
+    
+    TraineeBasicDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username of the trainee.
+          example: "Yelzhan.Rakhimzhanov"
+        firstName:
+          type: string
+          description: The first name of the trainee.
+          example: "Yelzhan"
+        lastName:
+          type: string
+          description: The last name of the trainee.
+          example: "Rakhimzhanov"
+    
+    TrainerUpdateDTO:
+      type: object
+      required:
+        - username
+        - firstName
+        - lastName
+        - trainingType
+        - isActive
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Lev.Ian"
+          description: "Username is required"
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 25
+          example: "Lev"
+          description: "First name is required"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 25
+          example: "Ian"
+          description: "Last name is required"
+        trainingType:
+          type: string
+          minLength: 2
+          maxLength: 20
+          example: "CALISTHENICS"
+          description: "Training type is required"
+        isActive:
+          type: boolean
+          example: true
+          description: "Indicates whether the trainer is active"
+    
+    TrainerTrainingDTO:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Lev.Ian"
+          description: "Username is required"
+        dateFrom:
+          type: string
+          format: date-time
+          example: "10.12.2020 00:00:00 UTC"
+          description: "Start date for filtering trainings"
+        dateTo:
+          type: string
+          format: date-time
+          example: "30.12.2020 18:00:00 UTC"
+          description: "End date for filtering trainings"
+        traineeName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Yelzhan.Rakhimzhanov"
+          description: "Name of the trainee to filter by"
+    
+    TrainingTypeBasicDTO:
+      type: object
+      properties:
+        trainingType:
+          type: string
+          example: "CALISTHENICS"
+          description: "Type of training"
+        id:
+          type: integer
+          example: 3
+          description: "Unique identifier for the training type"
+    
+    UserUpdateDTO:
+      type: object
+      required:
+        - username
+        - oldPassword
+        - newPassword
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Yelzhan.Rakhimzhanov"
+          description: "Username of the user"
+        oldPassword:
+          type: string
+          minLength: 10
+          maxLength: 10
+          example: "oldpassword"
+          description: "Current password of the user (must be exactly 10 characters)"
+        newPassword:
+          type: string
+          minLength: 10
+          maxLength: 10
+          example: "newpassword"
+          description: "New password for the user (must be exactly 10 characters)"
+    
+    TrainingGettingDTO:
+      type: object
+      required:
+        - traineeUsername
+        - trainerUsername
+        - trainingName
+        - date
+        - trainingDuration
+      properties:
+        traineeUsername:
+          type: string
+          minLength: 2
+          maxLength: 25
+          example: "Lev.Ian"
+          description: "Username of the trainee"
+        trainerUsername:
+          type: string
+          minLength: 2
+          maxLength: 25
+          example: "Yelzhan.Rakhimzhanov"
+          description: "Username of the trainer"
+        trainingName:
+          type: string
+          minLength: 2
+          maxLength: 25
+          example: "Calisthenics Class"
+          description: "Name of the training session"
+        date:
+          type: string
+          format: date-time
+          example: "15.12.2020 15:00:00 UTC"
+          description: "Scheduled date of the training (must be in the future)"
+        trainingDuration:
+          type: integer
+          minimum: 10
+          maximum: 360
+          example: 60
+          description: "Duration of the training in minutes (must be between 10 and 360)"
+    
+    UserActivationDTO:
+      type: object
+      required: 
+        - username
+        - isActive
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Yelzhan.Rakhimzhanov"
+          description: "Username of the user"
+        isActive:
+          type: boolean
+          example: true
+          description: "Indicates whether the user is active or not"
+    
+    
+    

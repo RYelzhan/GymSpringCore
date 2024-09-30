@@ -14,7 +14,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<String> handleMethodArgumentValidationExceptions(ValidationException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.I_AM_A_TEAPOT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
