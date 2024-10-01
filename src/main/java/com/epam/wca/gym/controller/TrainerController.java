@@ -4,7 +4,6 @@ import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.dto.user.UsernameGetDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
@@ -22,10 +21,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -40,9 +39,9 @@ public class TrainerController {
     @NonNull
     private TrainingTypeService trainingTypeService;
 
-    @GetMapping("/profile")
+    @GetMapping("/profile/{username}")
     public ResponseEntity<TrainerSendDTO> getTrainerProfile(
-            @RequestParam String username,
+            @PathVariable("username") String username,
             HttpServletRequest request
     ) {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
@@ -63,17 +62,21 @@ public class TrainerController {
         TrainingType trainingType = trainingTypeService.findByUniqueName(trainerUpdateDTO.trainingType());
 
         if (trainingType == null) {
+            // TODO: add new exception, namely BadRequestException
             throw new ValidationException("Invalid Training Type choice");
         }
 
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
+        // TODO: add authorization AOP. Checks if it is Trainee/Trainer and
+        //  if he is authorized to do something that he is trying to do
         if (!(authenticatedUser instanceof Trainer trainer)) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
         if (!authenticatedUser.getUserName().equals(trainerUpdateDTO.username())) {
-            throw new com.epam.wca.gym.exception.ValidationException("Can not change username");
+            // TODO: add new exception, namely BadRequestException
+            throw new ValidationException("Can not change username");
         }
 
         trainer = trainerService.update(trainer, trainerUpdateDTO, trainingType);
@@ -81,15 +84,15 @@ public class TrainerController {
         return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(trainer), HttpStatus.OK);
     }
 
-    @DeleteMapping("/profile")
+    @DeleteMapping("/profile/{username}")
     public ResponseEntity<String> deleteTrainee(
-            @RequestBody @Valid UsernameGetDTO usernameGetDTO,
+            @PathVariable("username") String username,
             HttpServletRequest request
     ) {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
         if (!(authenticatedUser instanceof Trainer) ||
-                !authenticatedUser.getUserName().equals(usernameGetDTO.username())) {
+                !authenticatedUser.getUserName().equals(username)) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 

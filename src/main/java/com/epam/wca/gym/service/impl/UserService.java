@@ -29,4 +29,12 @@ public class UserService extends GenericDAOServiceImpl<User, User, Long> {
         // No use right now
         throw new UnsupportedOperationException();
     }
+
+    public User findByUniqueNameForAuthentication(String uniqueName) {
+        try {
+            return genericDAO.findByUniqueName(uniqueName);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

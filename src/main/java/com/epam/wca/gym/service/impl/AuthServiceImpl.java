@@ -1,6 +1,5 @@
 package com.epam.wca.gym.service.impl;
 
-import com.epam.wca.gym.aop.Logging;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.AuthSService;
 import lombok.NonNull;
@@ -18,7 +17,6 @@ public class AuthServiceImpl implements AuthSService {
     private UserService userService;
 
     @Override
-    @Logging
     public User authenticate(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Basic ")) {
             // Extract and decode the Base64 encoded login:password
@@ -32,7 +30,7 @@ public class AuthServiceImpl implements AuthSService {
                 String username = values[0];
                 String password = values[1];
 
-                User user = userService.findByUniqueName(username);
+                User user = userService.findByUniqueNameForAuthentication(username);
 
                 if (user != null && user.getPassword().equals(password)) {
                     return user;

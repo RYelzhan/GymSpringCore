@@ -5,6 +5,7 @@ import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.gym.dto.user.UserLoginDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,15 +45,14 @@ public class AuthenticationController {
     @NonNull
     private UsernameDAO usernameDAO;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @Logging
     public ResponseEntity<String> login(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password
+            @RequestBody @Valid UserLoginDTO userLoginDTO
     ) {
-        User user = userService.findByUniqueName(username);
+        User user = userService.findByUniqueName(userLoginDTO.username());
 
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null || !user.getPassword().equals(userLoginDTO.password())) {
             return new ResponseEntity<>("Invalid Username or Password", HttpStatus.BAD_REQUEST);
         }
 

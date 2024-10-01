@@ -20,7 +20,7 @@ public class LoggingAspect {
     @NonNull
     private TransactionDetails transactionDetails;
 
-    @Pointcut(value = "@annotation(com.epam.wca.gym.aop.Logging)")
+    @Pointcut(value = "@annotation(Logging)")
     public void loggingPointcut() {
         // This method is empty because it serves as a pointcut definition.
     }
