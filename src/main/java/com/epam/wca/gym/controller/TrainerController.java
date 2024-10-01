@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "user/trainer", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "user/trainer")
 @RequiredArgsConstructor
 public class TrainerController {
     @NonNull
@@ -55,7 +55,7 @@ public class TrainerController {
         return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(authenticatedTrainer), HttpStatus.OK);
     }
 
-    @PutMapping("/profile")
+    @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainer
     public ResponseEntity<TrainerSendDTO> updateTrainerProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
@@ -65,6 +65,7 @@ public class TrainerController {
 
         if (trainingType == null) {
             // TODO: add new exception, namely BadRequestException
+            // maybe validation exception is alright
             throw new MyValidationException("Invalid Training Type choice");
         }
 
@@ -79,9 +80,9 @@ public class TrainerController {
         return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(updatedTrainer), HttpStatus.OK);
     }
 
-    @DeleteMapping("/profile/{username}")
+    @DeleteMapping(value = "/profile/{username}")
     @CheckTrainer
-    public ResponseEntity<String> deleteTrainee(
+    public ResponseEntity<String> deleteTrainer(
             @PathVariable("username") String username,
             HttpServletRequest request
     ) {
@@ -93,7 +94,7 @@ public class TrainerController {
 
         trainerService.deleteById(authenticatedTrainer.getId());
 
-        return ResponseEntity.ok("Trainee Profile Deleted Successfully");
+        return ResponseEntity.ok("Trainer Profile Deleted Successfully");
     }
 
     @GetMapping("/trainings/filter")

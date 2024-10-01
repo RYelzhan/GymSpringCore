@@ -7,7 +7,6 @@ import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.dto.user.UsernameGetDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.ForbiddenActionException;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/user/trainee", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/user/trainee")
 @RequiredArgsConstructor
 public class TraineeController {
     @NonNull
@@ -59,7 +58,7 @@ public class TraineeController {
         return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(authenticatedTrainee), HttpStatus.OK);
     }
 
-    @PutMapping("/profile")
+    @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
     public ResponseEntity<TraineeSendDTO> updateTraineeProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeUpdateDTO,
@@ -76,15 +75,15 @@ public class TraineeController {
         return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(updatedTrainee), HttpStatus.OK);
     }
 
-    @DeleteMapping("/profile")
+    @DeleteMapping(value = "/profile/{username}")
     @CheckTrainee
     public ResponseEntity<String> deleteTrainee(
-            @RequestBody @Valid UsernameGetDTO usernameGetDTO,
+            @PathVariable("username") String username,
             HttpServletRequest request
     ) {
         Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedTrainee.getUserName().equals(usernameGetDTO.username())) {
+        if (!authenticatedTrainee.getUserName().equals(username)) {
             throw new ForbiddenActionException("This is not your profile.");
         }
 
@@ -112,7 +111,7 @@ public class TraineeController {
     }
 
     // TODO: delegate all this work to service layer
-    @PutMapping("/trainers/add")
+    @PutMapping(value = "/trainers/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
     public ResponseEntity<List<TrainerBasicDTO>> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,

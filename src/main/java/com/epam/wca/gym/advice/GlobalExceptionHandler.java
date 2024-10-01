@@ -2,8 +2,10 @@ package com.epam.wca.gym.advice;
 
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.MyValidationException;
+import com.epam.wca.gym.util.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,5 +31,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenActionException.class)
     public ResponseEntity<String> handleForbiddenActionException(ForbiddenActionException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadable() {
+
+        String message = "Invalid date format." +
+                " Please use the correct format (e.g., " +
+                AppConstants.DEFAULT_DATE_FORMAT +
+                " ).";
+
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 }

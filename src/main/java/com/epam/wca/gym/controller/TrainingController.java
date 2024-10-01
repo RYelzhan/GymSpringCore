@@ -5,7 +5,6 @@ import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/training",
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/training")
 @RequiredArgsConstructor
 public class TrainingController {
     @NonNull

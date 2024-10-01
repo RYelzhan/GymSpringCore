@@ -10,7 +10,7 @@ public record TrainerRegistrationDTO(
         @NotBlank(message = "Last name is required")
         @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
         String lastName,
-        @NotBlank(message = "Last name is required")
+        @NotBlank(message = "Training type is required")
         @Size(min = 2, max = 20, message = "Last name must be between 2 and 20 characters")
         String trainingType
 ) {

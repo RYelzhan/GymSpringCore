@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/user")
 @RequiredArgsConstructor
 public class UserController {
     @NonNull
@@ -47,7 +47,7 @@ public class UserController {
         return ResponseEntity.ok(authenticatedUser.getUserName());
     }
 
-    @PutMapping("/change/password")
+    @PutMapping(value = "/change/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> changeUserPassword(
             @RequestBody @Valid UserUpdateDTO userUpdateDTO,
             HttpServletRequest request
@@ -57,7 +57,7 @@ public class UserController {
         if (!authenticatedUser.getUserName().equals(userUpdateDTO.username()) ||
             !authenticatedUser.getPassword().equals(userUpdateDTO.oldPassword())) {
             // authenticated as other user and trying to change password details of other user
-            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Not Correct Credentials", HttpStatus.FORBIDDEN);
         }
 
         authenticatedUser.setPassword(userUpdateDTO.newPassword());
@@ -66,7 +66,7 @@ public class UserController {
         return new ResponseEntity<>("Password Changed Successfully", HttpStatus.OK);
     }
 
-    @PostMapping("/create/training")
+    @PostMapping(value = "/create/training", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createNewTraining(
             @RequestBody @Valid TrainingGettingDTO trainingGettingDTO,
             HttpServletRequest request
@@ -100,7 +100,7 @@ public class UserController {
         return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
     }
 
-    @PatchMapping("/change/active")
+    @PatchMapping(value = "/change/active", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> activateDeactivateUser(
             @RequestBody @Valid UserActivationDTO userActivationDTO,
             HttpServletRequest request
