@@ -111,6 +111,7 @@ public class TraineeController {
         );
     }
 
+    // TODO: delegate all this work to service layer
     @PutMapping("/trainers/add")
     @CheckTrainee
     public ResponseEntity<List<TrainerBasicDTO>> updateTrainerList(

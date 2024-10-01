@@ -1,12 +1,13 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.aop.CheckTrainer;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.MyValidationException;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingTypeService;
@@ -40,21 +41,22 @@ public class TrainerController {
     private TrainingTypeService trainingTypeService;
 
     @GetMapping("/profile/{username}")
+    @CheckTrainer
     public ResponseEntity<TrainerSendDTO> getTrainerProfile(
             @PathVariable("username") String username,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainer authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedUser.getUserName().equals(username) ||
-                !(authenticatedUser instanceof Trainer trainer)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainer.getUserName().equals(username)) {
+            throw new ForbiddenActionException("This is not your profile.");
         }
 
-        return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(trainer), HttpStatus.OK);
+        return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(authenticatedTrainer), HttpStatus.OK);
     }
 
     @PutMapping("/profile")
+    @CheckTrainer
     public ResponseEntity<TrainerSendDTO> updateTrainerProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
@@ -66,54 +68,47 @@ public class TrainerController {
             throw new MyValidationException("Invalid Training Type choice");
         }
 
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainer authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        // TODO: add authorization AOP. Checks if it is Trainee/Trainer and
-        //  if he is authorized to do something that he is trying to do
-        if (!(authenticatedUser instanceof Trainer trainer)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainer.getUserName().equals(trainerUpdateDTO.username())) {
+            throw new ForbiddenActionException("Can not change username");
         }
 
-        if (!authenticatedUser.getUserName().equals(trainerUpdateDTO.username())) {
-            // TODO: add new exception, namely BadRequestException
-            throw new MyValidationException("Can not change username");
-        }
+        Trainer updatedTrainer = trainerService.update(authenticatedTrainer, trainerUpdateDTO, trainingType);
 
-        trainer = trainerService.update(trainer, trainerUpdateDTO, trainingType);
-
-        return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(trainer), HttpStatus.OK);
+        return new ResponseEntity<>(DTOFactory.createTrainerSendDTO(updatedTrainer), HttpStatus.OK);
     }
 
     @DeleteMapping("/profile/{username}")
+    @CheckTrainer
     public ResponseEntity<String> deleteTrainee(
             @PathVariable("username") String username,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainer authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainer) ||
-                !authenticatedUser.getUserName().equals(username)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainer.getUserName().equals(username)) {
+            throw new ForbiddenActionException("This is not your profile.");
         }
 
-        trainerService.deleteById(authenticatedUser.getId());
+        trainerService.deleteById(authenticatedTrainer.getId());
 
         return ResponseEntity.ok("Trainee Profile Deleted Successfully");
     }
 
     @GetMapping("/trainings/filter")
+    @CheckTrainer
     public ResponseEntity<List<TrainingBasicDTO>> getTraineeTrainingsList(
             @RequestBody @Valid TrainerTrainingDTO trainerTrainingDTO,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainer authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainer trainer) ||
-                !authenticatedUser.getUserName().equals(trainerTrainingDTO.username())) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainer.getUserName().equals(trainerTrainingDTO.username())) {
+            throw new ForbiddenActionException("This is not your account.");
         }
 
-        List<TrainingBasicDTO> result = Filter.filterTrainerTrainings(trainer.getTrainings(),
+        List<TrainingBasicDTO> result = Filter.filterTrainerTrainings(authenticatedTrainer.getTrainings(),
                         trainerTrainingDTO)
                 .stream()
                 .map(DTOFactory::createTrainerBasicTrainingDTO)
