@@ -11,7 +11,7 @@ import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.exception.ValidationException;
+import com.epam.wca.gym.exception.MyValidationException;
 import com.epam.wca.gym.repository.impl.UsernameDAO;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
@@ -76,7 +76,7 @@ public class AuthenticationController {
         TrainingType trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
 
         if (trainingType == null) {
-            throw new ValidationException("Invalid Training Type choice");
+            throw new MyValidationException("Invalid Training Type choice");
         }
 
         TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerRegistrationDTO.firstName(),

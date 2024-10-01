@@ -7,7 +7,7 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.exception.ValidationException;
+import com.epam.wca.gym.exception.MyValidationException;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
@@ -63,7 +63,7 @@ public class TrainerController {
 
         if (trainingType == null) {
             // TODO: add new exception, namely BadRequestException
-            throw new ValidationException("Invalid Training Type choice");
+            throw new MyValidationException("Invalid Training Type choice");
         }
 
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
@@ -76,7 +76,7 @@ public class TrainerController {
 
         if (!authenticatedUser.getUserName().equals(trainerUpdateDTO.username())) {
             // TODO: add new exception, namely BadRequestException
-            throw new ValidationException("Can not change username");
+            throw new MyValidationException("Can not change username");
         }
 
         trainer = trainerService.update(trainer, trainerUpdateDTO, trainingType);

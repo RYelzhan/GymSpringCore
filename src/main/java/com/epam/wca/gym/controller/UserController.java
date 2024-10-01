@@ -6,7 +6,7 @@ import com.epam.wca.gym.dto.user.UserUpdateDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.exception.ValidationException;
+import com.epam.wca.gym.exception.MyValidationException;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.TrainingService;
@@ -82,7 +82,7 @@ public class UserController {
                 return ResponseEntity.ok(null);
             }
 
-            throw new ValidationException("No Trainer Found With Username"
+            throw new MyValidationException("No Trainer Found With Username"
                     + trainingGettingDTO.trainerUsername());
         } else if (authenticatedUser instanceof Trainer trainer &&
                 authenticatedUser.getUserName().equals(trainingGettingDTO.trainerUsername())) {
@@ -93,7 +93,7 @@ public class UserController {
                 return ResponseEntity.ok(null);
             }
 
-            throw new ValidationException("No Trainee Found With Username"
+            throw new MyValidationException("No Trainee Found With Username"
                     + trainingGettingDTO.traineeUsername());
         }
 

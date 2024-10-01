@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.aop.CheckTrainee;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
@@ -9,14 +10,13 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UsernameGetDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -45,82 +45,82 @@ public class TraineeController {
     private TrainerService trainerService;
 
     @GetMapping("/profile/{username}")
+    @CheckTrainee
     public ResponseEntity<TraineeSendDTO> getTraineeProfile(
             @PathVariable("username") String username,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedUser.getUserName().equals(username) ||
-                !(authenticatedUser instanceof Trainee trainee)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainee.getUserName().equals(username)) {
+            throw new ForbiddenActionException("This is not your profile.");
         }
 
-        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(trainee), HttpStatus.OK);
+        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(authenticatedTrainee), HttpStatus.OK);
     }
 
     @PutMapping("/profile")
+    @CheckTrainee
     public ResponseEntity<TraineeSendDTO> updateTraineeProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeUpdateDTO,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainee trainee)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainee.getUserName().equals(traineeUpdateDTO.username())) {
+            throw new ForbiddenActionException("Can not change username");
         }
 
-        if (!authenticatedUser.getUserName().equals(traineeUpdateDTO.username())) {
-            throw new com.epam.wca.gym.exception.ValidationException("Can not change username");
-        }
+        Trainee updatedTrainee = traineeService.update(authenticatedTrainee, traineeUpdateDTO);
 
-        trainee = traineeService.update(trainee, traineeUpdateDTO);
-
-        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(trainee), HttpStatus.OK);
+        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(updatedTrainee), HttpStatus.OK);
     }
 
     @DeleteMapping("/profile")
+    @CheckTrainee
     public ResponseEntity<String> deleteTrainee(
             @RequestBody @Valid UsernameGetDTO usernameGetDTO,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainee) ||
-                !authenticatedUser.getUserName().equals(usernameGetDTO.username())) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainee.getUserName().equals(usernameGetDTO.username())) {
+            throw new ForbiddenActionException("This is not your profile.");
         }
 
-        traineeService.deleteById(authenticatedUser.getId());
+        traineeService.deleteById(authenticatedTrainee.getId());
 
         return ResponseEntity.ok(null);
     }
 
     @GetMapping("/trainers/available")
+    @CheckTrainee
     public ResponseEntity<List<TrainerBasicDTO>> getNotAssignedTrainers(
             @RequestParam("username") String username,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainee trainee) ||
-                !authenticatedUser.getUserName().equals(username)) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainee.getUserName().equals(username)) {
+            throw new ForbiddenActionException("This is not your account.");
         }
 
-        return new ResponseEntity<>(traineeService.getListOfNotAssignedTrainers(trainee), HttpStatus.OK);
+        return new ResponseEntity<>(
+                traineeService.getListOfNotAssignedTrainers(authenticatedTrainee),
+                HttpStatus.OK
+        );
     }
 
     @PutMapping("/trainers/add")
+    @CheckTrainee
     public ResponseEntity<List<TrainerBasicDTO>> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
             ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainee trainee) ||
-                !authenticatedUser.getUserName().equals(traineeTrainersUpdateDTO.username())) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainee.getUserName().equals(traineeTrainersUpdateDTO.username())) {
+            throw new ForbiddenActionException("This is not your account.");
         }
 
         List<Trainer> trainerList = new ArrayList<>();
@@ -129,7 +129,7 @@ public class TraineeController {
                 Trainer trainer = trainerService.findByUniqueName(trainerUsername);
 
                 if (trainer == null) {
-                    throw new ValidationException("No Trainer Found with Username " +
+                    throw new ForbiddenActionException("No Trainer Found with Username " +
                             trainerUsername +
                             ". No Trainers Added");
                 }
@@ -137,8 +137,8 @@ public class TraineeController {
                 trainerList.add(trainer);
         });
 
-        trainee.addTrainers(trainerList);
-        traineeService.update(trainee);
+        authenticatedTrainee.addTrainers(trainerList);
+        traineeService.update(authenticatedTrainee);
 
         List<TrainerBasicDTO> addedTrainers = new ArrayList<>();
         trainerList.forEach((trainer) -> {
@@ -149,18 +149,18 @@ public class TraineeController {
     }
 
     @GetMapping("/trainings/filter")
+    @CheckTrainee
     public ResponseEntity<List<TrainingBasicDTO>> getTraineeTrainingsList(
             @RequestBody @Valid TraineeTrainingDTO traineeTrainingDTO,
             HttpServletRequest request
             ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!(authenticatedUser instanceof Trainee trainee) ||
-                !authenticatedUser.getUserName().equals(traineeTrainingDTO.username())) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if (!authenticatedTrainee.getUserName().equals(traineeTrainingDTO.username())) {
+            throw new ForbiddenActionException("This is not your account.");
         }
 
-        List<TrainingBasicDTO> result = Filter.filterTraineeTrainings(trainee.getTrainings(),
+        List<TrainingBasicDTO> result = Filter.filterTraineeTrainings(authenticatedTrainee.getTrainings(),
                         traineeTrainingDTO)
                 .stream()
                 .map(DTOFactory::createTraineeBasicTrainingDTO)

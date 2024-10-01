@@ -1,6 +1,7 @@
 package com.epam.wca.gym.advice;
 
-import com.epam.wca.gym.exception.ValidationException;
+import com.epam.wca.gym.exception.ForbiddenActionException;
+import com.epam.wca.gym.exception.MyValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,8 +13,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<String> handleMethodArgumentValidationExceptions(ValidationException ex) {
+    @ExceptionHandler(MyValidationException.class)
+    public ResponseEntity<String> handleMethodArgumentValidationExceptions(MyValidationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.I_AM_A_TEAPOT);
     }
 
@@ -23,5 +24,10 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ForbiddenActionException.class)
+    public ResponseEntity<String> handleForbiddenActionException(ForbiddenActionException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 }
