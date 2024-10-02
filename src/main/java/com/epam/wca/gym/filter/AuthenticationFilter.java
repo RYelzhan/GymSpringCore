@@ -51,6 +51,7 @@ public class AuthenticationFilter extends HttpFilter {
             httpRequest.setAttribute("authenticatedUser", user);
 
             // Continue the request if authentication is successful
+
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (IllegalArgumentException e){
             // If authentication fails, respond with 401 Unauthorized

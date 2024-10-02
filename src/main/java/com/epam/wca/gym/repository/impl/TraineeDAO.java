@@ -3,7 +3,6 @@ package com.epam.wca.gym.repository.impl;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.facade.user.UserSession;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -16,14 +15,10 @@ import java.util.Set;
 
 @Repository
 public class TraineeDAO extends GenericDAOImpl<Trainee, Long> {
-    private final UserSession userSession;
-
     @Autowired
-    public TraineeDAO(EntityManagerFactory entityManagerFactory,
-                      UserSession userSession) {
+    public TraineeDAO(EntityManagerFactory entityManagerFactory) {
         super(entityManagerFactory.createEntityManager(),
                 Trainee.class);
-        this.userSession = userSession;
     }
 
     @Override
@@ -48,7 +43,6 @@ public class TraineeDAO extends GenericDAOImpl<Trainee, Long> {
 
             Trainee trainee = entityManager.find(entityClass, id);
             Set<Training> trainings = trainee.getTrainings();
-            userSession.setUser(trainee);
 
             transaction.commit();
 

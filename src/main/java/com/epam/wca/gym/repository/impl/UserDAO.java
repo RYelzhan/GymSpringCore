@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class UserDAO extends GenericDAOImpl<User, Long> {
@@ -14,6 +15,7 @@ public class UserDAO extends GenericDAOImpl<User, Long> {
     }
 
     @Override
+    @Transactional
     public User findByUniqueName(String username) {
         try {
             TypedQuery<User> query = entityManager.createQuery(

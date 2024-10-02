@@ -4,6 +4,7 @@ import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.repository.impl.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService extends GenericDAOServiceImpl<User, User, Long> {
@@ -30,6 +31,7 @@ public class UserService extends GenericDAOServiceImpl<User, User, Long> {
         throw new UnsupportedOperationException();
     }
 
+    @Transactional
     public User findByUniqueNameForAuthentication(String uniqueName) {
         try {
             return genericDAO.findByUniqueName(uniqueName);

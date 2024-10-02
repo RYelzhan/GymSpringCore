@@ -6,7 +6,7 @@
 
     <groupId>com.epam.wca.gym</groupId>
     <artifactId>GymSpringCore</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.1-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,40 +14,16 @@
         <java.version>17</java.version>
 
         <!--   Dependencies versions    -->
-        <spring.version>6.1.12</spring.version>
         <jakarta.annotation.api.version>3.0.0</jakarta.annotation.api.version>
 
-        <!-- Web -->
-        <tomcat.embed.version>10.1.30</tomcat.embed.version>
-        <jackson.version>2.18.0</jackson.version>
-
-        <!-- Data Validation -->
-        <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-        <jakarta.validation.api.version>3.1.0</jakarta.validation.api.version>
-        <jakarta.el.api.version>6.0.1</jakarta.el.api.version>
-
-        <!--  AOP versions  -->
+        <!--  AOP version  -->
         <aspectj.weaver.version>1.9.22</aspectj.weaver.version>
 
-        <!--  Utility versions  -->
+        <!--  Utility version  -->
         <lombok.version>1.18.30</lombok.version>
 
-        <!--  Database versions  -->
-        <jakarta.persistence.api.version>3.2.0</jakarta.persistence.api.version>
+        <!--  Database version  -->
         <postgresql.version>42.7.4</postgresql.version>
-        <hibernate.core.version>6.6.0.Final</hibernate.core.version>
-        <apache.commons.dbcp2.version>2.12.0</apache.commons.dbcp2.version>
-
-        <!--  Logging versions  -->
-        <slf4j.version>2.0.13</slf4j.version>
-        <logback.version>1.4.14</logback.version>
-
-        <!--  Testing versions  -->
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <junit.jupiter.params.version>5.10.2</junit.jupiter.params.version>
-        <junit.jupiter.engine.version>5.10.2</junit.jupiter.engine.version>
-        <junit.platrfom.commons.version>1.11.1</junit.platrfom.commons.version>
-        <mockito.junit.jupiter.version>5.7.0</mockito.junit.jupiter.version>
 
         <!--  Plugin versions  -->
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
@@ -56,105 +32,46 @@
 
         <!-- OpenApi -->
         <springdoc.openapi.starter.webmvc.ui.version>2.6.0</springdoc.openapi.starter.webmvc.ui.version>
-
     </properties>
 
+    <!-- All Spring Boot Starter versions -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
     <dependencies>
-
-        <!-- Spring Dependencies -->
+        <!-- Web (includes Spring, Jackson, Tomcat) -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-            <version>${jakarta.annotation.api.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Web -->
+        <!-- Data Validation (includes Hibernate Validator) -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>${tomcat.embed.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-el</artifactId>
-            <version>${tomcat.embed.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <!-- To Deal With Zoned Date Time in JSON -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Data Validation -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate.validator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <version>${jakarta.validation.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.el</groupId>
-            <artifactId>jakarta.el-api</artifactId>
-            <version>${jakarta.el.api.version}</version>
-        </dependency>
-
-        <!-- AOP -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
+        <!-- AOP (includes AspectJ and Spring AOP) -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.weaver.version}</version>
         </dependency>
 
-        <!-- Database Dependencies -->
+        <!-- Database (includes Hibernate and JPA support) -->
         <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>${jakarta.persistence.api.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${apache.commons.dbcp2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <version>${spring.version}</version>
         </dependency>
 
         <!-- Utility Dependency -->
@@ -165,49 +82,15 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Logging Dependencies -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
+        <!-- Logging Dependencies (included in all spring.boot.starter) -->
 
         <!-- Testing Dependencies -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.jupiter.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.jupiter.params.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.engine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-commons</artifactId>
-            <version>${junit.platrfom.commons.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
@@ -216,7 +99,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- OpenAPI dependencies -->
+        <!-- OpenAPI (Swagger) -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
