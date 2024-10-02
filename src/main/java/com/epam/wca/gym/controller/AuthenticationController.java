@@ -8,10 +8,10 @@ import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.exception.MyValidationException;
+import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.repository.impl.UsernameDAO;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
@@ -20,20 +20,22 @@ import com.epam.wca.gym.service.impl.UserService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthenticationController {
+    // TODO: make fields final. (everywhere)
     @NonNull
     private UserService userService;
     @NonNull
@@ -47,36 +49,35 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @Logging
-    public ResponseEntity<String> login(
-            @RequestBody @Valid UserLoginDTO userLoginDTO
-    ) {
-        User user = userService.findByUniqueName(userLoginDTO.username());
+    public String login(@RequestBody @Valid UserLoginDTO loginDTO) throws BadRequestException {
+        User user = userService.findByUniqueName(loginDTO.username());
 
-        if (user == null || !user.getPassword().equals(userLoginDTO.password())) {
-            return new ResponseEntity<>("Invalid Username or Password", HttpStatus.BAD_REQUEST);
+        if (user == null || !user.getPassword().equals(loginDTO.password())) {
+             throw new BadControllerRequestException("Invalid Username or Password");
         }
 
-        return ResponseEntity.ok("Login Successful");
+        return "Login Successful";
     }
 
     @PostMapping(value = "/register/trainee")
-    public ResponseEntity<UserAuthenticatedDTO> registerTrainee(
-            @RequestBody @Valid TraineeRegistrationDTO traineeRegistrationDto
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserAuthenticatedDTO registerTrainee(
+            @RequestBody @Valid TraineeRegistrationDTO traineeDTO
     ) {
-        Trainee trainee = traineeService.save(traineeRegistrationDto);
-        var newUser = new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
+        Trainee trainee = traineeService.save(traineeDTO);
 
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
     }
 
     @PostMapping(value = "/register/trainer")
-    public ResponseEntity<UserAuthenticatedDTO> registerTrainer(
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserAuthenticatedDTO registerTrainer(
             @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO
     ) {
-        TrainingType trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
+        var trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
 
         if (trainingType == null) {
-            throw new MyValidationException("Invalid Training Type choice");
+            throw new ControllerValidationException("Invalid Training Type choice");
         }
 
         TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerRegistrationDTO.firstName(),
@@ -84,17 +85,13 @@ public class AuthenticationController {
                 trainingType);
 
         Trainer trainer = trainerService.save(trainerSavingDTO);
-        var newUser = new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
 
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
     }
 
     @GetMapping("/register/username/availability/{baseUsername}")
-    public ResponseEntity<Username> findUsernameAvailable(
-            @PathVariable("baseUsername") String baseUsername
-    ) {
-        Username usernameAvailable = usernameDAO.findByUniqueName(baseUsername);
+    public Username findUsernameAvailable(@PathVariable("baseUsername") String baseUsername) {
 
-        return new ResponseEntity<>(usernameAvailable, HttpStatus.OK);
+        return usernameDAO.findByUniqueName(baseUsername);
     }
 }

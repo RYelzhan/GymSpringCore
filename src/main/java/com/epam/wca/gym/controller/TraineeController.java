@@ -23,11 +23,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -43,71 +42,44 @@ public class TraineeController {
     @NonNull
     private TrainerService trainerService;
 
-    @GetMapping("/profile/{username}")
+    @GetMapping("/profile")
     @CheckTrainee
-    public ResponseEntity<TraineeSendDTO> getTraineeProfile(
-            @PathVariable("username") String username,
-            HttpServletRequest request
-    ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+    public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
+        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedTrainee.getUserName().equals(username)) {
-            throw new ForbiddenActionException("This is not your profile.");
-        }
-
-        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(authenticatedTrainee), HttpStatus.OK);
+        return DTOFactory.createTraineeSendDTO(authenticatedTrainee);
     }
 
+    // TODO: remove username field from all DTO-s
+    // TODO: remove username checks in every controller
     @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
-    public ResponseEntity<TraineeSendDTO> updateTraineeProfile(
+    public TraineeSendDTO updateTraineeProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeUpdateDTO,
             HttpServletRequest request
     ) {
         Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedTrainee.getUserName().equals(traineeUpdateDTO.username())) {
-            throw new ForbiddenActionException("Can not change username");
-        }
-
         Trainee updatedTrainee = traineeService.update(authenticatedTrainee, traineeUpdateDTO);
 
-        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(updatedTrainee), HttpStatus.OK);
+        return DTOFactory.createTraineeSendDTO(updatedTrainee);
     }
 
-    @DeleteMapping(value = "/profile/{username}")
+    @DeleteMapping(value = "/profile")
     @CheckTrainee
-    public ResponseEntity<String> deleteTrainee(
-            @PathVariable("username") String username,
-            HttpServletRequest request
-    ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
-
-        if (!authenticatedTrainee.getUserName().equals(username)) {
-            throw new ForbiddenActionException("This is not your profile.");
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTrainee(HttpServletRequest request) {
+        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
         traineeService.deleteById(authenticatedTrainee.getId());
-
-        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/trainers/available")
     @CheckTrainee
-    public ResponseEntity<List<TrainerBasicDTO>> getNotAssignedTrainers(
-            @RequestParam("username") String username,
-            HttpServletRequest request
-    ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+    public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
+        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
-        if (!authenticatedTrainee.getUserName().equals(username)) {
-            throw new ForbiddenActionException("This is not your account.");
-        }
-
-        return new ResponseEntity<>(
-                traineeService.getListOfNotAssignedTrainers(authenticatedTrainee),
-                HttpStatus.OK
-        );
+        return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
     }
 
     // TODO: delegate all this work to service layer
@@ -118,10 +90,6 @@ public class TraineeController {
             HttpServletRequest request
             ) {
         Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
-
-        if (!authenticatedTrainee.getUserName().equals(traineeTrainersUpdateDTO.username())) {
-            throw new ForbiddenActionException("This is not your account.");
-        }
 
         List<Trainer> trainerList = new ArrayList<>();
         traineeTrainersUpdateDTO.trainerUsernames()
@@ -155,10 +123,6 @@ public class TraineeController {
             HttpServletRequest request
             ) {
         Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
-
-        if (!authenticatedTrainee.getUserName().equals(traineeTrainingDTO.username())) {
-            throw new ForbiddenActionException("This is not your account.");
-        }
 
         List<TrainingBasicDTO> result = Filter.filterTraineeTrainings(authenticatedTrainee.getTrainings(),
                         traineeTrainingDTO)
