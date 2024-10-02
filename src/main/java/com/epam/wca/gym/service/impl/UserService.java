@@ -19,12 +19,6 @@ public class UserService extends GenericDAOServiceImpl<User, User, Long> {
     }
 
     @Override
-    public void update(User entity) {
-        // No use right now
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void deleteById(Long id) {
         // No use right now
         throw new UnsupportedOperationException();
@@ -34,5 +28,13 @@ public class UserService extends GenericDAOServiceImpl<User, User, Long> {
     public User findById(Long id) {
         // No use right now
         throw new UnsupportedOperationException();
+    }
+
+    public User findByUniqueNameForAuthentication(String uniqueName) {
+        try {
+            return genericDAO.findByUniqueName(uniqueName);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

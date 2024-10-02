@@ -21,7 +21,10 @@ import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +49,7 @@ class TrainingServiceTest {
     }
 
     @Test
-    void testSave() {
+    void testOverriddenSave() {
         // Given
         long traineeId = 1L;
         long trainerId = 2L;
@@ -78,6 +81,31 @@ class TrainingServiceTest {
         Mockito.verify(trainerDAO, times(1)).findById(trainerId);
         assertEquals(mockTraining.getTrainee(), savedTraining.getTrainee());
         assertEquals(mockTraining.getTrainer(), savedTraining.getTrainer());
+    }
+
+    @Test
+    public void testSave() {
+        // Given
+        long traineeId = 1L;
+        long trainerId = 2L;
+
+        Trainee mockTrainee = new Trainee();  // Mock trainee
+        Trainer mockTrainer = new Trainer();  // Mock trainer
+        Training mockTraining = new Training(mockTrainee,
+                mockTrainer,
+                "Strength Training",
+                new TrainingType("POWERLIFTING"),
+                ZonedDateTime.now(),
+                60);
+
+        // When
+        doNothing().when(trainingDAO).save(any());
+
+        Training savedTraining = trainingService.save(mockTraining);
+
+        // Then
+        assertEquals(savedTraining, mockTraining);
+        verify(trainingDAO, times(1)).save(any());
     }
 
     @Test

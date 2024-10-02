@@ -18,6 +18,7 @@ import lombok.Setter;
 
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,7 +42,7 @@ public class Trainee extends User {
     private Set<Training> trainings;
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+            cascade = {CascadeType.MERGE})
     @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
             joinColumns = @JoinColumn(name = "TRAINEE_ID"),
             inverseJoinColumns = @JoinColumn(name = "TRAINER_ID"))
@@ -54,7 +55,7 @@ public class Trainee extends User {
 
         super(firstName,
                 lastName,
-                profileService.createUserName(firstName, lastName),
+                profileService.createUsername(firstName, lastName),
                 profileService.createPassword(),
                 true);
 
@@ -66,6 +67,10 @@ public class Trainee extends User {
 
     public static void setProfileService(ProfileService profileService) {
         Trainee.profileService = profileService;
+    }
+
+    public void addTrainers(List<Trainer> trainerList) {
+        trainersAssigned.addAll(trainerList);
     }
 
     @Override

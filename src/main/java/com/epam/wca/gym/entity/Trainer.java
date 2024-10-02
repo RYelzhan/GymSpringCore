@@ -49,7 +49,7 @@ public class Trainer extends User {
                    TrainingType specialization) {
         super(firstName,
                 lastName,
-                profileService.createUserName(firstName, lastName),
+                profileService.createUsername(firstName, lastName),
                 profileService.createPassword(),
                 true);
 

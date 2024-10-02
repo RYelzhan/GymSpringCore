@@ -1,7 +1,7 @@
-package com.epam.wca.gym.aop;
+package com.epam.wca.gym.aop.deprecated;
 
 import com.epam.wca.gym.facade.user.UserSession;
-import com.epam.wca.gym.util.InputHandler;
+import com.epam.wca.gym.util.deprecated.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
+
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
 
 @Slf4j
 @Aspect
@@ -30,7 +36,7 @@ public class ActiveUserAspect {
      * pointcut definition. It allows advice to be applied to any method
      * annotated with {@code @ActiveUser}.</p>
      */
-    @Pointcut("@annotation(ActiveUser)")
+    @Pointcut("@annotation(com.epam.wca.gym.aop.deprecated.ActiveUser)")
     public void callAtActiveUserAnnotation() {
         // This method is empty because it serves as a pointcut definition.
     }

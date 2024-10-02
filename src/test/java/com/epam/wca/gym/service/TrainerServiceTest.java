@@ -1,6 +1,7 @@
 package com.epam.wca.gym.service;
 
-import com.epam.wca.gym.dto.TrainerDTO;
+import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
+import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,7 +36,7 @@ class TrainerServiceTest {
     @Mock
     private ProfileService profileService;
 
-    private TrainerDTO trainerDTO;
+    private TrainerSavingDTO trainerDTO;
 
     @InjectMocks
     private TrainerService trainerService;
@@ -42,7 +45,7 @@ class TrainerServiceTest {
     void setUp() {
         Trainer.setProfileService(profileService);
 
-        trainerDTO = new TrainerDTO("John",
+        trainerDTO = new TrainerSavingDTO("John",
                 "Doe",
                 new TrainingType("POWERLIFTING"));
     }
@@ -100,5 +103,40 @@ class TrainerServiceTest {
         // Then
         verify(trainerDAO, times(1)).findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
         assertEquals(mockTrainings, foundTrainings);
+    }
+
+    @Test
+    void testUpdateTrainer() {
+        // Prepare the test data
+        Trainer trainer = new Trainer();
+        trainer.setFirstName("OldFirstName");
+        trainer.setLastName("OldLastName");
+        trainer.setSpecialization(new TrainingType("CALISTHENICS"));
+        trainer.setActive(false);
+
+        TrainerUpdateDTO trainerUpdateDTO = new TrainerUpdateDTO(
+                null,
+                "NewFirstName",
+                "NewLastName",
+                null,
+                true
+        );
+
+        TrainingType newTrainingType = new TrainingType("YOGA");
+
+        // Mock the DAO update method
+        doNothing().when(trainerDAO).update(any(Trainer.class));
+
+        // Call the method under test
+        Trainer updatedTrainer = trainerService.update(trainer, trainerUpdateDTO, newTrainingType);
+
+        // Verify that the trainer was updated correctly
+        assertEquals("NewFirstName", updatedTrainer.getFirstName());
+        assertEquals("NewLastName", updatedTrainer.getLastName());
+        assertEquals(newTrainingType, updatedTrainer.getSpecialization());
+        assertTrue(updatedTrainer.isActive());
+
+        // Verify that the DAO update method was called with the updated trainer
+        verify(trainerDAO, times(1)).update(updatedTrainer);
     }
 }

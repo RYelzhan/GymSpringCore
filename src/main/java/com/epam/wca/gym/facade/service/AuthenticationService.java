@@ -1,15 +1,14 @@
 package com.epam.wca.gym.facade.service;
 
-import com.epam.wca.gym.dto.TraineeDTO;
-import com.epam.wca.gym.dto.TrainerDTO;
+import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.impl.TraineeService;
 import com.epam.wca.gym.service.impl.TrainerService;
 import com.epam.wca.gym.service.impl.UserService;
 import com.epam.wca.gym.util.AppConstants;
-import com.epam.wca.gym.util.DateParser;
-import com.epam.wca.gym.util.InputHandler;
+import com.epam.wca.gym.util.deprecated.DateParser;
+import com.epam.wca.gym.util.deprecated.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,12 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Scanner;
+
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
 
 @Slf4j
 @Component
@@ -73,8 +78,8 @@ public class AuthenticationService {
                 "Enter date of birth (" + AppConstants.DEFAULT_DATE_FORMAT + "):");
         String address = InputHandler.promptForInput(scanner, "Enter address:");
 
-        TraineeDTO traineeDTO = new TraineeDTO(firstName, lastName, dateOfBirth, address);
-        printUserDetails(traineeService.save(traineeDTO));
+        TraineeRegistrationDTO traineeRegistrationDTO = new TraineeRegistrationDTO(firstName, lastName, dateOfBirth, address);
+        printUserDetails(traineeService.save(traineeRegistrationDTO));
     }
 
     private void registerTrainer() {
@@ -83,8 +88,8 @@ public class AuthenticationService {
         TrainingType trainingType = trainingTypeFacadeService.selectTrainingType();
 
         if (trainingType != null) {
-            TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
-            printUserDetails(trainerService.save(trainerDTO));
+//            TrainerDTO trainerDTO = new TrainerDTO(firstName, lastName, trainingType);
+ //           printUserDetails(trainerService.save(trainerDTO));
         } else {
             log.info("Invalid Date Format. Trainer not created");
         }

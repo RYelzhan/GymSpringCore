@@ -1,5 +1,6 @@
-package com.epam.wca.gym.util;
+package com.epam.wca.gym.util.deprecated;
 
+import com.epam.wca.gym.util.AppConstants;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,6 +8,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
 
 @Slf4j
 @UtilityClass

@@ -2,7 +2,7 @@ package com.epam.wca.gym.repository.impl;
 
 import com.epam.wca.gym.entity.User;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,26 +15,14 @@ public class UserDAO extends GenericDAOImpl<User, Long> {
 
     @Override
     public User findByUniqueName(String username) {
-        EntityTransaction transaction = entityManager.getTransaction();
-
         try {
-            transaction.begin();
+            TypedQuery<User> query = entityManager.createQuery(
+                    "SELECT t FROM User t WHERE t.userName = :username", User.class);
+            query.setParameter("username", username);
 
-            User user = (User) entityManager.createQuery("SELECT u FROM User u WHERE u.userName = ?1")
-                    .setParameter(1, username)
-                    .getSingleResult();
-
-            entityManager.detach(user);
-
-            transaction.commit();
-
-            return user;
+            return query.getSingleResult();
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-
-            throw new IllegalArgumentException("Entity was not found");
+            return null;
         }
     }
 }

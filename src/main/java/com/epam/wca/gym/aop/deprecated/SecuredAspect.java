@@ -1,4 +1,4 @@
-package com.epam.wca.gym.aop;
+package com.epam.wca.gym.aop.deprecated;
 
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.facade.user.UserSession;
@@ -10,6 +10,12 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
 
 @Slf4j
 @Aspect
@@ -28,7 +34,7 @@ public class SecuredAspect {
      *
      * @param user the user object passed to the method
      */
-    @Pointcut("@annotation(Secured) && args(user)")
+    @Pointcut("@annotation(com.epam.wca.gym.aop.deprecated.Secured) && args(user)")
     public void callAtSecuredAnnotationUser(User user) {
         // This method is empty because it serves as a pointcut definition.
     }
@@ -42,7 +48,7 @@ public class SecuredAspect {
      *
      * @param id the long ID passed to the method
      */
-    @Pointcut("@annotation(Secured) && args(id)")
+    @Pointcut("@annotation(com.epam.wca.gym.aop.deprecated.Secured) && args(id)")
     public void callAtSecuredAnnotationId(long id) {
         // This method is empty because it serves as a pointcut definition.
     }

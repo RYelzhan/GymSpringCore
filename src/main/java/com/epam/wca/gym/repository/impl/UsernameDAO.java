@@ -2,7 +2,7 @@ package com.epam.wca.gym.repository.impl;
 
 import com.epam.wca.gym.entity.Username;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,32 +16,14 @@ public class UsernameDAO extends GenericDAOImpl<Username, Long> {
 
     @Override
     public Username findByUniqueName(String baseUsername) {
-        EntityTransaction transaction = entityManager.getTransaction();
-
         try {
-            transaction.begin();
+            TypedQuery<Username> query = entityManager.createQuery(
+                    "SELECT t FROM Username t WHERE t.baseUserName = :baseUserName", Username.class);
+            query.setParameter("baseUserName", baseUsername);
 
-            Username username = (Username) entityManager.createQuery("SELECT t FROM Username t WHERE t.baseUserName = ?1")
-                    .setParameter(1, baseUsername)
-                    .getSingleResult();
-            /*
-            TODO: Replace above code with:
-                TypedQuery<Username> query = entityManager.createQuery("SELECT t FROM Username t WHERE t.baseUserName = :baseUserName", Username.class);
-                query.setParameter("baseUserName", baseUserName);
-                List<Username> usernames = query.getResultList();
-             */
-
-            entityManager.detach(username);
-
-            transaction.commit();
-
-            return username;
+            return query.getSingleResult();
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-
-            throw new IllegalArgumentException("Entity was not found");
+            return null;
         }
     }
 }

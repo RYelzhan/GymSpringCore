@@ -38,12 +38,12 @@ class ProfileServiceImplTest {
         when(usernameDAO.findByUniqueName(baseUsername)).thenReturn(existingUsername);
 
         // When
-        String generatedUsername = profileService.createUserName(firstName, lastName);
+        String generatedUsername = profileService.createUsername(firstName, lastName);
 
         // Then
         assertEquals(expected, generatedUsername); // Check if the counter was incremented
         Mockito.verify(usernameDAO).findByUniqueName(baseUsername);
-        Mockito.verify(usernameDAO).save(existingUsername); // Make sure it was saved
+        Mockito.verify(usernameDAO).update(existingUsername); // Make sure it was saved
     }
 
     @ParameterizedTest
@@ -58,7 +58,7 @@ class ProfileServiceImplTest {
         when(usernameDAO.findByUniqueName(baseUsername)).thenThrow(new RuntimeException());
 
         // When
-        String generatedUsername = profileService.createUserName(firstName, lastName);
+        String generatedUsername = profileService.createUsername(firstName, lastName);
 
         // Then
         assertEquals(expected, generatedUsername); // The new username should be the base one

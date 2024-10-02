@@ -14,16 +14,38 @@
         </encoder>
     </appender>
 
-    <!-- Root logger -->
-    <root level="WARN">
-        <!--- Global Configuration -->
-        <appender-ref ref="CONSOLE" />
-    </root>
+    <!-- File appender to log access logs into a file -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Specify log file location -->
+        <file>logs/access.log</file>
+
+        <!-- Configure rolling policy to handle log rotation -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Logs will be archived by day, e.g., access-2024-09-28.log -->
+            <fileNamePattern>logs/access-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Keep 30 days worth of logs -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- Pattern for the access logs -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+<!--    &lt;!&ndash; Root logger &ndash;&gt;-->
+<!--    <root level="WARN">-->
+<!--        &lt;!&ndash;- Global Configuration &ndash;&gt;-->
+<!--        <appender-ref ref="CONSOLE" />-->
+<!--    </root>-->
 
     <logger name="org.springframework" level="ERROR"/>
 
     <logger name="com.epam.wca.gym.facade" level="INFO" additivity="false">
         <appender-ref ref="USER_CONSOLE"/>
+    </logger>
+
+    <logger name="com.epam.wca.gym.filter" level="WARN" additivity="false">
+        <appender-ref ref="FILE"/>
     </logger>
 
     <logger name="com.epam.wca.gym.aop" level="INFO" additivity="false">

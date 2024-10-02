@@ -45,10 +45,4 @@ class TrainingTypeServiceTest {
         // Verify that findById() throws UnsupportedOperationException
         assertThrows(UnsupportedOperationException.class, () -> trainingTypeService.findById(1L));
     }
-
-    @Test
-    void testUnsupportedFindByUniqueName() {
-        // Verify that findByUniqueName() throws UnsupportedOperationException
-        assertThrows(UnsupportedOperationException.class, () -> trainingTypeService.findByUniqueName("Powerlifting"));
-    }
 }

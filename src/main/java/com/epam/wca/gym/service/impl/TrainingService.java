@@ -43,6 +43,12 @@ public class TrainingService extends GenericDAOServiceImpl<Training, TrainingDTO
         return training;
     }
 
+    public Training save(Training training) {
+        trainingDAO.save(training);
+
+        return training;
+    }
+
     @Override
     public void update(Training entity) {
         // No use right now

@@ -7,6 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
 @Slf4j
 public class MainFacade {
 

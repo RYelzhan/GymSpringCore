@@ -6,8 +6,8 @@ import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.facade.user.UserSession;
 import com.epam.wca.gym.util.AppConstants;
-import com.epam.wca.gym.util.DateParser;
-import com.epam.wca.gym.util.InputHandler;
+import com.epam.wca.gym.util.deprecated.DateParser;
+import com.epam.wca.gym.util.deprecated.InputHandler;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,12 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Scanner;
+
+/**
+ * @deprecated This class is deprecated. It was used in console version of application.
+ */
+
+@Deprecated(since = "2.0")
 
 @Slf4j
 @Component
