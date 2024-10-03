@@ -3,16 +3,22 @@ package com.epam.wca.gym.service.impl;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
+import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
 import com.epam.wca.gym.service.TrainerService;
+import com.epam.wca.gym.service.TrainingService;
 import com.epam.wca.gym.service.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
+import com.epam.wca.gym.util.TrainingFactory;
 import com.epam.wca.gym.util.UserFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +33,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
+    private final TraineeRepository traineeRepository;
     private final TrainingTypeService trainingTypeService;
+    private final TrainingService trainingService;
 
     @Override
     @Transactional
@@ -100,5 +108,19 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Trainer findByUsername(String username) {
         return trainerRepository.findTrainerByUserName(username);
+    }
+
+    @Override
+    public void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO) {
+        Trainee trainee = traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername());
+
+        if (trainee == null) {
+            throw new ControllerValidationException("No Trainee Found with Username: " + trainingDTO.traineeUsername());
+        }
+
+        trainingService.save(TrainingFactory.createTraining(
+                trainingDTO,
+                trainee, trainer
+        ));
     }
 }

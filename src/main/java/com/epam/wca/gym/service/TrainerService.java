@@ -3,6 +3,7 @@ package com.epam.wca.gym.service;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
+import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
@@ -28,4 +29,6 @@ public interface TrainerService {
     void deleteById(Long id);
 
     Trainer findByUsername(String username);
+
+    void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO);
 }

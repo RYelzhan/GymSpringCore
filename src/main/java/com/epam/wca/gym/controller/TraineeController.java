@@ -3,6 +3,7 @@ package com.epam.wca.gym.controller;
 import com.epam.wca.gym.aop.CheckTrainee;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
+import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,5 +93,19 @@ public class TraineeController {
         var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
         return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingDTO);
+    }
+
+    @PostMapping("/trainings")
+    @CheckTrainee
+    @ResponseStatus(HttpStatus.CREATED)
+    public String createTraineeTraining(
+            @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
+            HttpServletRequest request
+    ) {
+        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+
+        traineeService.createTraining(authenticatedTrainee, trainingDTO);
+
+        return "Training Created Successfully";
     }
 }

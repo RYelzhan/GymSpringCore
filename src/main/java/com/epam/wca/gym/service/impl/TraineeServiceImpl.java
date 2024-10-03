@@ -3,6 +3,7 @@ package com.epam.wca.gym.service.impl;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
+import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
@@ -10,12 +11,15 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
+import com.epam.wca.gym.service.TrainingService;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
+import com.epam.wca.gym.util.TrainingFactory;
 import com.epam.wca.gym.util.UserFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
+    private final TrainingService trainingService;
 
     @Override
     @Transactional
@@ -116,5 +121,19 @@ public class TraineeServiceImpl implements TraineeService {
         }
 
         throw new IllegalArgumentException("No Trainee Found with Id: " + id);
+    }
+
+    @Override
+    public void createTraining(Trainee trainee, TraineeTrainingCreateDTO trainingDTO) {
+        Trainer trainer = trainerService.findByUsername(trainingDTO.trainerUsername());
+
+        if (trainer == null) {
+            throw new ControllerValidationException("No Trainer Found with Username: " + trainingDTO.trainerUsername());
+        }
+
+        trainingService.save(TrainingFactory.createTraining(
+                trainingDTO,
+                trainee, trainer
+        ));
     }
 }

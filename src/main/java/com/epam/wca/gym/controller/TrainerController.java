@@ -2,6 +2,7 @@ package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.aop.CheckTrainer;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
+import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,5 +68,19 @@ public class TrainerController {
         var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
         return trainerService.findTrainingsFiltered(authenticatedTrainer.getId(), trainerTrainingDTO);
+    }
+
+    @PostMapping("/trainings")
+    @CheckTrainer
+    @ResponseStatus(HttpStatus.CREATED)
+    public String createTraineeTraining(
+            @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
+            HttpServletRequest request
+    ) {
+        var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
+
+        trainerService.createTraining(authenticatedTrainer, trainingDTO);
+
+        return "Training Created Successfully";
     }
 }

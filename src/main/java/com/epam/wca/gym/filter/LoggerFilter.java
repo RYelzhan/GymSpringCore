@@ -26,13 +26,9 @@ public class LoggerFilter extends HttpFilter {
         String requestURI = httpRequest.getRequestURI();
         String method = httpRequest.getMethod();
 
-        System.out.println("Request Method: {}" + method);
-        System.out.println("Request URI: {}" + requestURI);
-
         var wrappedResponse =
                 new ContentCachingResponseWrapper((HttpServletResponse) servletResponse);
 
-        System.out.println("Continue Filtering");
         chain.doFilter(servletRequest, wrappedResponse);
 
         int status = wrappedResponse.getStatus();

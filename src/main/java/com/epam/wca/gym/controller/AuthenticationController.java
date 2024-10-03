@@ -5,15 +5,12 @@ import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
-import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.exception.BadControllerRequestException;
-import com.epam.wca.gym.repository.deprecated.impl.UsernameDAO;
+import com.epam.wca.gym.repository.UsernameRepository;
+import com.epam.wca.gym.service.AuthService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
-import com.epam.wca.gym.service.deprecated.UserServiceOld;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,22 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthenticationController {
-    // TODO: make fields final. (everywhere)
-    @NonNull
-    private UserServiceOld userServiceOld;
+    private final AuthService authService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
-    @NonNull
-    private UsernameDAO usernameDAO;
+    private final UsernameRepository usernameRepository;
 
     @PostMapping("/login")
     @Logging
     public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
-        User user = userServiceOld.findByUniqueName(loginDTO.username());
-
-        if (user == null || !user.getPassword().equals(loginDTO.password())) {
-             throw new BadControllerRequestException("Invalid Username or Password");
-        }
+        authService.authenticate(loginDTO);
 
         return "Login Successful";
     }
@@ -63,6 +53,6 @@ public class AuthenticationController {
 
     @GetMapping("/register/username/availability/{baseUsername}")
     public Username findUsernameAvailable(@PathVariable("baseUsername") String baseUsername) {
-        return usernameDAO.findByUniqueName(baseUsername);
+        return usernameRepository.findUsernameByBaseUserName(baseUsername);
     }
 }

@@ -1,7 +1,7 @@
 package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.service.AuthSService;
+import com.epam.wca.gym.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -9,21 +9,17 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthenticationFilter extends HttpFilter {
     private static final String AUTHENTICATION_URI = "/gym/authenticate";
-    @NonNull
-    private AuthSService authSService;
+    private final AuthService authService;
 
     @Override
     public void doFilter(ServletRequest servletRequest,
@@ -45,7 +41,7 @@ public class AuthenticationFilter extends HttpFilter {
         String authHeader = httpRequest.getHeader("Authorization");
 
         try {
-            User user = authSService.authenticate(authHeader);
+            User user = authService.authenticate(authHeader);
 
             // Store user in the request attributes
             httpRequest.setAttribute("authenticatedUser", user);

@@ -3,26 +3,22 @@ package com.epam.wca.gym.service.impl;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.repository.deprecated.impl.UsernameDAO;
+import com.epam.wca.gym.repository.UsernameRepository;
 import com.epam.wca.gym.service.ProfileService;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-    private final UsernameDAO usernameDAO;
+    private final UsernameRepository usernameRepository;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int PASSWORD_LENGTH = 10;
-
-    @Autowired
-    public ProfileServiceImpl(UsernameDAO usernameDAO) {
-        this.usernameDAO = usernameDAO;
-    }
 
     @PostConstruct
     public void injectIntoEntities() {
@@ -35,11 +31,12 @@ public class ProfileServiceImpl implements ProfileService {
         String baseUsername = firstName + "." + lastName;
         Username username;
         try {
-            username = usernameDAO.findByUniqueName(baseUsername);
+            username = usernameRepository.findUsernameByBaseUserName(baseUsername);
 
             username.setCounter(username.getCounter() + 1);
 
-            usernameDAO.update(username);
+            // because username gets detached
+            usernameRepository.save(username);
 
             return username.getBaseUserName() + username.getCounter();
         } catch (Exception e) {
@@ -47,7 +44,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             username = new Username(baseUsername, 1L);
 
-            usernameDAO.save(username);
+            usernameRepository.save(username);
 
             return baseUsername;
         }

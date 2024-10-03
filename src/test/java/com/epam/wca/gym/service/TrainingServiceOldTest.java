@@ -1,6 +1,6 @@
 package com.epam.wca.gym.service;
 
-import com.epam.wca.gym.dto.TrainingDTO;
+import com.epam.wca.gym.dto.training.TrainingDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;

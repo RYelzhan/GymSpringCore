@@ -3,6 +3,7 @@ package com.epam.wca.gym.service;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
+import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
@@ -26,4 +27,6 @@ public interface TraineeService {
     List<TrainerBasicDTO> addTrainers(Trainee trainee, TraineeTrainersUpdateDTO dto);
 
     Trainee findById(Long id);
+
+    void createTraining(Trainee trainee, TraineeTrainingCreateDTO trainingDTO);
 }
