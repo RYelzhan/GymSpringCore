@@ -5,10 +5,10 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.repository.impl.TraineeDAO;
-import com.epam.wca.gym.repository.impl.TrainerDAO;
-import com.epam.wca.gym.repository.impl.TrainingDAO;
-import com.epam.wca.gym.service.impl.TrainingService;
+import com.epam.wca.gym.repository.deprecated.impl.TraineeDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TrainerDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TrainingDAO;
+import com.epam.wca.gym.service.deprecated.TrainingServiceOld;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TrainingServiceTest {
+class TrainingServiceOldTest {
     @Mock
     private TrainingDAO trainingDAO;
 
@@ -39,7 +39,7 @@ class TrainingServiceTest {
     private TrainerDAO trainerDAO;
 
     @InjectMocks
-    private TrainingService trainingService;
+    private TrainingServiceOld trainingServiceOld;
 
     private Training training;
 
@@ -74,7 +74,7 @@ class TrainingServiceTest {
         when(trainerDAO.findById(trainerId)).thenReturn(mockTrainer);
 
         // Act
-        Training savedTraining = trainingService.save(dto);
+        Training savedTraining = trainingServiceOld.save(dto);
 
         // Then
         Mockito.verify(traineeDAO, times(1)).findById(traineeId);
@@ -101,7 +101,7 @@ class TrainingServiceTest {
         // When
         doNothing().when(trainingDAO).save(any());
 
-        Training savedTraining = trainingService.save(mockTraining);
+        Training savedTraining = trainingServiceOld.save(mockTraining);
 
         // Then
         assertEquals(savedTraining, mockTraining);
@@ -112,22 +112,22 @@ class TrainingServiceTest {
     void testUnsupportedOperations() {
         // Test update operation
         UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
-                () -> trainingService.update(training));
+                () -> trainingServiceOld.update(training));
         assertEquals(UnsupportedOperationException.class, exception.getClass());
 
         // Test deleteById operation
         exception = assertThrows(UnsupportedOperationException.class,
-                () -> trainingService.deleteById(1L));
+                () -> trainingServiceOld.deleteById(1L));
         assertEquals(UnsupportedOperationException.class, exception.getClass());
 
         // Test findByUniqueName operation
         exception = assertThrows(UnsupportedOperationException.class,
-                () -> trainingService.findByUniqueName("Strength Training"));
+                () -> trainingServiceOld.findByUniqueName("Strength Training"));
         assertEquals(UnsupportedOperationException.class, exception.getClass());
 
         // Test findAll operation
         exception = assertThrows(UnsupportedOperationException.class,
-                () -> trainingService.findAll());
+                () -> trainingServiceOld.findAll());
 
         assertEquals(UnsupportedOperationException.class,
                 exception.getClass());

@@ -1,25 +1,25 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.dto.TrainingDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
-import com.epam.wca.gym.repository.impl.TraineeDAO;
-import com.epam.wca.gym.repository.impl.TrainerDAO;
-import com.epam.wca.gym.repository.impl.TrainingDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TraineeDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TrainerDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TrainingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class TrainingService extends GenericDAOServiceImpl<Training, TrainingDTO, Long> {
+public class TrainingServiceOld extends GenericDAOServiceImpl<Training, TrainingDTO, Long> {
     private final TrainingDAO trainingDAO;
     private final TraineeDAO traineeDAO;
     private final TrainerDAO trainerDAO;
 
     @Autowired
-    public TrainingService(TrainingDAO trainingDAO, TraineeDAO traineeDAO, TrainerDAO trainerDAO) {
+    public TrainingServiceOld(TrainingDAO trainingDAO, TraineeDAO traineeDAO, TrainerDAO trainerDAO) {
         super(trainingDAO);
         this.trainingDAO = trainingDAO;
         this.traineeDAO = traineeDAO;

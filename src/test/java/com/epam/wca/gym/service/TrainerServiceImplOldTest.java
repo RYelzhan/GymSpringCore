@@ -5,8 +5,8 @@ import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.repository.impl.TrainerDAO;
-import com.epam.wca.gym.service.impl.TrainerService;
+import com.epam.wca.gym.repository.deprecated.impl.TrainerDAO;
+import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
 import com.epam.wca.gym.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TrainerServiceTest {
+class TrainerServiceImplOldTest {
     @Mock
     private TrainerDAO trainerDAO;
 
@@ -39,7 +39,7 @@ class TrainerServiceTest {
     private TrainerSavingDTO trainerDTO;
 
     @InjectMocks
-    private TrainerService trainerService;
+    private TrainerServiceOld trainerServiceOld;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +59,7 @@ class TrainerServiceTest {
         doNothing().when(trainerDAO).save(trainer);
 
         // Act
-        Trainer savedTrainer = trainerService.save(trainerDTO);
+        Trainer savedTrainer = trainerServiceOld.save(trainerDTO);
 
         // Then
         Mockito.verify(trainerDAO, times(1)).save(trainer);
@@ -76,7 +76,7 @@ class TrainerServiceTest {
         when(trainerDAO.findAllTrainingsById(trainerId)).thenReturn(mockTrainings);
 
         // Act
-        Set<Training> foundTrainings = trainerService.findAllTrainingsById(trainerId);
+        Set<Training> foundTrainings = trainerServiceOld.findAllTrainingsById(trainerId);
 
         // Then
         verify(trainerDAO, times(1)).findAllTrainingsById(trainerId);
@@ -98,7 +98,7 @@ class TrainerServiceTest {
                 .thenReturn(mockTrainings);
 
         // Act
-        List<Training> foundTrainings = trainerService.findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
+        List<Training> foundTrainings = trainerServiceOld.findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
 
         // Then
         verify(trainerDAO, times(1)).findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
@@ -128,7 +128,7 @@ class TrainerServiceTest {
         doNothing().when(trainerDAO).update(any(Trainer.class));
 
         // Call the method under test
-        Trainer updatedTrainer = trainerService.update(trainer, trainerUpdateDTO, newTrainingType);
+        Trainer updatedTrainer = trainerServiceOld.update(trainer, trainerUpdateDTO, newTrainingType);
 
         // Verify that the trainer was updated correctly
         assertEquals("NewFirstName", updatedTrainer.getFirstName());

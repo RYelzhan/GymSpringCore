@@ -1,7 +1,7 @@
 package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
+import com.epam.wca.gym.service.deprecated.TrainingTypeServiceOld;
 import com.epam.wca.gym.util.DTOFactory;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrainingController {
     @NonNull
-    private TrainingTypeService trainingTypeService;
+    private TrainingTypeServiceOld trainingTypeServiceOld;
 
     @GetMapping("/types")
     public List<TrainingTypeBasicDTO> getTrainingTypes() {
-        return trainingTypeService.findAll()
+        return trainingTypeServiceOld.findAll()
                 .stream()
                 .map(DTOFactory::createBasicTrainingTypeDTO)
                 .collect(Collectors.toList());

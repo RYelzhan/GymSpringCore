@@ -9,10 +9,10 @@ import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.InternalErrorException;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingService;
-import com.epam.wca.gym.service.impl.UserService;
+import com.epam.wca.gym.service.deprecated.TraineeServiceOld;
+import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
+import com.epam.wca.gym.service.deprecated.TrainingServiceOld;
+import com.epam.wca.gym.service.deprecated.UserServiceOld;
 import com.epam.wca.gym.util.TrainingFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -34,13 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     @NonNull
-    private UserService userService;
+    private UserServiceOld userServiceOld;
     @NonNull
-    private TrainerService trainerService;
+    private TrainerServiceOld trainerServiceOld;
     @NonNull
-    private TraineeService traineeService;
+    private TraineeServiceOld traineeServiceOld;
     @NonNull
-    private TrainingService trainingService;
+    private TrainingServiceOld trainingServiceOld;
 
     @GetMapping("/info")
     public String getUserInfo(HttpServletRequest request) {
@@ -62,7 +62,7 @@ public class UserController {
         }
 
         authenticatedUser.setPassword(userUpdateDTO.newPassword());
-        userService.update(authenticatedUser);
+        userServiceOld.update(authenticatedUser);
 
         return "Password Changed Successfully";
     }
@@ -76,20 +76,20 @@ public class UserController {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
         if (authenticatedUser instanceof Trainee trainee) {
-            Trainer trainer = trainerService.findByUniqueName(trainingGettingDTO.trainerUsername());
+            Trainer trainer = trainerServiceOld.findByUniqueName(trainingGettingDTO.trainerUsername());
 
             if (trainer != null) {
-                trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
+                trainingServiceOld.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
                 return "Training Created Successfully";
             }
 
             throw new ControllerValidationException("No Trainer Found With Username"
                     + trainingGettingDTO.trainerUsername());
         } else if (authenticatedUser instanceof Trainer trainer) {
-            Trainee trainee = traineeService.findByUniqueName(trainingGettingDTO.traineeUsername());
+            Trainee trainee = traineeServiceOld.findByUniqueName(trainingGettingDTO.traineeUsername());
 
             if (trainee != null) {
-                trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
+                trainingServiceOld.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
                 return "Training Created Successfully";
             }
 
@@ -108,7 +108,7 @@ public class UserController {
         var authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
         authenticatedUser.setActive(userActivationDTO.isActive());
-        userService.update(authenticatedUser);
+        userServiceOld.update(authenticatedUser);
 
         return "Is Active Updated Successfully";
     }

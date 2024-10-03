@@ -1,8 +1,7 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.aop.Logging;
-import com.epam.wca.gym.repository.GenericDAO;
-import com.epam.wca.gym.service.GenericDAOService;
+import com.epam.wca.gym.repository.deprecated.GenericDAO;
 
 import java.util.List;
 

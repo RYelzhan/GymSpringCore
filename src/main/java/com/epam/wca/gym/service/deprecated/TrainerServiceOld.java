@@ -1,11 +1,11 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.repository.impl.TrainerDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TrainerDAO;
 import com.epam.wca.gym.util.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class TrainerService extends GenericDAOServiceImpl<Trainer, TrainerSavingDTO, Long> {
+public class TrainerServiceOld extends GenericDAOServiceImpl<Trainer, TrainerSavingDTO, Long> {
     private final TrainerDAO trainerDAO;
 
     @Autowired
-    public TrainerService(TrainerDAO trainerDAO) {
+    public TrainerServiceOld(TrainerDAO trainerDAO) {
         super(trainerDAO);
         this.trainerDAO = trainerDAO;
     }

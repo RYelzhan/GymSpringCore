@@ -1,14 +1,14 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.repository.impl.TrainingTypeDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TrainingTypeDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TrainingTypeService extends GenericDAOServiceImpl<TrainingType, TrainingType, Long> {
+public class TrainingTypeServiceOld extends GenericDAOServiceImpl<TrainingType, TrainingType, Long> {
     @Autowired
-    public TrainingTypeService(TrainingTypeDAO trainingTypeDAO) {
+    public TrainingTypeServiceOld(TrainingTypeDAO trainingTypeDAO) {
         super(trainingTypeDAO);
     }
 

@@ -7,8 +7,8 @@ import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.ControllerValidationException;
-import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
+import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
+import com.epam.wca.gym.service.deprecated.TrainingTypeServiceOld;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrainerController {
     @NonNull
-    private TrainerService trainerService;
+    private TrainerServiceOld trainerServiceOld;
     @NonNull
-    private TrainingTypeService trainingTypeService;
+    private TrainingTypeServiceOld trainingTypeServiceOld;
 
     @GetMapping("/profile")
     @CheckTrainer
@@ -49,7 +49,7 @@ public class TrainerController {
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
     ) {
-        var trainingType = trainingTypeService.findByUniqueName(trainerUpdateDTO.trainingType());
+        var trainingType = trainingTypeServiceOld.findByUniqueName(trainerUpdateDTO.trainingType());
 
         if (trainingType == null) {
             throw new ControllerValidationException("Invalid Training Type choice");
@@ -57,7 +57,7 @@ public class TrainerController {
 
         var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        var updatedTrainer = trainerService.update(authenticatedTrainer, trainerUpdateDTO, trainingType);
+        var updatedTrainer = trainerServiceOld.update(authenticatedTrainer, trainerUpdateDTO, trainingType);
 
         return DTOFactory.createTrainerSendDTO(updatedTrainer);
     }
@@ -67,7 +67,7 @@ public class TrainerController {
     public String deleteTrainer(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        trainerService.deleteById(authenticatedTrainer.getId());
+        trainerServiceOld.deleteById(authenticatedTrainer.getId());
 
         return "Trainer Profile Deleted Successfully";
     }

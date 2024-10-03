@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 
@@ -18,6 +19,7 @@ public class AuthServiceImpl implements AuthSService {
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public User authenticate(String authHeader) {
 
         if (authHeader != null && authHeader.startsWith("Basic ")) {

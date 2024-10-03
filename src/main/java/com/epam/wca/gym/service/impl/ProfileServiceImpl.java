@@ -3,7 +3,7 @@ package com.epam.wca.gym.service.impl;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.repository.impl.UsernameDAO;
+import com.epam.wca.gym.repository.deprecated.impl.UsernameDAO;
 import com.epam.wca.gym.service.ProfileService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

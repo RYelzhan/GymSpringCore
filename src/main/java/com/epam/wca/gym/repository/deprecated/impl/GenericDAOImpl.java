@@ -1,6 +1,6 @@
-package com.epam.wca.gym.repository.impl;
+package com.epam.wca.gym.repository.deprecated.impl;
 
-import com.epam.wca.gym.repository.GenericDAO;
+import com.epam.wca.gym.repository.deprecated.GenericDAO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import lombok.extern.slf4j.Slf4j;

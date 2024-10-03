@@ -1,7 +1,7 @@
 package com.epam.wca.gym.service;
 
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.service.impl.UserService;
+import com.epam.wca.gym.service.deprecated.UserServiceOld;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,9 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceOldTest {
     @InjectMocks
-    private UserService userService;
+    private UserServiceOld userServiceOld;
 
     private User user;
 
@@ -25,18 +25,18 @@ class UserServiceTest {
     @Test
     void testUnsupportedSave() {
         // Verify that save() throws UnsupportedOperationException
-        assertThrows(UnsupportedOperationException.class, () -> userService.save(user));
+        assertThrows(UnsupportedOperationException.class, () -> userServiceOld.save(user));
     }
 
     @Test
     void testUnsupportedDeleteById() {
         // Verify that deleteById() throws UnsupportedOperationException
-        assertThrows(UnsupportedOperationException.class, () -> userService.deleteById(1L));
+        assertThrows(UnsupportedOperationException.class, () -> userServiceOld.deleteById(1L));
     }
 
     @Test
     void testUnsupportedFindById() {
         // Verify that findById() throws UnsupportedOperationException
-        assertThrows(UnsupportedOperationException.class, () -> userService.findById(1L));
+        assertThrows(UnsupportedOperationException.class, () -> userServiceOld.findById(1L));
     }
 }

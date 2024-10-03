@@ -1,4 +1,4 @@
-package com.epam.wca.gym.repository.impl;
+package com.epam.wca.gym.repository.deprecated.impl;
 
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Training;

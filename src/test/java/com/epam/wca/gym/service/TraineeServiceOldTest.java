@@ -7,9 +7,9 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.repository.impl.TraineeDAO;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
+import com.epam.wca.gym.repository.deprecated.impl.TraineeDAO;
+import com.epam.wca.gym.service.deprecated.TraineeServiceOld;
+import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,15 +34,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TraineeServiceTest {
+class TraineeServiceOldTest {
     @Mock
     private TraineeDAO traineeDAO;
     @Mock
-    private TrainerService trainerService;
+    private TrainerServiceOld trainerServiceOld;
     @Mock
     private ProfileService profileService;
     @InjectMocks
-    private TraineeService traineeService;
+    private TraineeServiceOld traineeServiceOld;
 
     private TraineeRegistrationDTO traineeRegistrationDTO;
 
@@ -64,7 +64,7 @@ class TraineeServiceTest {
         Trainee trainee = UserFactory.createTrainee(traineeRegistrationDTO);  // Mock trainee created from dto
 
         // Act
-        Trainee savedTrainee = traineeService.save(traineeRegistrationDTO);
+        Trainee savedTrainee = traineeServiceOld.save(traineeRegistrationDTO);
 
         // Then
         Mockito.verify(traineeDAO, times(1)).save(trainee);
@@ -81,7 +81,7 @@ class TraineeServiceTest {
         when(traineeDAO.findAllTrainingsById(traineeId)).thenReturn(mockTrainings);
 
         // Act
-        Set<Training> foundTrainings = traineeService.findAllTrainingsById(traineeId);
+        Set<Training> foundTrainings = traineeServiceOld.findAllTrainingsById(traineeId);
 
         // Then
         Mockito.verify(traineeDAO, times(1)).findAllTrainingsById(traineeId);
@@ -103,7 +103,7 @@ class TraineeServiceTest {
                 .thenReturn(mockTrainings);
 
         // Act
-        List<Training> foundTrainings = traineeService.findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
+        List<Training> foundTrainings = traineeServiceOld.findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
 
         // Then
         Mockito.verify(traineeDAO, times(1)).findTrainingByCriteria(username, fromDate, toDate, trainerName, trainingType);
@@ -121,7 +121,7 @@ class TraineeServiceTest {
         when(traineeDAO.findByUniqueName(username)).thenReturn(trainee);
 
         // Act
-        traineeService.deleteByUsername(username);
+        traineeServiceOld.deleteByUsername(username);
 
         // Then
         Mockito.verify(traineeDAO, times(1)).findByUniqueName(username);
@@ -141,7 +141,7 @@ class TraineeServiceTest {
 
         Trainee trainee = new Trainee();
 
-        Trainee updatedTrainee = traineeService.update(trainee, traineeUpdateDTO);
+        Trainee updatedTrainee = traineeServiceOld.update(trainee, traineeUpdateDTO);
 
         assertEquals(trainee, updatedTrainee);
         verify(traineeDAO, times(1)).update(trainee);
@@ -177,16 +177,16 @@ class TraineeServiceTest {
         when(trainee.getTrainersAssigned()).thenReturn(assignedTrainers);
 
         // Mock the return value of trainerService.findAll()
-        when(trainerService.findAll()).thenReturn(allTrainers);
+        when(trainerServiceOld.findAll()).thenReturn(allTrainers);
 
         // Invoke the method under test
-        List<TrainerBasicDTO> result = traineeService.getListOfNotAssignedTrainers(trainee);
+        List<TrainerBasicDTO> result = traineeServiceOld.getListOfNotAssignedTrainers(trainee);
 
         // Verify expected results
         assertEquals(1, result.size(), "Only one trainer should be returned");
         // Only trainer2 should be returned
 
         // Verify that trainerService.findAll() was called once
-        verify(trainerService, times(1)).findAll();
+        verify(trainerServiceOld, times(1)).findAll();
     }
 }

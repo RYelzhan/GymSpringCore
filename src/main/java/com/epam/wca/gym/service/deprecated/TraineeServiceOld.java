@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
@@ -7,7 +7,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.repository.impl.TraineeDAO;
+import com.epam.wca.gym.repository.deprecated.impl.TraineeDAO;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +19,16 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeRegistrationDTO, Long> {
+public class TraineeServiceOld extends GenericDAOServiceImpl<Trainee, TraineeRegistrationDTO, Long> {
     private final TraineeDAO traineeDAO;
-    private final TrainerService trainerService;
+    private final TrainerServiceOld trainerServiceOld;
 
     @Autowired
-    public TraineeService(TraineeDAO traineeDAO,
-                          TrainerService trainerService) {
+    public TraineeServiceOld(TraineeDAO traineeDAO,
+                             TrainerServiceOld trainerServiceOld) {
         super(traineeDAO);
         this.traineeDAO = traineeDAO;
-        this.trainerService = trainerService;
+        this.trainerServiceOld = trainerServiceOld;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class TraineeService extends GenericDAOServiceImpl<Trainee, TraineeRegist
 
     public List<TrainerBasicDTO> getListOfNotAssignedTrainers(Trainee trainee) {
         return getListOfNotAssignedTrainers(trainee.getTrainersAssigned(),
-                trainerService.findAll());
+                trainerServiceOld.findAll());
     }
 
     private List<TrainerBasicDTO> getListOfNotAssignedTrainers(Set<Trainer> assignedTrainers,

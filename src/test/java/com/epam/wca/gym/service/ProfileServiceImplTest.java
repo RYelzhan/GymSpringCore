@@ -1,7 +1,7 @@
 package com.epam.wca.gym.service;
 
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.repository.impl.UsernameDAO;
+import com.epam.wca.gym.repository.deprecated.impl.UsernameDAO;
 import com.epam.wca.gym.service.impl.ProfileServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -6,21 +6,19 @@ import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
-import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
-import com.epam.wca.gym.repository.impl.UsernameDAO;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
-import com.epam.wca.gym.service.impl.UserService;
+import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.repository.deprecated.impl.UsernameDAO;
+import com.epam.wca.gym.service.TraineeService;
+import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
+import com.epam.wca.gym.service.deprecated.TrainingTypeServiceOld;
+import com.epam.wca.gym.service.deprecated.UserServiceOld;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,20 +35,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     // TODO: make fields final. (everywhere)
     @NonNull
-    private UserService userService;
+    private UserServiceOld userServiceOld;
     @NonNull
     private TraineeService traineeService;
     @NonNull
-    private TrainerService trainerService;
+    private TrainerServiceOld trainerServiceOld;
     @NonNull
-    private TrainingTypeService trainingTypeService;
+    private TrainingTypeServiceOld trainingTypeServiceOld;
     @NonNull
     private UsernameDAO usernameDAO;
 
     @PostMapping("/login")
     @Logging
-    public String login(@RequestBody @Valid UserLoginDTO loginDTO) throws BadRequestException {
-        User user = userService.findByUniqueName(loginDTO.username());
+    public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
+        User user = userServiceOld.findByUniqueName(loginDTO.username());
 
         if (user == null || !user.getPassword().equals(loginDTO.password())) {
              throw new BadControllerRequestException("Invalid Username or Password");
@@ -64,9 +62,7 @@ public class AuthenticationController {
     public UserAuthenticatedDTO registerTrainee(
             @RequestBody @Valid TraineeRegistrationDTO traineeDTO
     ) {
-        Trainee trainee = traineeService.save(traineeDTO);
-
-        return new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
+        return traineeService.save(traineeDTO);
     }
 
     @PostMapping(value = "/register/trainer")
@@ -74,7 +70,7 @@ public class AuthenticationController {
     public UserAuthenticatedDTO registerTrainer(
             @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO
     ) {
-        var trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
+        var trainingType = trainingTypeServiceOld.findByUniqueName(trainerRegistrationDTO.trainingType());
 
         if (trainingType == null) {
             throw new ControllerValidationException("Invalid Training Type choice");
@@ -84,7 +80,7 @@ public class AuthenticationController {
                 trainerRegistrationDTO.lastName(),
                 trainingType);
 
-        Trainer trainer = trainerService.save(trainerSavingDTO);
+        Trainer trainer = trainerServiceOld.save(trainerSavingDTO);
 
         return new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
     }

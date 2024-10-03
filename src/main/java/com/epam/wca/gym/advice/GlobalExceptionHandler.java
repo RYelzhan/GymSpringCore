@@ -60,9 +60,10 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+/*
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleServerError() {
         return new ResponseEntity<>(SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+ */
 }

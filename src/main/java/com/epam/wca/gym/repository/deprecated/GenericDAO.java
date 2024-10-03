@@ -1,4 +1,4 @@
-package com.epam.wca.gym.repository;
+package com.epam.wca.gym.repository.deprecated;
 
 import java.util.List;
 
