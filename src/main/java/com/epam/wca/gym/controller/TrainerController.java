@@ -6,34 +6,28 @@ import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.ControllerValidationException;
-import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
-import com.epam.wca.gym.service.deprecated.TrainingTypeServiceOld;
+import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.util.DTOFactory;
-import com.epam.wca.gym.util.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "user/trainer")
 @RequiredArgsConstructor
 public class TrainerController {
-    @NonNull
-    private TrainerServiceOld trainerServiceOld;
-    @NonNull
-    private TrainingTypeServiceOld trainingTypeServiceOld;
+    private final TrainerService trainerService;
 
     @GetMapping("/profile")
     @CheckTrainer
@@ -49,41 +43,28 @@ public class TrainerController {
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
     ) {
-        var trainingType = trainingTypeServiceOld.findByUniqueName(trainerUpdateDTO.trainingType());
-
-        if (trainingType == null) {
-            throw new ControllerValidationException("Invalid Training Type choice");
-        }
-
         var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        var updatedTrainer = trainerServiceOld.update(authenticatedTrainer, trainerUpdateDTO, trainingType);
-
-        return DTOFactory.createTrainerSendDTO(updatedTrainer);
+        return trainerService.update(authenticatedTrainer, trainerUpdateDTO);
     }
 
-    @DeleteMapping(value = "/profile/{username}")
+    @DeleteMapping(value = "/profile")
     @CheckTrainer
-    public String deleteTrainer(HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTrainer(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        trainerServiceOld.deleteById(authenticatedTrainer.getId());
-
-        return "Trainer Profile Deleted Successfully";
+        trainerService.deleteById(authenticatedTrainer.getId());
     }
 
     @GetMapping("/trainings/filter")
     @CheckTrainer
-    public List<TrainingBasicDTO> getTraineeTrainingsList(
+    public List<TrainingBasicDTO> getTrainerTrainingsList(
             @RequestBody @Valid TrainerTrainingDTO trainerTrainingDTO,
             HttpServletRequest request
     ) {
         var authenticatedTrainer = (Trainer) request.getAttribute("authenticatedUser");
 
-        return Filter.filterTrainerTrainings(authenticatedTrainer.getTrainings(),
-                        trainerTrainingDTO)
-                .stream()
-                .map(DTOFactory::createTrainerBasicTrainingDTO)
-                .collect(Collectors.toList());
+        return trainerService.findTrainingsFiltered(authenticatedTrainer.getId(), trainerTrainingDTO);
     }
 }

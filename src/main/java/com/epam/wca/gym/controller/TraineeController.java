@@ -12,7 +12,6 @@ import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,8 +30,7 @@ import java.util.List;
 @RequestMapping(value = "/user/trainee")
 @RequiredArgsConstructor
 public class TraineeController {
-    @NonNull
-    private TraineeService traineeService;
+    private final TraineeService traineeService;
 
     @GetMapping("/profile")
     @CheckTrainee
@@ -90,7 +88,7 @@ public class TraineeController {
             @RequestBody @Valid TraineeTrainingDTO traineeTrainingDTO,
             HttpServletRequest request
             ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
 
         return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingDTO);
     }

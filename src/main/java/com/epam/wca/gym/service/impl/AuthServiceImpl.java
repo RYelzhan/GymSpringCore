@@ -3,7 +3,6 @@ package com.epam.wca.gym.service.impl;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.AuthSService;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,8 +14,7 @@ import java.util.Base64;
 @Component
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthSService {
-    @NonNull
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional

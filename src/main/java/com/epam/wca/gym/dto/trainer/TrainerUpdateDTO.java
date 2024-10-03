@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record TrainerUpdateDTO(
-        @NotBlank(message = "Username is required")
-        @Size(min = 2, max = 50, message = "Username must be between 2 and 50 characters")
-        String username,
         @NotBlank(message = "First name is required")
         @Size(min = 2, max = 25, message = "First name must be between 2 and 25 characters")
         String firstName,

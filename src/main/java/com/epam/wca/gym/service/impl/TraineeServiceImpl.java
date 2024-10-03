@@ -35,7 +35,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public UserAuthenticatedDTO save(TraineeRegistrationDTO dto) {
-        Trainee trainee = UserFactory.createTrainee(dto);
+        var trainee = UserFactory.createTrainee(dto);
 
         traineeRepository.save(trainee);
 
@@ -45,7 +45,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingDTO traineeTrainingDTO) {
-        Trainee trainee = findById(id);
+        var trainee = findById(id);
 
         return Filter.filterTraineeTrainings(trainee.getTrainings(), traineeTrainingDTO)
                 .stream()
@@ -61,6 +61,9 @@ public class TraineeServiceImpl implements TraineeService {
         trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
         trainee.setAddress(traineeUpdateDTO.address());
         trainee.setActive(traineeUpdateDTO.isActive());
+
+        // оказываеться finByUserName detaches object
+        traineeRepository.save(trainee);
 
         return DTOFactory.createTraineeSendDTO(trainee);
     }
