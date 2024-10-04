@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
@@ -8,8 +8,7 @@ import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.repository.deprecated.impl.TraineeDAO;
-import com.epam.wca.gym.service.deprecated.TraineeServiceOld;
-import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
+import com.epam.wca.gym.service.ProfileService;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,7 +130,6 @@ class TraineeServiceOldTest {
     @Test
     public void testUpdate() {
         TraineeUpdateDTO traineeUpdateDTO = new TraineeUpdateDTO(
-                "John.Doe",
                 "John",
                 "Doe",
                 ZonedDateTime.now().minusYears(35),

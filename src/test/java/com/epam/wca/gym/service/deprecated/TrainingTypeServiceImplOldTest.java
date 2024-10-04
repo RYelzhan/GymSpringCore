@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.service.deprecated.TrainingTypeServiceOld;

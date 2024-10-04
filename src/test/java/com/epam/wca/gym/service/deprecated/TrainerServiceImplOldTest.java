@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
@@ -6,7 +6,7 @@ import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.repository.deprecated.impl.TrainerDAO;
-import com.epam.wca.gym.service.deprecated.TrainerServiceOld;
+import com.epam.wca.gym.service.ProfileService;
 import com.epam.wca.gym.util.UserFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,6 @@ class TrainerServiceImplOldTest {
         trainer.setActive(false);
 
         TrainerUpdateDTO trainerUpdateDTO = new TrainerUpdateDTO(
-                null,
                 "NewFirstName",
                 "NewLastName",
                 null,

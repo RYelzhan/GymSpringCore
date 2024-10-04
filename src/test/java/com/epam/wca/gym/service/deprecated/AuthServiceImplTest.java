@@ -1,7 +1,6 @@
-package com.epam.wca.gym.service;
+package com.epam.wca.gym.service.deprecated;
 
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceImplTest {
     @Mock
-    private UserRepository userRepository;
+    private UserServiceOld userServiceOld;
+
     @InjectMocks
     private AuthServiceImpl authService;
 
@@ -48,7 +48,7 @@ public class AuthServiceImplTest {
     @ParameterizedTest
     @CsvSource({"Basic VGVzdDp0ZXN0"})
     public void testUserNotFound(String header) {
-        when(userRepository.findUserByUserName(anyString())).thenReturn(null);
+        when(userServiceOld.findByUniqueName(anyString())).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
     }
@@ -64,7 +64,7 @@ public class AuthServiceImplTest {
                 true
         );
 
-        when(userRepository.findUserByUserName(anyString())).thenReturn(user);
+        when(userServiceOld.findByUniqueName(anyString())).thenReturn(user);
 
         assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
     }
@@ -80,11 +80,11 @@ public class AuthServiceImplTest {
                 true
         );
 
-        when(userRepository.findUserByUserName(anyString())).thenReturn(user);
+        when(userServiceOld.findByUniqueName(anyString())).thenReturn(user);
 
         User authenticatedUser = authService.authenticate(header);
 
-        Mockito.verify(userRepository, times(1)).findUserByUserName(anyString());
+        Mockito.verify(userServiceOld, times(1)).findByUniqueName(anyString());
         assertEquals(authenticatedUser, user);
     }
 }
