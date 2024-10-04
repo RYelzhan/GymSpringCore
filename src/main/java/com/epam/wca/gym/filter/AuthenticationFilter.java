@@ -1,6 +1,7 @@
 package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.metrics.RequestCounterMetrics;
 import com.epam.wca.gym.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,11 +21,13 @@ import java.util.Optional;
 public class AuthenticationFilter extends HttpFilter {
     private static final String AUTHENTICATION_URI = "/gym/authenticate";
     private final AuthService authService;
+    private final RequestCounterMetrics requestCounterMetrics;
 
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
+        requestCounterMetrics.increaseCounter();
 
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 

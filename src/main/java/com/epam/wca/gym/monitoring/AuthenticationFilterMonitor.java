@@ -1,4 +1,4 @@
-package com.epam.wca.gym.monitor;
+package com.epam.wca.gym.monitoring;
 
 import com.epam.wca.gym.filter.AuthenticationFilter;
 import lombok.RequiredArgsConstructor;

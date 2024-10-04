@@ -30,8 +30,11 @@
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
         <jacoco.version>0.8.7</jacoco.version>
 
-        <!-- OpenApi -->
+        <!-- OpenApi version -->
         <springdoc.openapi.starter.webmvc.ui.version>2.6.0</springdoc.openapi.starter.webmvc.ui.version>
+
+        <!-- Metrics version -->
+        <micrometer.registry.prometheus.version>1.13.5</micrometer.registry.prometheus.version>
     </properties>
 
     <!-- All Spring Boot Starter versions -->
@@ -124,6 +127,12 @@
             <artifactId>spring-boot-devtools</artifactId>
         </dependency>
 
+        <!-- Metrics -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${micrometer.registry.prometheus.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
