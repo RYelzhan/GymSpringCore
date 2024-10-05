@@ -4,12 +4,14 @@ import com.epam.wca.gym.filter.AuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Profile("secure")
 public class AuthenticationFilterMonitor implements HealthIndicator {
     private final static String AUTH_FILTER = "Authentication Filter";
     private final AuthenticationFilter authenticationFilter;
