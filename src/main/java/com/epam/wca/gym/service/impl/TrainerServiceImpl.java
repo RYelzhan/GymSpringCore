@@ -111,12 +111,16 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Transactional
     public void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO) {
         Trainee trainee = traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername());
 
         if (trainee == null) {
             throw new ControllerValidationException("No Trainee Found with Username: " + trainingDTO.traineeUsername());
         }
+
+        // trainer might create training without assigning himself to trainee, so, we do it manually
+        trainee.getTrainersAssigned().add(trainer);
 
         trainingService.save(TrainingFactory.createTraining(
                 trainingDTO,

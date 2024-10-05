@@ -124,6 +124,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Transactional
     public void createTraining(Trainee trainee, TraineeTrainingCreateDTO trainingDTO) {
         Trainer trainer = trainerService.findByUsername(trainingDTO.trainerUsername());
 

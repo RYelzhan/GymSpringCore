@@ -21,7 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Profile("secure")
 public class AuthenticationFilter extends HttpFilter {
-    private static final String AUTHENTICATION_URI = "/gym/authenticate";
+    private static final String AUTHENTICATION_URI = "/authenticate";
     private final AuthService authService;
     private final RequestCounterMetrics requestCounterMetrics;
 

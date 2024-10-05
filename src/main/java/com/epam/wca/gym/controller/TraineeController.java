@@ -11,6 +11,10 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
+import com.epam.wca.gym.util.ResponseMessages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +32,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+
+@SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping(value = "/user/trainee")
 @RequiredArgsConstructor
 public class TraineeController {
     private final TraineeService traineeService;
 
-    @GetMapping("/profile")
+    @Operation(
+            summary = "Get Trainee Profile",
+            description = "Retrieves the profile of a trainee by authentication details."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successful retrieval of the trainee's profile."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @GetMapping("/profiles")
     @CheckTrainee
     @Transactional
     public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
@@ -43,9 +61,23 @@ public class TraineeController {
         return DTOFactory.createTraineeSendDTO(trainee);
     }
 
-    // TODO: remove username field from all DTO-s
-    // TODO: remove username checks in every controller
-    @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Update Trainee Profile",
+            description = "Updates the profile of a trainee."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully updated the trainee profile."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @PutMapping(value = "/profiles", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
     public TraineeSendDTO updateTraineeProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
@@ -56,7 +88,19 @@ public class TraineeController {
         return traineeService.update(authenticatedTrainee, traineeDTO);
     }
 
-    @DeleteMapping(value = "/profile")
+    @Operation(
+            summary = "Delete Trainee Profile",
+            description = "Deletes the trainee profile of the authenticated trainee."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully deleted the trainee profile."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @DeleteMapping(value = "/profiles")
     @CheckTrainee
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTrainee(HttpServletRequest request) {
@@ -65,6 +109,18 @@ public class TraineeController {
         traineeService.deleteById(authenticatedTrainee.getId());
     }
 
+    @Operation(
+            summary = "Get Available Trainers for a Trainee",
+            description = "Retrieves a list of trainers that are not assigned to the specified trainee."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved the list of available trainers."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @GetMapping("/trainers/available")
     @CheckTrainee
     public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
@@ -73,6 +129,22 @@ public class TraineeController {
         return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
     }
 
+    @Operation(
+            summary = "Update Trainer List for a Trainee",
+            description = "Adds specified trainers to the trainee's profile."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully updated the trainer list."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @PutMapping(value = "/trainers/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
     public List<TrainerBasicDTO> updateTrainerList(
@@ -84,6 +156,19 @@ public class TraineeController {
         return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
     }
 
+    //TODO: transfer all input to RequestParam
+    @Operation(
+            summary = "Retrieve a list of trainings with filter",
+            description = "Retrieve a list of trainings for a specific trainee based on filter criteria."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @GetMapping("/trainings/filter")
     @CheckTrainee
     public List<TrainingBasicDTO> getTraineeTrainingsList(
@@ -95,6 +180,22 @@ public class TraineeController {
         return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingDTO);
     }
 
+    @Operation(
+            summary = "Creates training for trainee",
+            description = "Creates training with trainee specific input data."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully created new training."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @PostMapping("/trainings")
     @CheckTrainee
     @ResponseStatus(HttpStatus.CREATED)

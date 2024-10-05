@@ -5,17 +5,17 @@ import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
-import com.epam.wca.gym.entity.Username;
 import com.epam.wca.gym.repository.UsernameRepository;
 import com.epam.wca.gym.service.AuthService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
+import com.epam.wca.gym.util.ResponseMessages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +31,18 @@ public class AuthenticationController {
     private final TrainerService trainerService;
     private final UsernameRepository usernameRepository;
 
+    @Operation(
+            summary = "User Login",
+            description = "Authenticates a user based on the username and password."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Login successful"
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
     @PostMapping("/login")
     @Logging
     public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
@@ -39,20 +51,39 @@ public class AuthenticationController {
         return "Login Successful";
     }
 
+    @Operation(
+            summary = "Register a new trainee",
+            description = "Registers a new trainee and returns their username and password."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Registration successful"
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
     @PostMapping(value = "/register/trainee")
     @ResponseStatus(HttpStatus.CREATED)
     public UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO) {
         return traineeService.save(traineeDTO);
     }
 
+    @Operation(
+            summary = "Register a new trainer",
+            description = "Registers a new trainer and returns their username and password."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Registration successful"
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
     @PostMapping(value = "/register/trainer")
     @ResponseStatus(HttpStatus.CREATED)
     public UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO) {
         return trainerService.save(trainerDTO);
-    }
-
-    @GetMapping("/register/username/availability/{baseUsername}")
-    public Username findUsernameAvailable(@PathVariable("baseUsername") String baseUsername) {
-        return usernameRepository.findUsernameByBaseUserName(baseUsername);
     }
 }
