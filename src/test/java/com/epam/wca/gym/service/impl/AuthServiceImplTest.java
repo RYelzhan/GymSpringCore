@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service;
+package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.repository.UserRepository;

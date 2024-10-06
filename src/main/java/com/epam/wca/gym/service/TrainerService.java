@@ -20,8 +20,6 @@ public interface TrainerService {
 
     TrainerSendDTO update(Trainer trainer, TrainerUpdateDTO trainerUpdateDTO);
 
-    List<Trainer> findAll();
-
     List<TrainerBasicDTO> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers);
 
     Trainer findById(Long id);

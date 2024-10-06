@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TrainingServiceOldTest {
+class TrainingServiceImplTestOldTest {
     @Mock
     private TrainingDAO trainingDAO;
 

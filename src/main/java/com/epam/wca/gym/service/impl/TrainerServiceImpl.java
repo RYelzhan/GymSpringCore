@@ -77,11 +77,6 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public List<Trainer> findAll() {
-        return trainerRepository.findAll();
-    }
-
-    @Override
     public List<TrainerBasicDTO> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers) {
         return trainerRepository.findActiveUnassignedTrainers(assignedTrainers)
                 .stream().map(DTOFactory::createBasicTrainerDTO)
