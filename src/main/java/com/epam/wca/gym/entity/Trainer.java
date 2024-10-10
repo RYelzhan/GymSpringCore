@@ -37,7 +37,7 @@ public class Trainer extends User {
             orphanRemoval = true)
     private Set<Training> trainings;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
             joinColumns = @JoinColumn(name = "TRAINER_ID"),

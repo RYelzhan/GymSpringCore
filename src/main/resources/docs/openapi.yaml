@@ -1,1038 +1,1341 @@
-openapi: 3.0.1
-info:
-  title: Gym Management API
-  description: API for managing trainers, trainees, and trainings in the gym management system.
-  version: 2.0.0
-servers:
-  - url: http://localhost:8080/gym
-    description: Local Development Server
-
-security:
-  - basicAuth: []
-
-paths:
-  /authenticate/login:
-    post:
-      summary: User login
-      description: Authenticates a user based on the username and password.
-      security: []
-      tags:
-        - User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLoginDTO'
-            examples:
-              validLogin:
-                summary: Valid login request
-                value:
-                  username: "johndoe"
-                  password: "1234567890"
-              invalidLogin:
-                summary: Invalid login request (bad username or password)
-                value:
-                  username: "johndoe"
-                  password: "wrongpassword"
-      responses:
-        '200':
-          description: Login successful
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Login Successful"
-        '400':
-          description: Invalid Username or Password
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Invalid Username or Password"
-
-  /authenticate/register/trainee:
-    post:
-      summary: Register a new trainee
-      description: Registers a new trainee and returns their username and password.
-      operationId: registerTrainee
-      security: []
-      tags:
-        - User
-      requestBody:
-        description: Trainee registration details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TraineeRegistrationDTO'
-      responses:
-        '200':
-          description: Registration successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserAuthenticatedDTO'
-        '400':
-          description: Invalid input data
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Invalid request data"
-
-  /authenticate/register/trainer:
-    post:
-      summary: Register a new trainer
-      description: Registers a new trainer and returns their username and password.
-      operationId: registerTrainer
-      security: []
-      tags:
-        - User
-      requestBody:
-        description: Trainer registration details
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TrainerRegistrationDTO'
-      responses:
-        '200':
-          description: Registration successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserAuthenticatedDTO'
-        '400':
-          description: Invalid input data
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Invalid Training Type choice"
-
-  /user/trainee/profile/{username}:
-    get:
-      summary: Get Trainee Profile
-      description: Retrieves the profile of a trainee by their username.
-      operationId: getTraineeProfile
-      tags:
-        - Trainee
-      parameters:
-        - name: username
-          in: path
-          required: true
-          description: The username of the trainee whose profile is to be retrieved.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful retrieval of the trainee's profile.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TraineeSendDTO'
-        '401':
-          description: Unauthorized access if the authenticated user does not match the username.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Unauthorized
-    delete:
-      summary: Delete Trainee Profile
-      description: Deletes the trainee profile of the authenticated trainer.
-      operationId: deleteTrainee
-      tags:
-        - Trainee
-      parameters:
-        - name: username
-          in: path
-          required: true
-          description: The username of the trainee to be deleted.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully deleted the trainee profile.
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Trainee Profile Deleted Successfully"
-        '401':
-          description: Unauthorized access if the authenticated user is not a trainer or does not match the username.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Unauthorized
-
-  /user/trainee/profile:
-    put:
-      summary: Update Trainee Profile
-      description: Updates the profile of a trainee. The request must include the username to authenticate the trainee. The username cannot be changed.
-      operationId: updateTraineeProfile
-      tags:
-        - Trainee
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TraineeUpdateDTO'
-      responses:
-        '200':
-          description: Successfully updated the trainee profile.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TraineeSendDTO'
-        '401':
-          description: Unauthorized. The user is not authenticated or trying to update a different user profile.
-        '400':
-          description: Bad Request. Validation errors occurred.
-
-  /user/trainee/trainers/available:
-    get:
-      summary: Get Available Trainers for a Trainee
-      description: Retrieves a list of trainers that are not assigned to the specified trainee. The trainee must be authenticated to access this information.
-      operationId: getNotAssignedTrainers
-      tags:
-        - Trainee
-      parameters:
-        - name: username
-          in: query
-          required: true
-          description: The username of the trainee requesting the list of available trainers.
-          schema:
-            type: string
-            example: "john_doe"
-      responses:
-        '200':
-          description: Successfully retrieved the list of available trainers.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TrainerBasicDTO'
-        '401':
-          description: Unauthorized. The user is not authenticated or trying to access a different trainee's data.
-
-  /user/trainee/trainers/add:
-    put:
-      summary: Update Trainer List for a Trainee
-      description: Adds specified trainers to the trainee's profile. The trainee must be authenticated and can only modify their own trainer list.
-      operationId: updateTrainerList
-      tags:
-        - Trainee
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TraineeTrainersUpdateDTO'
-      responses:
-        '200':
-          description: Successfully updated the trainer list.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TrainerBasicDTO'
-        '401':
-          description: Unauthorized. The user is not authenticated or trying to access a different trainee's data.
-        '400':
-          description: Bad Request. Validation errors occurred (e.g., invalid trainer username).
-
-  /user/trainee/trainings/filter:
-    get:
-      summary: Retrieve a list of trainings for a specific trainee based on filter criteria.
-      operationId: getTraineeTrainingsList
-      tags:
-        - Trainee
-      parameters:
-        - name: username
-          in: query
-          required: true
-          schema:
-            type: string
-            description: The username of the trainee requesting the trainings.
-            example: "traineeUser"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TraineeTrainingDTO'
-      responses:
-        '200':
-          description: A list of filtered trainings for the trainee.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TrainingBasicDTO'
-        '401':
-          description: Unauthorized - user is not a trainee or username does not match.
-        '400':
-          description: Bad Request - validation error.
-
-  /user/trainer/profile/{username}:
-    get:
-      summary: Get Trainer Profile
-      description: Retrieves the profile of a trainer by their username.
-      operationId: getTrainerProfile
-      tags:
-        - Trainer
-      parameters:
-        - name: username
-          in: path
-          required: true
-          description: The username of the trainer whose profile is to be retrieved.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful retrieval of the trainer's profile.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrainerSendDTO'
-        '401':
-          description: Unauthorized access if the authenticated user does not match the username or is not a trainer.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Unauthorized
-    delete:
-      summary: Delete Trainee Profile
-      description: Deletes the trainer profile of the authenticated trainer.
-      operationId: deleteTrainer
-      tags:
-        - Trainer
-      parameters:
-        - name: username
-          in: path
-          required: true
-          description: The username of the trainer to be deleted.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully deleted the trainer profile.
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Trainer Profile Deleted Successfully"
-        '401':
-          description: Unauthorized access if the authenticated user is not a trainer or does not match the username.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Unauthorized
-
-  /user/trainer/profile:
-    put:
-      summary: Update Trainer Profile
-      operationId: updateTrainerProfile
-      tags:
-        - Trainer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TrainerUpdateDTO'
-      responses:
-        '200':
-          description: Profile updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrainerSendDTO'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Unauthorized"
-        '400':
-          description: Bad Request (Validation Errors)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Username is required"
-  
-  /user/trainer/trainings/filter:
-    get:
-      summary: Get Trainer Trainings List
-      operationId: getTrainerTrainingsList
-      tags:
-        - Trainer
-      parameters:
-        - name: username
-          in: query
-          required: true
-          schema:
-            type: string
-            example: "Lev.Ian"
-            description: "Username of the trainer"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TrainerTrainingDTO'
-      responses:
-        '200':
-          description: Successfully retrieved list of trainings
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TrainingBasicDTO'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Unauthorized"
-        '400':
-          description: Bad Request (Validation Errors)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Username is required"
-
-  /training/types:
-    get:
-      summary: Get Training Types
-      operationId: getTrainingTypes
-      tags:
-        - Training Type
-      responses:
-        '200':
-          description: Successfully retrieved list of training types
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TrainingTypeBasicDTO'
-
-  /user/change/password:
-    put:
-      summary: Change User Password
-      operationId: changeUserPassword
-      tags:
-        - User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdateDTO'
-      responses:
-        '200':
-          description: Password changed successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Password Changed Successfully"
-        '401':
-          description: Unauthorized (Invalid credentials)
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Not Authorised"
-        '400':
-          description: Bad Request (Validation Errors)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Username is required"
-
-  /user/create/training:
-    post:
-      summary: Create New Training
-      operationId: createNewTraining
-      tags:
-        - User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TrainingGettingDTO'
-      responses:
-        '200':
-          description: Training created successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Training created successfully"
-        '401':
-          description: Unauthorized (Invalid credentials)
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Not Authorised"
-        '400':
-          description: Bad Request (Validation Errors)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Trainee username is required"
-  /user/change/active:
-    patch:
-      summary: Activate or Deactivate User
-      operationId: activateDeactivateUser
-      tags:
-        - User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserActivationDTO'
-      responses:
-        '200':
-          description: User activation status updated successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Is Active Updated Successfully"
-        '401':
-          description: Unauthorized (Invalid credentials)
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Not Authorised"
-        '400':
-          description: Bad Request (Validation Errors)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Username is required"
-
-components:
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-
-  schemas:
-    UserLoginDTO:
-      type: object
-      required:
-        - username
-        - password
-      properties:
-        username:
-          type: string
-          description: Username of the user
-          minLength: 2
-          maxLength: 50
-          example: "John.Doe"
-        password:
-          type: string
-          description: Password of the user (must be exactly 10 characters)
-          minLength: 10
-          maxLength: 10
-          example: "1234567890"
-
-    TraineeRegistrationDTO:
-      type: object
-      required:
-        - firstName
-        - lastName
-      properties:
-        firstName:
-          type: string
-          description: The first name of the trainee
-          minLength: 2
-          maxLength: 25
-          example: "Yelzhan"
-        lastName:
-          type: string
-          description: The last name of the trainee
-          minLength: 2
-          maxLength: 25
-          example: "Rakhimzhanov"
-        dateOfBirth:
-          type: string
-          format: date-time
-          description: The date of birth of the trainee (must be in the past)
-          example: "01.01.2000 00:00:00 UTC"
-        address:
-          type: string
-          description: The address of the trainee
-          minLength: 5
-          maxLength: 50
-          example: "123 Main St"
-    
-    TrainerRegistrationDTO:
-      type: object
-      required:
-        - firstName
-        - lastName
-        - trainingType
-      properties:
-        firstName:
-          type: string
-          description: The first name of the trainer
-          minLength: 2
-          maxLength: 50
-          example: "Lev"
-        lastName:
-          type: string
-          description: The last name of the trainer
-          minLength: 2
-          maxLength: 50
-          example: "Ian"
-        trainingType:
-          type: string
-          description: The training type chosen by the trainer
-          minLength: 2
-          maxLength: 20
-          example: "CALISTHENICS"
-    
-    UserAuthenticatedDTO:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The trainee's username
-          example: "Yelzhan.Rakhimzhanov"
-        password:
-          type: string
-          description: The trainee's password (should be securely stored and handled)
-          example: "Abfm14sdsa"
-    
-    TraineeSendDTO:
-      type: object
-      properties:
-        firstName:
-          type: string
-          description: The first name of the trainee
-          example: "Yelzhan"
-        lastName:
-          type: string
-          description: The last name of the trainee
-          example: "Rakhimzhanov"
-        dateOfBirth:
-          type: string
-          format: zoned-date-time
-          description: The date of birth of the trainee
-          example: "01.01.2000 00:00:00 UTC"
-        address:
-          type: string
-          description: The address of the trainee
-          example: "123 Main St"
-        isActive:
-          type: boolean
-          description: Indicates whether the trainee is currently active
-        trainersAssigned:
-          type: array
-          items:
-            $ref: '#/components/schemas/TrainerBasicDTO'
-    
-    TraineeUpdateDTO:
-      type: object
-      required:
-        - username
-        - firstName
-        - lastName
-        - isActive
-      properties:
-        username:
-          type: string
-          description: The username of the trainee (must be unique)
-          example: "Yelzhan.rakhimzhanov"
-        firstName:
-          type: string
-          description: The first name of the trainee
-          example: "Yelzhan"
-        lastName:
-          type: string
-          description: The last name of the trainee
-          example: "Rakhimzhanov"
-        dateOfBirth:
-          type: string
-          format: date-time
-          description: The date of birth of the trainee in ISO 8601 format (e.g., 2024-09-30T14:30:00Z)
-          example: "01.01.2000 00:00:00 UTC"
-        address:
-          type: string
-          description: The address of the trainee
-          example: "123 Main St"
-        isActive:
-          type: boolean
-          description: Indicates whether the trainee is currently active
-          example: true
-    
-    TrainerBasicDTO:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The username of the trainer
-          example: "Lev.Ian"
-        firstName:
-          type: string
-          description: The first name of the trainer
-          example: "Lev"
-        lastName:
-          type: string
-          description: The last name of the trainer
-          example: "Ian"
-        trainingType:
-          type: string
-          description: The type of training that the trainer specializes in
-          example: "CALISTHENICS"
-    
-    UsernameGetDTO:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The username of the trainee. This field is required and must be between 2 and 50 characters.
-          example: "Yelzhan.Rakhimzhanov"
-      required:
-        - username
-    
-    TraineeTrainersUpdateDTO:
-      type: object
-      required:
-        - username
-        - trainerUsernames
-      properties:
-        username:
-          type: string
-          description: The username of the trainee.
-          minLength: 2
-          maxLength: 50
-          example: "Yelzhan.Rakhimzhanov"
-        trainerUsernames:
-          type: array
-          items:
-            type: string
-            description: The usernames of the trainers to be added.
-            minLength: 2
-            maxLength: 50
-            example: "Lev.Ian"
-    
-    TraineeTrainingDTO:
-      type: object
-      required:
-        - username
-      properties:
-        username:
-          type: string
-          description: The username of the trainee.
-          minLength: 2
-          maxLength: 50
-          example: "Yelzhan.Rakhimzhanov"
-        dateFrom:
-          type: string
-          format: date-time
-          description: The start date for filtering trainings.
-          example: "10.12.2020 00:00:00 UTC"
-        dateTo:
-          type: string
-          format: date-time
-          description: The end date for filtering trainings.
-          example: "18.12.2020 23:00:00 UTC"
-        trainerName:
-          type: string
-          description: The name of the trainer to filter by.
-          minLength: 2
-          maxLength: 50
-          example: "Lev.Ian"
-        trainingType:
-          type: string
-          description: The type of training to filter by.
-          minLength: 2
-          maxLength: 20
-          example: "CALISTHENICS"
-
-    TrainingBasicDTO:
-      type: object
-      properties:
-        trainingName:
-          type: string
-          description: The name of the training session.
-          example: "Morning Calisthenics"
-        trainingDate:
-          type: string
-          format: date-time
-          description: The date of the training session.
-          example: "15.12.2020 15:00:00 UTC"
-        trainingType:
-          type: string
-          description: The type of training.
-          example: "CALISTHENICS"
-        trainingDuration:
-          type: integer
-          description: The duration of the training in minutes.
-          example: 60
-        partnerName:
-          type: string
-          description: The name of the partner for the training session, if applicable.
-          example: "Lev.Ian"
-    
-    TrainerSendDTO:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The username of the trainer.
-          example: "Lev.Ian"
-        firstName:
-          type: string
-          description: The first name of the trainer.
-          example: "Lev"
-        lastName:
-          type: string
-          description: The last name of the trainer.
-          example: "Ian"
-        trainingType:
-          type: string
-          description: The specialization type of the trainer.
-          example: "CALISTHENICS"
-        isActive:
-          type: boolean
-          description: Indicates if the trainer is currently active.
-          example: true
-        traineeAssigned:
-          type: array
-          items:
-            $ref: '#/components/schemas/TraineeBasicDTO'
-          description: A list of trainees assigned to the trainer.
-    
-    TraineeBasicDTO:
-      type: object
-      properties:
-        username:
-          type: string
-          description: The username of the trainee.
-          example: "Yelzhan.Rakhimzhanov"
-        firstName:
-          type: string
-          description: The first name of the trainee.
-          example: "Yelzhan"
-        lastName:
-          type: string
-          description: The last name of the trainee.
-          example: "Rakhimzhanov"
-    
-    TrainerUpdateDTO:
-      type: object
-      required:
-        - username
-        - firstName
-        - lastName
-        - trainingType
-        - isActive
-      properties:
-        username:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: "Lev.Ian"
-          description: "Username is required"
-        firstName:
-          type: string
-          minLength: 2
-          maxLength: 25
-          example: "Lev"
-          description: "First name is required"
-        lastName:
-          type: string
-          minLength: 2
-          maxLength: 25
-          example: "Ian"
-          description: "Last name is required"
-        trainingType:
-          type: string
-          minLength: 2
-          maxLength: 20
-          example: "CALISTHENICS"
-          description: "Training type is required"
-        isActive:
-          type: boolean
-          example: true
-          description: "Indicates whether the trainer is active"
-    
-    TrainerTrainingDTO:
-      type: object
-      required:
-        - username
-      properties:
-        username:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: "Lev.Ian"
-          description: "Username is required"
-        dateFrom:
-          type: string
-          format: date-time
-          example: "10.12.2020 00:00:00 UTC"
-          description: "Start date for filtering trainings"
-        dateTo:
-          type: string
-          format: date-time
-          example: "30.12.2020 18:00:00 UTC"
-          description: "End date for filtering trainings"
-        traineeName:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: "Yelzhan.Rakhimzhanov"
-          description: "Name of the trainee to filter by"
-    
-    TrainingTypeBasicDTO:
-      type: object
-      properties:
-        trainingType:
-          type: string
-          example: "CALISTHENICS"
-          description: "Type of training"
-        id:
-          type: integer
-          example: 3
-          description: "Unique identifier for the training type"
-    
-    UserUpdateDTO:
-      type: object
-      required:
-        - username
-        - oldPassword
-        - newPassword
-      properties:
-        username:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: "Yelzhan.Rakhimzhanov"
-          description: "Username of the user"
-        oldPassword:
-          type: string
-          minLength: 10
-          maxLength: 10
-          example: "oldpassword"
-          description: "Current password of the user (must be exactly 10 characters)"
-        newPassword:
-          type: string
-          minLength: 10
-          maxLength: 10
-          example: "newpassword"
-          description: "New password for the user (must be exactly 10 characters)"
-    
-    TrainingGettingDTO:
-      type: object
-      required:
-        - traineeUsername
-        - trainerUsername
-        - trainingName
-        - date
-        - trainingDuration
-      properties:
-        traineeUsername:
-          type: string
-          minLength: 2
-          maxLength: 25
-          example: "Lev.Ian"
-          description: "Username of the trainee"
-        trainerUsername:
-          type: string
-          minLength: 2
-          maxLength: 25
-          example: "Yelzhan.Rakhimzhanov"
-          description: "Username of the trainer"
-        trainingName:
-          type: string
-          minLength: 2
-          maxLength: 25
-          example: "Calisthenics Class"
-          description: "Name of the training session"
-        date:
-          type: string
-          format: date-time
-          example: "15.12.2020 15:00:00 UTC"
-          description: "Scheduled date of the training (must be in the future)"
-        trainingDuration:
-          type: integer
-          minimum: 10
-          maximum: 360
-          example: 60
-          description: "Duration of the training in minutes (must be between 10 and 360)"
-    
-    UserActivationDTO:
-      type: object
-      required: 
-        - username
-        - isActive
-      properties:
-        username:
-          type: string
-          minLength: 2
-          maxLength: 50
-          example: "Yelzhan.Rakhimzhanov"
-          description: "Username of the user"
-        isActive:
-          type: boolean
-          example: true
-          description: "Indicates whether the user is active or not"
-    
-    
-    
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "My Gym API",
+    "description": "API for GYM management",
+    "version": "2.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/user/trainer/profiles": {
+      "get": {
+        "tags": [
+          "trainer-controller"
+        ],
+        "summary": "Get Trainer Profile",
+        "description": "Retrieves the profile of a trainer by authentication details.",
+        "operationId": "getTrainerProfile",
+        "responses": {
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerSendDTO"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successful retrieval of the trainer's profile.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerSendDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "trainer-controller"
+        ],
+        "summary": "Update Trainer Profile",
+        "description": "Update Trainer Profile with trainer given input.",
+        "operationId": "updateTrainerProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainerUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerSendDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerSendDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerSendDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "trainer-controller"
+        ],
+        "summary": "Delete Trainee Profile",
+        "description": "Deletes the trainer profile of the authenticated trainer.",
+        "operationId": "deleteTrainer",
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the trainer profile."
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided."
+          },
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainee/trainers/add": {
+      "put": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Update Trainer List for a Trainee",
+        "description": "Adds specified trainers to the trainee's profile.",
+        "operationId": "updateTrainerList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraineeTrainersUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated the trainer list.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainerBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainerBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainerBasicDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainee/profiles": {
+      "get": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Get Trainee Profile",
+        "description": "Retrieves the profile of a trainee by authentication details.",
+        "operationId": "getTraineeProfile",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of the trainee's profile.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraineeSendDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraineeSendDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Update Trainee Profile",
+        "description": "Updates the profile of a trainee.",
+        "operationId": "updateTraineeProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraineeUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated the trainee profile.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraineeSendDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraineeSendDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraineeSendDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Delete Trainee Profile",
+        "description": "Deletes the trainee profile of the authenticated trainee.",
+        "operationId": "deleteTrainee",
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the trainee profile."
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided."
+          },
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/change/password": {
+      "put": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "Change User Password",
+        "operationId": "changeUserPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainer/trainings": {
+      "post": {
+        "tags": [
+          "trainer-controller"
+        ],
+        "summary": "Creates training for trainer",
+        "description": "Creates training with trainer specific input data.",
+        "operationId": "createTraineeTraining",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainerTrainingCreateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully created new training.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainee/trainings": {
+      "post": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Creates training for trainee",
+        "description": "Creates training with trainee specific input data.",
+        "operationId": "createTraineeTraining_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraineeTrainingCreateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully created new training.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/authenticate/register/trainer": {
+      "post": {
+        "tags": [
+          "authentication-controller"
+        ],
+        "summary": "Register a new trainer",
+        "description": "Registers a new trainer and returns their username and password.",
+        "operationId": "registerTrainer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainerRegistrationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAuthenticatedDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAuthenticatedDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authenticate/register/trainee": {
+      "post": {
+        "tags": [
+          "authentication-controller"
+        ],
+        "summary": "Register a new trainee",
+        "description": "Registers a new trainee and returns their username and password.",
+        "operationId": "registerTrainee",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraineeRegistrationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAuthenticatedDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAuthenticatedDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authenticate/login": {
+      "post": {
+        "tags": [
+          "authentication-controller"
+        ],
+        "summary": "User Login",
+        "description": "Authenticates a user based on the username and password.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/change/active": {
+      "patch": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "Activate or Deactivate User",
+        "operationId": "activateDeactivateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserActivationDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User activation status updated successfully.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainer/trainings/filter": {
+      "get": {
+        "tags": [
+          "trainer-controller"
+        ],
+        "summary": "Get Trainer Trainings List",
+        "operationId": "getTrainerTrainingsList",
+        "parameters": [
+          {
+            "name": "trainerTrainingDTO",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TrainerTrainingDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of trainings.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingBasicDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainee/trainings/filter": {
+      "get": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Retrieve a list of trainings with filter",
+        "description": "Retrieve a list of trainings for a specific trainee based on filter criteria.",
+        "operationId": "getTraineeTrainingsList",
+        "parameters": [
+          {
+            "name": "traineeTrainingDTO",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TraineeTrainingDTO"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. This error occurs when the input does not meet the validation criteria. Check the field-level errors for more details.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingBasicDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/trainee/trainers/available": {
+      "get": {
+        "tags": [
+          "trainee-controller"
+        ],
+        "summary": "Get Available Trainers for a Trainee",
+        "description": "Retrieves a list of trainers that are not assigned to the specified trainee.",
+        "operationId": "getNotAssignedTrainers",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the list of available trainers.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainerBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainerBasicDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/user/info": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "Return User username",
+        "description": "First ever endpoint.",
+        "operationId": "getUserInfo",
+        "responses": {
+          "200": {
+            "description": "Returns authenticated user's username.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/training/types": {
+      "get": {
+        "tags": [
+          "training-controller"
+        ],
+        "summary": "Get Training Types",
+        "operationId": "getTrainingTypes",
+        "responses": {
+          "401": {
+            "description": "Unauthorized access. Authentication failed due to invalid credentials or missing authorization header. Ensure the username/password are correct and the authorization header is provided.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingTypeBasicDTO"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully retrieved list of training types.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingTypeBasicDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TrainerUpdateDTO": {
+        "required": [
+          "firstName",
+          "isActive",
+          "lastName",
+          "trainingType"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "lastName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "trainingType": {
+            "maxLength": 20,
+            "minLength": 2,
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TraineeBasicDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          }
+        }
+      },
+      "TrainerSendDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "trainingType": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "traineeAssigned": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraineeBasicDTO"
+            }
+          }
+        }
+      },
+      "TraineeTrainersUpdateDTO": {
+        "required": [
+          "trainerUsernames"
+        ],
+        "type": "object",
+        "properties": {
+          "trainerUsernames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TrainerBasicDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "trainingType": {
+            "type": "string"
+          }
+        }
+      },
+      "TraineeUpdateDTO": {
+        "required": [
+          "firstName",
+          "isActive",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "lastName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "address": {
+            "maxLength": 50,
+            "minLength": 5,
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TraineeSendDTO": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "address": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "trainersAssigned": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerBasicDTO"
+            }
+          }
+        }
+      },
+      "UserUpdateDTO": {
+        "required": [
+          "newPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "maxLength": 10,
+            "minLength": 10,
+            "type": "string"
+          }
+        }
+      },
+      "TrainerTrainingCreateDTO": {
+        "required": [
+          "date",
+          "traineeUsername",
+          "trainingDuration",
+          "trainingName"
+        ],
+        "type": "object",
+        "properties": {
+          "traineeUsername": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "trainingName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trainingDuration": {
+            "maximum": 360,
+            "minimum": 10,
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TraineeTrainingCreateDTO": {
+        "required": [
+          "date",
+          "trainerUsername",
+          "trainingDuration",
+          "trainingName"
+        ],
+        "type": "object",
+        "properties": {
+          "trainerUsername": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "trainingName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trainingDuration": {
+            "maximum": 360,
+            "minimum": 10,
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TrainerRegistrationDTO": {
+        "required": [
+          "firstName",
+          "lastName",
+          "trainingType"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          },
+          "lastName": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          },
+          "trainingType": {
+            "maxLength": 20,
+            "minLength": 2,
+            "type": "string"
+          }
+        }
+      },
+      "UserAuthenticatedDTO": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "TraineeRegistrationDTO": {
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "lastName": {
+            "maxLength": 25,
+            "minLength": 2,
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "address": {
+            "maxLength": 50,
+            "minLength": 5,
+            "type": "string"
+          }
+        }
+      },
+      "UserLoginDTO": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 10,
+            "minLength": 10,
+            "type": "string"
+          }
+        }
+      },
+      "UserActivationDTO": {
+        "required": [
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TrainerTrainingDTO": {
+        "type": "object",
+        "properties": {
+          "dateFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "traineeName": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          }
+        }
+      },
+      "TrainingBasicDTO": {
+        "type": "object",
+        "properties": {
+          "trainingName": {
+            "type": "string"
+          },
+          "trainingDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trainingType": {
+            "type": "string"
+          },
+          "trainingDuration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "partnerName": {
+            "type": "string"
+          }
+        }
+      },
+      "TraineeTrainingDTO": {
+        "type": "object",
+        "properties": {
+          "dateFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trainerName": {
+            "maxLength": 50,
+            "minLength": 2,
+            "type": "string"
+          },
+          "trainingType": {
+            "maxLength": 20,
+            "minLength": 2,
+            "type": "string"
+          }
+        }
+      },
+      "TrainingTypeBasicDTO": {
+        "type": "object",
+        "properties": {
+          "trainingType": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
 package com.epam.wca.gym.aop;
 
 import com.epam.wca.gym.transaction.TransactionDetails;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -17,8 +16,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class LoggingAspect {
-    @NonNull
-    private TransactionDetails transactionDetails;
+    private final TransactionDetails transactionDetails;
 
     @Pointcut(value = "@annotation(Logging)")
     public void loggingPointcut() {
