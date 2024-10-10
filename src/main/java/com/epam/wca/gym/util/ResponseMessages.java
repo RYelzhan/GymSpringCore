@@ -10,4 +10,6 @@ public class ResponseMessages {
     public static final String UNAUTHORIZED_ACCESS_DESCRIPTION = "Unauthorized access." +
             " Authentication failed due to invalid credentials or missing authorization header." +
             " Ensure the username/password are correct and the authorization header is provided.";
+
+    public static final String SUCCESSFUL_REGISTRATION_DESCRIPTION = "Registration successful";
 }

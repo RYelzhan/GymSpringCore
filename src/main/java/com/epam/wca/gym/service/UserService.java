@@ -6,6 +6,7 @@ import com.epam.wca.gym.entity.User;
 
 public interface UserService {
     void update(User user, UserUpdateDTO userDTO);
+
     void update(User user, UserActivationDTO userDTO);
 
     User findByUsername(String username);

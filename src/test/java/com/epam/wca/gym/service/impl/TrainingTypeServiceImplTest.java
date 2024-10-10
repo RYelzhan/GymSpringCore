@@ -4,7 +4,6 @@ import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.repository.TrainingTypeRepository;
-import com.epam.wca.gym.service.impl.TrainingTypeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TrainingTypeServiceImplTest {
+class TrainingTypeServiceImplTest {
     @Mock
     private TrainingTypeRepository trainingTypeRepository;
 
@@ -49,9 +48,10 @@ public class TrainingTypeServiceImplTest {
         when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(null);
 
         // When & Then
-        ControllerValidationException exception = assertThrows(ControllerValidationException.class, () -> {
-            trainingTypeService.findByType(type);
-        });
+        ControllerValidationException exception = assertThrows(
+                ControllerValidationException.class,
+                () -> trainingTypeService.findByType(type)
+        );
         assertEquals("Invalid Training Type choice", exception.getMessage());
     }
 

@@ -2,7 +2,6 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.Username;
 import com.epam.wca.gym.repository.UsernameRepository;
-import com.epam.wca.gym.service.impl.ProfileServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ProfileServiceImplTest {
+class ProfileServiceImplTest {
     @Mock
     private UsernameRepository usernameRepository;
 

@@ -6,13 +6,14 @@ import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
-import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
+import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
+import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
@@ -28,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,13 +49,13 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
-    public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingDTO traineeTrainingDTO) {
+    public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingQuery traineeTrainingQuery) {
         var trainee = findById(id);
 
-        return Filter.filterTraineeTrainings(trainee.getTrainings(), traineeTrainingDTO)
+        return Filter.filterTraineeTrainings(trainee.getTrainings(), traineeTrainingQuery)
                 .stream()
                 .map(DTOFactory::createTraineeBasicTrainingDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -109,7 +109,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         return addedTrainers.stream()
                 .map(DTOFactory::createBasicTrainerDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class TraineeServiceImpl implements TraineeService {
             return traineeOptional.get();
         }
 
-        throw new IllegalArgumentException("No Trainee Found with Id: " + id);
+        throw new ProfileNotFoundException("No Trainee Found with Id: " + id);
     }
 
     @Override

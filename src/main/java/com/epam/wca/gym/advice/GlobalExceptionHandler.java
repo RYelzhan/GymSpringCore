@@ -1,9 +1,11 @@
 package com.epam.wca.gym.advice;
 
+import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.InternalErrorException;
+import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.util.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -45,7 +47,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadable() {
-        String message = INVALID_DATE_FORMAT.formatted(AppConstants.DEFAULT_DATE_FORMAT);
+        String message = String.format(INVALID_DATE_FORMAT, AppConstants.DEFAULT_DATE_FORMAT);
 
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
@@ -65,10 +67,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidLoginAttempt(IllegalArgumentException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
-/*
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<String> handleInvalidLoginAttempt(AuthenticationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<String> handleInvalidLoginAttempt(ProfileNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleServerError() {
         return new ResponseEntity<>(SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
- */
 }

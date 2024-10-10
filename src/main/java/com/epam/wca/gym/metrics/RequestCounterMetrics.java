@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RequestCounterMetrics {
-    private static final String requestCounterName = "request_counter";
+    private static final String REQUEST_COUNTER_NAME = "request_counter";
     private final Counter counter;
 
     public RequestCounterMetrics(MeterRegistry meterRegistry) {
-        this.counter = Counter.builder(requestCounterName)
+        this.counter = Counter.builder(REQUEST_COUNTER_NAME)
                 .tag("type", "request")
                 .description("Total number of Requests received.")
                 .register(meterRegistry);

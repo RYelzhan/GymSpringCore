@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,6 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     public List<TrainingTypeBasicDTO> findAll() {
         return trainingTypeRepository.findAll()
                 .stream().map(DTOFactory::createBasicTrainingTypeDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

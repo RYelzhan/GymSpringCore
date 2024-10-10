@@ -13,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Profile("secure")
 public class AuthenticationFilterMonitor implements HealthIndicator {
-    private final static String AUTH_FILTER = "Authentication Filter";
+    private static final String AUTH_FILTER = "Authentication Filter";
     private final AuthenticationFilter authenticationFilter;
 
     @Override

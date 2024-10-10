@@ -6,7 +6,7 @@ import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
-import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
+import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
@@ -16,7 +16,7 @@ import java.util.List;
 public interface TraineeService {
     UserAuthenticatedDTO save(TraineeRegistrationDTO trainee);
 
-    List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingDTO traineeTrainingDTO);
+    List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingQuery traineeTrainingQuery);
 
     TraineeSendDTO update(Trainee trainee, TraineeUpdateDTO traineeUpdateDTO);
 

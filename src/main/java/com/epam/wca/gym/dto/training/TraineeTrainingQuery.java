@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.ZonedDateTime;
 
-public record TraineeTrainingDTO(
+public record TraineeTrainingQuery(
     @JsonFormat(pattern = AppConstants.DEFAULT_DATE_FORMAT)
     ZonedDateTime dateFrom,
     @JsonFormat(pattern = AppConstants.DEFAULT_DATE_FORMAT)

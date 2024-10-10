@@ -2,7 +2,6 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.repository.TrainingRepository;
-import com.epam.wca.gym.service.impl.TrainingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class TrainingServiceImplTest {
+class TrainingServiceImplTest {
     @Mock
     private TrainingRepository trainingRepository;
 

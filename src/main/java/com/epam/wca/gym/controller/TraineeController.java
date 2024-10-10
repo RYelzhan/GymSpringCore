@@ -6,7 +6,7 @@ import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
-import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
+import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TraineeController {
     private final TraineeService traineeService;
+    @Value("${gym.api.request.attribute.user}")
+    private String authenticatedUserRequestAttributeName;
 
     @Operation(
             summary = "Get Trainee Profile",
@@ -56,7 +59,7 @@ public class TraineeController {
     @CheckTrainee
     @Transactional
     public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
-        var trainee = (Trainee) request.getAttribute("authenticatedUser");
+        var trainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return DTOFactory.createTraineeSendDTO(trainee);
     }
@@ -83,7 +86,7 @@ public class TraineeController {
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             HttpServletRequest request
     ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return traineeService.update(authenticatedTrainee, traineeDTO);
     }
@@ -104,7 +107,7 @@ public class TraineeController {
     @CheckTrainee
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTrainee(HttpServletRequest request) {
-        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         traineeService.deleteById(authenticatedTrainee.getId());
     }
@@ -124,7 +127,7 @@ public class TraineeController {
     @GetMapping("/trainers/available")
     @CheckTrainee
     public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
-        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
     }
@@ -151,7 +154,7 @@ public class TraineeController {
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
             ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
     }
@@ -172,12 +175,12 @@ public class TraineeController {
     @GetMapping("/trainings/filter")
     @CheckTrainee
     public List<TrainingBasicDTO> getTraineeTrainingsList(
-            @RequestBody @Valid TraineeTrainingDTO traineeTrainingDTO,
+            @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
             ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingDTO);
+        return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingQuery);
     }
 
     @Operation(
@@ -203,7 +206,7 @@ public class TraineeController {
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         traineeService.createTraining(authenticatedTrainee, trainingDTO);
 

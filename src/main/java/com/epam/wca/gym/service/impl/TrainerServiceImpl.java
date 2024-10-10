@@ -5,12 +5,13 @@ import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
-import com.epam.wca.gym.dto.training.TrainerTrainingDTO;
+import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
 import com.epam.wca.gym.service.TrainerService;
@@ -51,10 +52,10 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-    public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TrainerTrainingDTO trainerTrainingDTO) {
+    public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TrainerTrainingQuery trainerTrainingQuery) {
         var trainer = findById(id);
 
-        return Filter.filterTrainerTrainings(trainer.getTrainings(), trainerTrainingDTO)
+        return Filter.filterTrainerTrainings(trainer.getTrainings(), trainerTrainingQuery)
                 .stream()
                 .map(DTOFactory::createTrainerBasicTrainingDTO)
                 .collect(Collectors.toList());
@@ -80,7 +81,7 @@ public class TrainerServiceImpl implements TrainerService {
     public List<TrainerBasicDTO> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers) {
         return trainerRepository.findActiveUnassignedTrainers(assignedTrainers)
                 .stream().map(DTOFactory::createBasicTrainerDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -91,7 +92,7 @@ public class TrainerServiceImpl implements TrainerService {
             return trainerOptional.get();
         }
 
-        throw new IllegalArgumentException("No Trainer Found with Id: " + id);
+        throw new ProfileNotFoundException("No Trainer Found with Id: " + id);
     }
 
     @Override

@@ -19,8 +19,8 @@ public class UserFactory {
     }
 
     /**
+     * @deprecated
      * Used for Trainer object creation
-     * @param trainerDTO
      * @return Obeject of Trainer
      */
     @Deprecated(since = "2.1")

@@ -1,8 +1,8 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.repository.UserRepository;
-import com.epam.wca.gym.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,43 +19,41 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceImplTest {
+class AuthServiceImplTest {
     @Mock
     private UserRepository userRepository;
     @InjectMocks
     private AuthServiceImpl authService;
 
     @Test
-    public void testNullAuthenticationHeader() {
-        String header = null;
-
-        assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
+    void testNullAuthenticationHeader() {
+        assertThrows(AuthenticationException.class, () -> authService.authenticate((String) null));
     }
 
     @Test
-    public void testNotBasicAuthentication() {
+    void testNotBasicAuthentication() {
         String header = "Oauth ";
 
-        assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
+        assertThrows(AuthenticationException.class, () -> authService.authenticate(header));
     }
 
     @ParameterizedTest
     @CsvSource({"Basic VGVzdDpUZXN0OlRlc3Q="})
-    public void testCredentialsCountNot2(String header) {
-        assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
+    void testCredentialsCountNot2(String header) {
+        assertThrows(AuthenticationException.class, () -> authService.authenticate(header));
     }
 
     @ParameterizedTest
     @CsvSource({"Basic VGVzdDp0ZXN0"})
-    public void testUserNotFound(String header) {
+    void testUserNotFound(String header) {
         when(userRepository.findUserByUserName(anyString())).thenReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
+        assertThrows(AuthenticationException.class, () -> authService.authenticate(header));
     }
 
     @ParameterizedTest
     @CsvSource({"Basic VGVzdDoxMjM0NTY3ODkx, 1234567890"})
-    public void testPasswordNotCorrect(String header, String userPassword) {
+    void testPasswordNotCorrect(String header, String userPassword) {
         User user = new User(
                 null,
                 null,
@@ -66,12 +64,12 @@ public class AuthServiceImplTest {
 
         when(userRepository.findUserByUserName(anyString())).thenReturn(user);
 
-        assertThrows(IllegalArgumentException.class, () -> authService.authenticate(header));
+        assertThrows(AuthenticationException.class, () -> authService.authenticate(header));
     }
 
     @ParameterizedTest
     @CsvSource({"Basic VGVzdDoxMjM0NTY3ODkw, 1234567890"})
-    public void testSuccessfulAuthentication(String header, String userPassword) {
+    void testSuccessfulAuthentication(String header, String userPassword) {
         User user = new User(
                 null,
                 null,

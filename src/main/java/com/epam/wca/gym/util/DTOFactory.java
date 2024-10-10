@@ -32,9 +32,7 @@ public class DTOFactory {
     public static Set<TrainerBasicDTO> createBasicTrainerDTOSet(Set<Trainer> trainerSet) {
         Set<TrainerBasicDTO> result = new HashSet<>();
 
-        trainerSet.forEach(trainer -> {
-            result.add(createBasicTrainerDTO(trainer));
-        });
+        trainerSet.forEach(trainer -> result.add(createBasicTrainerDTO(trainer)));
 
         return result;
     }
@@ -62,9 +60,7 @@ public class DTOFactory {
     public static Set<TraineeBasicDTO> createBasicTraineeDTOSet(Set<Trainee> traineeSet) {
         Set<TraineeBasicDTO> result = new HashSet<>();
 
-        traineeSet.forEach(trainee -> {
-            result.add(createBasicTraineeDTO(trainee));
-        });
+        traineeSet.forEach(trainee -> result.add(createBasicTraineeDTO(trainee)));
 
         return result;
     }

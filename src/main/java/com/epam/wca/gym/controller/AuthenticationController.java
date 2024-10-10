@@ -5,7 +5,6 @@ import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
-import com.epam.wca.gym.repository.UsernameRepository;
 import com.epam.wca.gym.service.AuthService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
@@ -29,7 +28,6 @@ public class AuthenticationController {
     private final AuthService authService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
-    private final UsernameRepository usernameRepository;
 
     @Operation(
             summary = "User Login",
@@ -57,7 +55,7 @@ public class AuthenticationController {
     )
     @ApiResponse(
             responseCode = "201",
-            description = "Registration successful"
+            description = ResponseMessages.SUCCESSFUL_REGISTRATION_DESCRIPTION
     )
     @ApiResponse(
             responseCode = "400",
@@ -75,7 +73,7 @@ public class AuthenticationController {
     )
     @ApiResponse(
             responseCode = "201",
-            description = "Registration successful"
+            description = ResponseMessages.SUCCESSFUL_REGISTRATION_DESCRIPTION
     )
     @ApiResponse(
             responseCode = "400",

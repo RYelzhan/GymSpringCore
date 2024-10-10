@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    @Value("${gym.api.request.attribute.user}")
+    private String authenticatedUserRequestAttributeName;
 
     @Operation(
             summary = "Return User username",
@@ -40,7 +43,7 @@ public class UserController {
     )
     @GetMapping("/info")
     public String getUserInfo(HttpServletRequest request) {
-        var authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return authenticatedUser.getUserName();
     }
@@ -65,13 +68,15 @@ public class UserController {
             @RequestBody @Valid UserUpdateDTO userDTO,
             HttpServletRequest request
     ) {
-        var authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
         userService.update(authenticatedUser, userDTO);
 
         return "Password Changed Successfully";
     }
 
+    // TODO: consider ...Query instead of some ...DTO
+    // query is better suited for queries to database. e.g. Filter, Search
     @Operation(
             summary = "Activate or Deactivate User"
     )
@@ -92,10 +97,37 @@ public class UserController {
             @RequestBody @Valid UserActivationDTO userDTO,
             HttpServletRequest request
             ) {
-        var authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
         userService.update(authenticatedUser, userDTO);
 
         return "Is Active Updated Successfully";
     }
 }
+
+// TODO: change manual training type validation checks in code with this:
+//
+
+//    @Target({ElementType.FIELD, ElementType.PARAMETER})
+//    @Retention(RetentionPolicy.RUNTIME)
+//    @Constraint(validatedBy = TrainingTypeValidator.class)
+//    public @interface ValidTrainingType {
+//
+//        String message() default "Invalid training type"; // Default validation message
+//
+//        Class<?>[] groups() default {}; // Required for grouping constraints
+//
+//        Class<? extends Payload>[] payload() default {}; // Can be used by clients to assign custom payload objects
+//    }
+
+//  public class TrainingTypeValidator implements ConstraintValidator<ValidTrainingType, String> {
+//
+//    private final TrainingTypeDAO trainingTypeDAO;
+//    @Override
+//    public boolean isValid(String trainingType, ConstraintValidatorContext context) {
+//        if (trainingType == null || trainingType.trim().isEmpty()) {
+//            return true;
+//        }
+//        return trainingTypeDAO.findByName(trainingType.toUpperCase()).isPresent();
+//    }
+//}

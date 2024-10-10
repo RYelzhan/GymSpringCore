@@ -6,7 +6,7 @@ import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
-import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
+import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
@@ -15,11 +15,8 @@ import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
+import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
-import com.epam.wca.gym.service.impl.ProfileServiceImpl;
-import com.epam.wca.gym.service.impl.TraineeServiceImpl;
-import com.epam.wca.gym.service.impl.TrainerServiceImpl;
-import com.epam.wca.gym.service.impl.TrainingServiceImpl;
 import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
@@ -56,7 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TraineeServiceImplTest {
+class TraineeServiceImplTest {
     @Mock
     private TraineeRepository traineeRepository;
     @Mock
@@ -103,7 +100,7 @@ public class TraineeServiceImplTest {
     void testTrainingsFiltered() {
         // Mock input and return data
         Long traineeId = 1L;
-        TraineeTrainingDTO traineeTrainingDTO = mock(TraineeTrainingDTO.class); // Mock DTO input
+        TraineeTrainingQuery traineeTrainingQuery = mock(TraineeTrainingQuery.class); // Mock DTO input
 
         // Create a mock Trainee object with a set of trainings
         Trainee trainee = mock(Trainee.class);
@@ -121,7 +118,7 @@ public class TraineeServiceImplTest {
             List<Training> filteredTrainings = List.of(training1); // Mock filtered trainings
 
             // When the static method is called, return the filteredTrainings
-            mockFilter.when(() -> Filter.filterTraineeTrainings(trainings, traineeTrainingDTO))
+            mockFilter.when(() -> Filter.filterTraineeTrainings(trainings, traineeTrainingQuery))
                     .thenReturn(filteredTrainings);
 
             // Mock the DTOFactory to return a list of TrainingBasicDTO
@@ -130,7 +127,7 @@ public class TraineeServiceImplTest {
                     .thenReturn(trainingBasicDTO);
 
             // Call the method under test
-            List<TrainingBasicDTO> result = traineeService.findTrainingsFiltered(traineeId, traineeTrainingDTO);
+            List<TrainingBasicDTO> result = traineeService.findTrainingsFiltered(traineeId, traineeTrainingQuery);
 
             // Verify the result and behavior
             assertNotNull(result);  // Ensure the result is not null
@@ -325,8 +322,8 @@ public class TraineeServiceImplTest {
         when(traineeRepository.findById(traineeId)).thenReturn(Optional.empty());
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ProfileNotFoundException exception = assertThrows(
+                ProfileNotFoundException.class,
                 () -> traineeService.findById(traineeId)
         );
 
