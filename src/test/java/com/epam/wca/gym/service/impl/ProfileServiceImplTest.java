@@ -2,6 +2,7 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.Username;
 import com.epam.wca.gym.repository.UsernameRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +23,12 @@ class ProfileServiceImplTest {
 
     @InjectMocks
     private ProfileServiceImpl profileService;
+
+    @BeforeEach
+    public void setUp() {
+        profileService.setPasswordLength(10);
+        profileService.setCharacters("a");
+    }
 
     @ParameterizedTest
     @CsvSource({"John, Doe, John.Doe2", "Jane, Smith, Jane.Smith2"})

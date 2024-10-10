@@ -7,12 +7,14 @@ import com.epam.wca.gym.repository.UsernameRepository;
 import com.epam.wca.gym.service.ProfileService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
+@Setter
 @Slf4j
 @Service
 @RequiredArgsConstructor

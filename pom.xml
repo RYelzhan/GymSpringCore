@@ -28,7 +28,10 @@
         <!--  Plugin versions  -->
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+
+        <!-- Testing version -->
         <jacoco.version>0.8.7</jacoco.version>
+        <junit.platform.launcher.version>1.3.1</junit.platform.launcher.version>
 
         <!-- OpenApi version -->
         <springdoc.openapi.starter.webmvc.ui.version>2.6.0</springdoc.openapi.starter.webmvc.ui.version>
@@ -77,6 +80,11 @@
             <version>${postgresql.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
         <!-- Utility Dependency -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -96,7 +104,7 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.3.1</version>
+            <version>${junit.platform.launcher.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -132,6 +140,11 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>${micrometer.registry.prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

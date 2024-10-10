@@ -24,15 +24,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Profile("secure")
 public class AuthenticationFilter extends HttpFilter {
-    private static final String AUTHENTICATION_URI = "/authenticate";
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;
     private static final Set<String> ALLOWED_PREFIXES = Set.of(
-            AUTHENTICATION_URI
+            "/authenticate",
+            "/h2-console"
     );
 
-    private final transient AuthService authService;
-    private final transient RequestCounterMetrics requestCounterMetrics;
+    private final AuthService authService;
+    private final RequestCounterMetrics requestCounterMetrics;
 
     @Override
     public void doFilter(ServletRequest servletRequest,
