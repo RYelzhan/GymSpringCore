@@ -67,7 +67,7 @@ public class TraineeServiceImpl implements TraineeService {
         trainee.setAddress(traineeUpdateDTO.address());
         trainee.setActive(traineeUpdateDTO.isActive());
 
-        // оказываеться finByUserName detaches object
+        // it turns out finByUserName detaches object
         traineeRepository.save(trainee);
 
         return DTOFactory.createTraineeSendDTO(trainee);
@@ -104,7 +104,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         trainee.addTrainers(addedTrainers);
 
-        // оказываеться finByUserName detaches object
+        // it turns out finByUserName detaches object
         traineeRepository.save(trainee);
 
         return addedTrainers.stream()

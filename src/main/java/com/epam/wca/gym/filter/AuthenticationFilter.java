@@ -64,7 +64,7 @@ public class AuthenticationFilter extends HttpFilter {
             // Continue the request if authentication is successful
 
             filterChain.doFilter(servletRequest, servletResponse);
-        } catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             // If authentication fails, respond with 401 Unauthorized
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.getWriter().write("HTTP Status 401 - Unauthorized");

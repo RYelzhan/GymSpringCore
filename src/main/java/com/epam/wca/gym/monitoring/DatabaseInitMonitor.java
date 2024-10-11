@@ -29,7 +29,7 @@ public class DatabaseInitMonitor implements HealthIndicator {
             // Example query: checking if a specific table has rows
             String query = "SELECT COUNT(*) FROM USERS"; // Replace with your table name
             int rowCount = jdbcTemplate.queryForObject(query, Integer.class);
-            
+
             return rowCount > 0;
         } catch (Exception ex) {
             // In case of any exception (e.g., table not found), return DOWN status

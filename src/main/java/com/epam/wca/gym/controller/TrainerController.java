@@ -36,6 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerController {
     private final TrainerService trainerService;
+
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;
 

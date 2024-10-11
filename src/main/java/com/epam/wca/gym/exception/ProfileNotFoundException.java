@@ -1,6 +1,6 @@
 package com.epam.wca.gym.exception;
 
-public class ProfileNotFoundException extends RuntimeException{
+public class ProfileNotFoundException extends RuntimeException {
     public ProfileNotFoundException(String message) {
         super(message);
     }

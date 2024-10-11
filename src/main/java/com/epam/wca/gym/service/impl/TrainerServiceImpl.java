@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,7 @@ public class TrainerServiceImpl implements TrainerService {
         return Filter.filterTrainerTrainings(trainer.getTrainings(), trainerTrainingQuery)
                 .stream()
                 .map(DTOFactory::createTrainerBasicTrainingDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -71,7 +70,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.setSpecialization(trainingType);
         trainer.setActive(trainerUpdateDTO.isActive());
 
-        // оказываеться finByUserName detaches object
+        // it turns out finByUserName detaches object
         trainerRepository.save(trainer);
 
         return DTOFactory.createTrainerSendDTO(trainer);

@@ -33,13 +33,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
 @SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping(value = "/user/trainee")
 @RequiredArgsConstructor
 public class TraineeController {
     private final TraineeService traineeService;
+
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;
 
@@ -153,7 +153,7 @@ public class TraineeController {
     public List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
-            ) {
+    ) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
@@ -177,7 +177,7 @@ public class TraineeController {
     public List<TrainingBasicDTO> getTraineeTrainingsList(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
-            ) {
+    ) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingQuery);

@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Change User Password"
+            summary = "Change User Password"
     )
     @ApiResponse(
             responseCode = "200",
@@ -96,7 +96,7 @@ public class UserController {
     public String activateDeactivateUser(
             @RequestBody @Valid UserActivationDTO userDTO,
             HttpServletRequest request
-            ) {
+    ) {
         var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
         userService.update(authenticatedUser, userDTO);
