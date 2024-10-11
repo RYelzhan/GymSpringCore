@@ -32,8 +32,8 @@ public class AuthenticationFilter extends HttpFilter {
             "/admin"
     );
 
-    private final AuthService authService;
-    private final RequestCounterMetrics requestCounterMetrics;
+    private final transient AuthService authService;
+    private final transient RequestCounterMetrics requestCounterMetrics;
 
     @Override
     public void doFilter(ServletRequest servletRequest,
