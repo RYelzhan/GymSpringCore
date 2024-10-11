@@ -28,7 +28,8 @@ public class AuthenticationFilter extends HttpFilter {
     private String authenticatedUserRequestAttributeName;
     private static final Set<String> ALLOWED_PREFIXES = Set.of(
             "/authenticate",
-            "/h2-console"
+            "/h2-console",
+            "/admin"
     );
 
     private final AuthService authService;
