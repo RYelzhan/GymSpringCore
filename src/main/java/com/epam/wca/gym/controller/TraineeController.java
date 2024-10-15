@@ -3,169 +3,213 @@ package com.epam.wca.gym.controller;
 import com.epam.wca.gym.aop.CheckTrainee;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
+import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
-import com.epam.wca.gym.dto.training.TraineeTrainingDTO;
+import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.ForbiddenActionException;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
+import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
-import com.epam.wca.gym.util.Filter;
+import com.epam.wca.gym.util.ResponseMessages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping(value = "/user/trainee")
 @RequiredArgsConstructor
 public class TraineeController {
-    @NonNull
-    private TraineeService traineeService;
-    @NonNull
-    private TrainerService trainerService;
+    private final TraineeService traineeService;
 
-    @GetMapping("/profile/{username}")
+    @Value("${gym.api.request.attribute.user}")
+    private String authenticatedUserRequestAttributeName;
+
+    @Operation(
+            summary = "Get Trainee Profile",
+            description = "Retrieves the profile of a trainee by authentication details."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successful retrieval of the trainee's profile."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @GetMapping("/profiles")
     @CheckTrainee
-    public ResponseEntity<TraineeSendDTO> getTraineeProfile(
-            @PathVariable("username") String username,
-            HttpServletRequest request
-    ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+    @Transactional
+    public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
+        var trainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedTrainee.getUserName().equals(username)) {
-            throw new ForbiddenActionException("This is not your profile.");
-        }
-
-        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(authenticatedTrainee), HttpStatus.OK);
+        return DTOFactory.createTraineeSendDTO(trainee);
     }
 
-    @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Update Trainee Profile",
+            description = "Updates the profile of a trainee."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully updated the trainee profile."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @PutMapping(value = "/profiles", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
-    public ResponseEntity<TraineeSendDTO> updateTraineeProfile(
-            @RequestBody @Valid TraineeUpdateDTO traineeUpdateDTO,
+    public TraineeSendDTO updateTraineeProfile(
+            @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             HttpServletRequest request
     ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedTrainee.getUserName().equals(traineeUpdateDTO.username())) {
-            throw new ForbiddenActionException("Can not change username");
-        }
-
-        Trainee updatedTrainee = traineeService.update(authenticatedTrainee, traineeUpdateDTO);
-
-        return new ResponseEntity<>(DTOFactory.createTraineeSendDTO(updatedTrainee), HttpStatus.OK);
+        return traineeService.update(authenticatedTrainee, traineeDTO);
     }
 
-    @DeleteMapping(value = "/profile/{username}")
+    @Operation(
+            summary = "Delete Trainee Profile",
+            description = "Deletes the trainee profile of the authenticated trainee."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully deleted the trainee profile."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @DeleteMapping(value = "/profiles")
     @CheckTrainee
-    public ResponseEntity<String> deleteTrainee(
-            @PathVariable("username") String username,
-            HttpServletRequest request
-    ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
-
-        if (!authenticatedTrainee.getUserName().equals(username)) {
-            throw new ForbiddenActionException("This is not your profile.");
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTrainee(HttpServletRequest request) {
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         traineeService.deleteById(authenticatedTrainee.getId());
-
-        return ResponseEntity.ok(null);
     }
 
+    @Operation(
+            summary = "Get Available Trainers for a Trainee",
+            description = "Retrieves a list of trainers that are not assigned to the specified trainee."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved the list of available trainers."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @GetMapping("/trainers/available")
     @CheckTrainee
-    public ResponseEntity<List<TrainerBasicDTO>> getNotAssignedTrainers(
-            @RequestParam("username") String username,
-            HttpServletRequest request
-    ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+    public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedTrainee.getUserName().equals(username)) {
-            throw new ForbiddenActionException("This is not your account.");
-        }
-
-        return new ResponseEntity<>(
-                traineeService.getListOfNotAssignedTrainers(authenticatedTrainee),
-                HttpStatus.OK
-        );
+        return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
     }
 
-    // TODO: delegate all this work to service layer
+    @Operation(
+            summary = "Update Trainer List for a Trainee",
+            description = "Adds specified trainers to the trainee's profile."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully updated the trainer list."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @PutMapping(value = "/trainers/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
-    public ResponseEntity<List<TrainerBasicDTO>> updateTrainerList(
+    public List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
-            ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+    ) {
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedTrainee.getUserName().equals(traineeTrainersUpdateDTO.username())) {
-            throw new ForbiddenActionException("This is not your account.");
-        }
-
-        List<Trainer> trainerList = new ArrayList<>();
-        traineeTrainersUpdateDTO.trainerUsernames()
-                .forEach(trainerUsername -> {
-                Trainer trainer = trainerService.findByUniqueName(trainerUsername);
-
-                if (trainer == null) {
-                    throw new ForbiddenActionException("No Trainer Found with Username " +
-                            trainerUsername +
-                            ". No Trainers Added");
-                }
-
-                trainerList.add(trainer);
-        });
-
-        authenticatedTrainee.addTrainers(trainerList);
-        traineeService.update(authenticatedTrainee);
-
-        List<TrainerBasicDTO> addedTrainers = new ArrayList<>();
-        trainerList.forEach((trainer) -> {
-            addedTrainers.add(DTOFactory.createBasicTrainerDTO(trainer));
-        });
-
-        return new ResponseEntity<>(addedTrainers, HttpStatus.OK);
+        return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
     }
 
+    //TODO: transfer all input to RequestParam
+    @Operation(
+            summary = "Retrieve a list of trainings with filter",
+            description = "Retrieve a list of trainings for a specific trainee based on filter criteria."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @GetMapping("/trainings/filter")
     @CheckTrainee
-    public ResponseEntity<List<TrainingBasicDTO>> getTraineeTrainingsList(
-            @RequestBody @Valid TraineeTrainingDTO traineeTrainingDTO,
+    public List<TrainingBasicDTO> getTraineeTrainingsList(
+            @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
-            ) {
-        Trainee authenticatedTrainee = (Trainee) request.getAttribute("authenticatedUser");
+    ) {
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedTrainee.getUserName().equals(traineeTrainingDTO.username())) {
-            throw new ForbiddenActionException("This is not your account.");
-        }
+        return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingQuery);
+    }
 
-        List<TrainingBasicDTO> result = Filter.filterTraineeTrainings(authenticatedTrainee.getTrainings(),
-                        traineeTrainingDTO)
-                .stream()
-                .map(DTOFactory::createTraineeBasicTrainingDTO)
-                .collect(Collectors.toList());
+    @Operation(
+            summary = "Creates training for trainee",
+            description = "Creates training with trainee specific input data."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully created new training."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @PostMapping("/trainings")
+    @CheckTrainee
+    @ResponseStatus(HttpStatus.CREATED)
+    public String createTraineeTraining(
+            @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
+            HttpServletRequest request
+    ) {
+        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        traineeService.createTraining(authenticatedTrainee, trainingDTO);
+
+        return "Training Created Successfully";
     }
 }

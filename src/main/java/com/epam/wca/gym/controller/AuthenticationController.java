@@ -3,98 +3,85 @@ package com.epam.wca.gym.controller;
 import com.epam.wca.gym.aop.Logging;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
-import com.epam.wca.gym.dto.trainer.TrainerSavingDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.user.UserLoginDTO;
-import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.exception.MyValidationException;
-import com.epam.wca.gym.repository.impl.UsernameDAO;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingTypeService;
-import com.epam.wca.gym.service.impl.UserService;
+import com.epam.wca.gym.service.AuthService;
+import com.epam.wca.gym.service.TraineeService;
+import com.epam.wca.gym.service.TrainerService;
+import com.epam.wca.gym.util.ResponseMessages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthenticationController {
-    @NonNull
-    private UserService userService;
-    @NonNull
-    private TraineeService traineeService;
-    @NonNull
-    private TrainerService trainerService;
-    @NonNull
-    private TrainingTypeService trainingTypeService;
-    @NonNull
-    private UsernameDAO usernameDAO;
+    private final AuthService authService;
+    private final TraineeService traineeService;
+    private final TrainerService trainerService;
 
+    @Operation(
+            summary = "User Login",
+            description = "Authenticates a user based on the username and password."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Login successful"
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
     @PostMapping("/login")
     @Logging
-    public ResponseEntity<String> login(
-            @RequestBody @Valid UserLoginDTO userLoginDTO
-    ) {
-        User user = userService.findByUniqueName(userLoginDTO.username());
+    public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
+        authService.authenticate(loginDTO);
 
-        if (user == null || !user.getPassword().equals(userLoginDTO.password())) {
-            return new ResponseEntity<>("Invalid Username or Password", HttpStatus.BAD_REQUEST);
-        }
-
-        return ResponseEntity.ok("Login Successful");
+        return "Login Successful";
     }
 
+    @Operation(
+            summary = "Register a new trainee",
+            description = "Registers a new trainee and returns their username and password."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = ResponseMessages.SUCCESSFUL_REGISTRATION_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
     @PostMapping(value = "/register/trainee")
-    public ResponseEntity<UserAuthenticatedDTO> registerTrainee(
-            @RequestBody @Valid TraineeRegistrationDTO traineeRegistrationDto
-    ) {
-        Trainee trainee = traineeService.save(traineeRegistrationDto);
-        var newUser = new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
-
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO) {
+        return traineeService.save(traineeDTO);
     }
 
+    @Operation(
+            summary = "Register a new trainer",
+            description = "Registers a new trainer and returns their username and password."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = ResponseMessages.SUCCESSFUL_REGISTRATION_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
     @PostMapping(value = "/register/trainer")
-    public ResponseEntity<UserAuthenticatedDTO> registerTrainer(
-            @RequestBody @Valid TrainerRegistrationDTO trainerRegistrationDTO
-    ) {
-        TrainingType trainingType = trainingTypeService.findByUniqueName(trainerRegistrationDTO.trainingType());
-
-        if (trainingType == null) {
-            throw new MyValidationException("Invalid Training Type choice");
-        }
-
-        TrainerSavingDTO trainerSavingDTO = new TrainerSavingDTO(trainerRegistrationDTO.firstName(),
-                trainerRegistrationDTO.lastName(),
-                trainingType);
-
-        Trainer trainer = trainerService.save(trainerSavingDTO);
-        var newUser = new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
-
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
-    }
-
-    @GetMapping("/register/username/availability/{baseUsername}")
-    public ResponseEntity<Username> findUsernameAvailable(
-            @PathVariable("baseUsername") String baseUsername
-    ) {
-        Username usernameAvailable = usernameDAO.findByUniqueName(baseUsername);
-
-        return new ResponseEntity<>(usernameAvailable, HttpStatus.OK);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO) {
+        return trainerService.save(trainerDTO);
     }
 }

@@ -1,120 +1,133 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.dto.training.TrainingGettingDTO;
 import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
-import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.exception.MyValidationException;
-import com.epam.wca.gym.service.impl.TraineeService;
-import com.epam.wca.gym.service.impl.TrainerService;
-import com.epam.wca.gym.service.impl.TrainingService;
-import com.epam.wca.gym.service.impl.UserService;
-import com.epam.wca.gym.util.TrainingFactory;
+import com.epam.wca.gym.service.UserService;
+import com.epam.wca.gym.util.ResponseMessages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@SecurityRequirement(name = "basicAuth")
 @RestController
 @RequestMapping(value = "/user")
 @RequiredArgsConstructor
 public class UserController {
-    @NonNull
-    private UserService userService;
-    @NonNull
-    private TrainerService trainerService;
-    @NonNull
-    private TraineeService traineeService;
-    @NonNull
-    private TrainingService trainingService;
+    private final UserService userService;
+    @Value("${gym.api.request.attribute.user}")
+    private String authenticatedUserRequestAttributeName;
 
+    @Operation(
+            summary = "Return User username",
+            description = "First ever endpoint."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Returns authenticated user's username."
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @GetMapping("/info")
-    public ResponseEntity<String> getUserInfo(HttpServletRequest request) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+    public String getUserInfo(HttpServletRequest request) {
+        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        return ResponseEntity.ok(authenticatedUser.getUserName());
+        return authenticatedUser.getUserName();
     }
 
+    @Operation(
+            summary = "Change User Password"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Password changed successfully."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @PutMapping(value = "/change/password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> changeUserPassword(
-            @RequestBody @Valid UserUpdateDTO userUpdateDTO,
+    public String changeUserPassword(
+            @RequestBody @Valid UserUpdateDTO userDTO,
             HttpServletRequest request
     ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedUser.getUserName().equals(userUpdateDTO.username()) ||
-            !authenticatedUser.getPassword().equals(userUpdateDTO.oldPassword())) {
-            // authenticated as other user and trying to change password details of other user
-            return new ResponseEntity<>("Not Correct Credentials", HttpStatus.FORBIDDEN);
-        }
+        userService.update(authenticatedUser, userDTO);
 
-        authenticatedUser.setPassword(userUpdateDTO.newPassword());
-        userService.update(authenticatedUser);
-
-        return new ResponseEntity<>("Password Changed Successfully", HttpStatus.OK);
+        return "Password Changed Successfully";
     }
 
-    @PostMapping(value = "/create/training", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createNewTraining(
-            @RequestBody @Valid TrainingGettingDTO trainingGettingDTO,
-            HttpServletRequest request
-            ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
-
-        if (authenticatedUser instanceof Trainee trainee &&
-                authenticatedUser.getUserName().equals(trainingGettingDTO.traineeUsername())) {
-            Trainer trainer = trainerService.findByUniqueName(trainingGettingDTO.trainerUsername());
-
-            if (trainer != null) {
-                trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
-                return ResponseEntity.ok(null);
-            }
-
-            throw new MyValidationException("No Trainer Found With Username"
-                    + trainingGettingDTO.trainerUsername());
-        } else if (authenticatedUser instanceof Trainer trainer &&
-                authenticatedUser.getUserName().equals(trainingGettingDTO.trainerUsername())) {
-            Trainee trainee = traineeService.findByUniqueName(trainingGettingDTO.traineeUsername());
-
-            if (trainee != null) {
-                trainingService.save(TrainingFactory.createTraining(trainingGettingDTO, trainee, trainer));
-                return ResponseEntity.ok(null);
-            }
-
-            throw new MyValidationException("No Trainee Found With Username"
-                    + trainingGettingDTO.traineeUsername());
-        }
-
-        return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
-    }
-
+    // TODO: consider ...Query instead of some ...DTO
+    // query is better suited for queries to database. e.g. Filter, Search
+    @Operation(
+            summary = "Activate or Deactivate User"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "User activation status updated successfully."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
     @PatchMapping(value = "/change/active", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> activateDeactivateUser(
-            @RequestBody @Valid UserActivationDTO userActivationDTO,
+    public String activateDeactivateUser(
+            @RequestBody @Valid UserActivationDTO userDTO,
             HttpServletRequest request
-            ) {
-        User authenticatedUser = (User) request.getAttribute("authenticatedUser");
+    ) {
+        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (!authenticatedUser.getUserName().equals(userActivationDTO.username())) {
-            // authenticated as other user and trying to change active details of other user
-            return new ResponseEntity<>("Not Authorised", HttpStatus.UNAUTHORIZED);
-        }
+        userService.update(authenticatedUser, userDTO);
 
-        authenticatedUser.setActive(userActivationDTO.isActive());
-        userService.update(authenticatedUser);
-
-        return ResponseEntity.ok("Is Active Updated Successfully");
+        return "Is Active Updated Successfully";
     }
 }
+
+// TODO: change manual training type validation checks in code with this:
+//
+
+//    @Target({ElementType.FIELD, ElementType.PARAMETER})
+//    @Retention(RetentionPolicy.RUNTIME)
+//    @Constraint(validatedBy = TrainingTypeValidator.class)
+//    public @interface ValidTrainingType {
+//
+//        String message() default "Invalid training type"; // Default validation message
+//
+//        Class<?>[] groups() default {}; // Required for grouping constraints
+//
+//        Class<? extends Payload>[] payload() default {}; // Can be used by clients to assign custom payload objects
+//    }
+
+//  public class TrainingTypeValidator implements ConstraintValidator<ValidTrainingType, String> {
+//
+//    private final TrainingTypeDAO trainingTypeDAO;
+//    @Override
+//    public boolean isValid(String trainingType, ConstraintValidatorContext context) {
+//        if (trainingType == null || trainingType.trim().isEmpty()) {
+//            return true;
+//        }
+//        return trainingTypeDAO.findByName(trainingType.toUpperCase()).isPresent();
+//    }
+//}

@@ -1,7 +1,9 @@
 package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.service.AuthSService;
+import com.epam.wca.gym.exception.AuthenticationException;
+import com.epam.wca.gym.metrics.RequestCounterMetrics;
+import com.epam.wca.gym.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -9,33 +11,42 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile("secure")
 public class AuthenticationFilter extends HttpFilter {
-    private static final String AUTHENTICATION_URI = "/gym/authenticate";
-    @NonNull
-    private AuthSService authSService;
+    @Value("${gym.api.request.attribute.user}")
+    private String authenticatedUserRequestAttributeName;
+    private static final Set<String> ALLOWED_PREFIXES = Set.of(
+            "/authenticate",
+            "/h2-console",
+            "/admin"
+    );
+
+    private final transient AuthService authService;
+    private final transient RequestCounterMetrics requestCounterMetrics;
 
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
+        requestCounterMetrics.increaseCounter();
 
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 
         Optional<String> uri = Optional.ofNullable(httpRequest.getRequestURI());
 
         // excluding authentication URI from checking
-        if (uri.isPresent() && httpRequest.getRequestURI().startsWith(AUTHENTICATION_URI)) {
+        if (uri.isPresent() && ALLOWED_PREFIXES.stream().anyMatch(uri.get()::startsWith)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
@@ -45,14 +56,15 @@ public class AuthenticationFilter extends HttpFilter {
         String authHeader = httpRequest.getHeader("Authorization");
 
         try {
-            User user = authSService.authenticate(authHeader);
+            User user = authService.authenticate(authHeader);
 
             // Store user in the request attributes
-            httpRequest.setAttribute("authenticatedUser", user);
+            httpRequest.setAttribute(authenticatedUserRequestAttributeName, user);
 
             // Continue the request if authentication is successful
+
             filterChain.doFilter(servletRequest, servletResponse);
-        } catch (IllegalArgumentException e){
+        } catch (AuthenticationException e) {
             // If authentication fails, respond with 401 Unauthorized
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.getWriter().write("HTTP Status 401 - Unauthorized");

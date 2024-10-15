@@ -18,7 +18,7 @@ public class CheckTraineeAspect {
         // This method is empty because it serves as a pointcut definition.
     }
 
-    @Around(value = "checkTraineePointcut(request)")
+    @Around(value = "checkTraineePointcut(request)", argNames = "pjp,request")
     public Object checkTrainee(ProceedingJoinPoint pjp, HttpServletRequest request) throws Throwable {
         User authenticatedUser = (User) request.getAttribute("authenticatedUser");
 
