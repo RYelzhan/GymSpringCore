@@ -40,6 +40,8 @@ public class ApiTimingAspect {
         try {
             return pjp.proceed();
         } catch (Throwable e) {
+            // TODO: choose some exception
+            // I do not know what exception to throw :(
             throw new RuntimeException(e);
         } finally {
             long end = System.nanoTime();

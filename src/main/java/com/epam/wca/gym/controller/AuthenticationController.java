@@ -44,9 +44,9 @@ public class AuthenticationController {
     @PostMapping("/login")
     @Logging
     public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
-        authService.authenticate(loginDTO);
+        String token = authService.authenticate(loginDTO);
 
-        return "Login Successful";
+        return "Login Successful. Token: %s".formatted(token);
     }
 
     @Operation(

@@ -46,7 +46,8 @@ public class TrainerServiceImpl implements TrainerService {
 
         trainerRepository.save(trainer);
 
-        return new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
+        // TODO: find a way to return raw password and save an encoded one
+        return new UserAuthenticatedDTO(trainer.getUsername(), trainer.getPassword());
     }
 
     @Override
@@ -77,6 +78,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Transactional
     public List<TrainerBasicDTO> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers) {
         return trainerRepository.findActiveUnassignedTrainers(assignedTrainers)
                 .stream().map(DTOFactory::createBasicTrainerDTO)

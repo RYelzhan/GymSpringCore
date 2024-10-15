@@ -1,37 +1,38 @@
 -- Populating the USERS table (30 users in total, 15 trainees and 15 trainers)
 INSERT INTO USERS (FIRSTNAME, LASTNAME, USERNAME, PASSWORD, IS_ACTIVE)
 VALUES
-    ('John', 'Doe', 'john.doe', 'password123', true),
-    ('Jane', 'Smith', 'jane.smith', 'password456', true),
-    ('Alice', 'Brown', 'alice.brown', 'password789', true),
-    ('Michael', 'Johnson', 'michael.johnson', 'password111', true),
-    ('Emily', 'Davis', 'emily.davis', 'password222', true),
-    ('David', 'Garcia', 'david.garcia', 'password333', true),
-    ('Emma', 'Martinez', 'emma.martinez', 'password444', true),
-    ('Oliver', 'Lopez', 'oliver.lopez', 'password555', true),
-    ('Sophia', 'Gonzalez', 'sophia.gonzalez', 'password666', true),
-    ('James', 'Wilson', 'james.wilson', 'password777', true),
-    ('Charlotte', 'Moore', 'charlotte.moore', 'password888', true),
-    ('Benjamin', 'Taylor', 'benjamin.taylor', 'password999', true),
-    ('Lucas', 'Anderson', 'lucas.anderson', 'password101', true),
-    ('Amelia', 'Thomas', 'amelia.thomas', 'password202', true),
-    ('Mason', 'Jackson', 'mason.jackson', 'password303', true),
+    ('John', 'Doe', 'john.doe', '$2b$12$enIN.nkQGvz1jH6FvFKmtOMA3z/LaN1qIH7BPQIF1XLUM4Zmjg9t2', true), -- password123
+    ('Jane', 'Smith', 'jane.smith', '$2b$12$BeOlpZ4odLfeQSIrHLpwPe8vYtx9r30UaCKoKPSFv2JH/y9JDoYGC', true), -- password456
+    ('Alice', 'Brown', 'alice.brown', '$2b$12$iFVW60Zr6kG8zcokVReX2OwH7c36HBJtTgOC8dntZYpBtcqp4/t4y', true), -- password789
+    ('Michael', 'Johnson', 'michael.johnson', '$2b$12$CvXBpBm4oShKXMwSIJNclO4GtgIrSbE3Du0QWs7ZDDOLnEPPFKDIy', true), -- password111
+    ('Emily', 'Davis', 'emily.davis', '$2b$12$rpVZLK9HiaDxUaloyIElH.ZqDjQTkA.wwbuueDU3nQPi65sr7oDbS', true), -- password222
+    ('David', 'Garcia', 'david.garcia', '$2b$12$ZS0kskeaRbJBZ0oPTgIVc.Aui0cCB5p5F9BM8VFzaRRb9cjHSez5K', true), -- password333
+    ('Emma', 'Martinez', 'emma.martinez', '$2b$12$CxQdDedkmh1nFKRR7X6D2eFCS5gCBkNTH/92jNNFZ64Ur96RMGYSm', true), -- password444
+    ('Oliver', 'Lopez', 'oliver.lopez', '$2b$12$7ihbAMYOt64pSX3CKHkdEuJI5kXy9AKiYQOdvzrAsUnd9tHKIwTA.', true), -- password555
+    ('Sophia', 'Gonzalez', 'sophia.gonzalez', '$2b$12$7e2IO5B83Eb0unbcvr/bUeGA93juWgTOTZZEy5yQPtSTTc5GDGvXO', true), -- password666
+    ('James', 'Wilson', 'james.wilson', '$2b$12$b7zG5Wy48Qm7LOYoXjWKxOd0UzlSfigkJehIgHRnjNQRMLMBBp/ES', true), -- password777
+    ('Charlotte', 'Moore', 'charlotte.moore', '$2b$12$sBumZOOB2MBxq6.Ia.7IYex2NNQBZEBNjLwYOhzROaMFkBhsN93hG', true), -- password888
+    ('Benjamin', 'Taylor', 'benjamin.taylor', '$2b$12$zRv9MrjTjGHaSKQaEho3veaexpVfLIfluwvqgQ6j7n8oybJdQlVLS', true), -- password999
+    ('Lucas', 'Anderson', 'lucas.anderson', '$2b$12$/BUsIS7nPMtYlvZ3YVqnZ.KD98eG5wpJkVCg14Zc87BjRmv/Kz/V.', true), -- password101
+    ('Amelia', 'Thomas', 'amelia.thomas', '$2b$12$U1YVSoHBHie0DtHHWhDQq.6h6/fBGgV0cK52ROhqvwrJbYSiGdndC', true), -- password202
+    ('Mason', 'Jackson', 'mason.jackson', '$2b$12$XmfwWP0/zEER0MPtl/FF4u2XXfayAn.g9gQTxjzPS4AAT/9lKetj.', true), -- password303
 -- Trainers
-    ('Ethan', 'White', 'ethan.white', 'password404', true),
-    ('Olivia', 'Harris', 'olivia.harris', 'password505', true),
-    ('Isabella', 'Clark', 'isabella.clark', 'password606', true),
-    ('Aiden', 'Lewis', 'aiden.lewis', 'password707', true),
-    ('Ava', 'Young', 'ava.young', 'password808', true),
-    ('Jacob', 'Walker', 'jacob.walker', 'password909', true),
-    ('Liam', 'Hall', 'liam.hall', 'password010', true),
-    ('Mia', 'Allen', 'mia.allen', 'password112', true),
-    ('Noah', 'King', 'noah.king', 'password213', true),
-    ('Ella', 'Wright', 'ella.wright', 'password314', true),
-    ('William', 'Scott', 'william.scott', 'password415', true),
-    ('Abigail', 'Torres', 'abigail.torres', 'password516', true),
-    ('Elijah', 'Nguyen', 'elijah.nguyen', 'password617', true),
-    ('Avery', 'Hill', 'avery.hill', 'password718', true),
-    ('Evelyn', 'Green', 'evelyn.green', 'password819', true);
+    ('Ethan', 'White', 'ethan.white', '$2b$12$63dYDkOIzIJYN8X5naDRCO5W6ipvg0Pr2t1NE/YiA5GpDMuPD7OSK', true), -- password404
+    ('Olivia', 'Harris', 'olivia.harris', '$2b$12$OGjeXXAZ3bfjiEHUOmRnwuI0o/PSlX2uHTfF3hsIckloS/YGL4VzO', true), -- password505
+    ('Isabella', 'Clark', 'isabella.clark', '$2b$12$XKTMmZ9CQ/j2OY.hLWhYJO2OujrUwe0dWNJXNae4mPptgMUiuvaiu', true), -- password606
+    ('Aiden', 'Lewis', 'aiden.lewis', '$2b$12$abNItLOghizbupXI3W/jwOTyKHuVVOkWy31wtmgMEfaAOEIVnYov2', true), -- password707
+    ('Ava', 'Young', 'ava.young', '$2b$12$QKRAvHJAhkPj/wwwBnA1ZOEosgf.nFRBBQ93zc6TiUotKscR9l0va', true), -- password808
+    ('Jacob', 'Walker', 'jacob.walker', '$2b$12$cOyO7869GC7Of9ruD4xGye.mFZatlVyrDeDy2HlsARr8ayeq2CjGW', true), -- password909
+    ('Liam', 'Hall', 'liam.hall', '$2b$12$h0hLe/Bgx8BcrH62vxVgFeOrNrxOvN2/vbmodfO4G/UMZQf//dC7e', true), -- password010
+    ('Mia', 'Allen', 'mia.allen', '$2b$12$mbGrGYnz.i2clgLGyhUkBeqKb2xPkQF1fnvYO/M.HgkBKguGBh8iS', true), -- password112
+    ('Noah', 'King', 'noah.king', '$2b$12$Jm6qioSa679fkyZUka6euuKiET.XSVyNf33s8DqB/WNVGuS3sX/QG', true), -- password213
+    ('Ella', 'Wright', 'ella.wright', '$2b$12$mo/P2CkOKgV5mG4KyWkTV.DJlpOKlhI3XqY4WDozSnIi.1yejRwB6', true), -- password314
+    ('William', 'Scott', 'william.scott', '$2b$12$J8OXFC6ees6f34sAA7e9P.3VJBxp/ixMRAUl3L4BdFEJoR2N4lsLG', true), -- password415
+    ('Abigail', 'Torres', 'abigail.torres', '$2b$12$5q2eaRCbf0mlFTHku8d/S.hGbmbL/ge16pQFG.yZeYSUTgLbrUvZ6', true), -- password516
+    ('Elijah', 'Nguyen', 'elijah.nguyen', '$2b$12$hTZLqdBzk6Guxelz9SjKAeoKKf8XDwMQqxRljviADz0Y3h/GZ86aK', true), -- password617
+    ('Avery', 'Hill', 'avery.hill', '$2b$12$egu8.534d/MzIGfzQ2T7IusKQnGvpw5dfITkyW91QfnQk4dx8ao86', true), -- password718
+    ('Evelyn', 'Green', 'evelyn.green', '$2b$12$HiF9TMx9zuyuKqXB3nV7xuM0fbgl0gpCKgaixGPVEGzE.veEPPXSO', true); -- password819
+
 
 -- Populating the TRAINING_TYPE table
 INSERT INTO TRAINING_TYPE (TYPE)

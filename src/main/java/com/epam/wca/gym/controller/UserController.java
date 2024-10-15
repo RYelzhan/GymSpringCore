@@ -45,7 +45,7 @@ public class UserController {
     public String getUserInfo(HttpServletRequest request) {
         var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        return authenticatedUser.getUserName();
+        return authenticatedUser.getUsername();
     }
 
     @Operation(

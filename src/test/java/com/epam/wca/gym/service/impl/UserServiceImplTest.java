@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
@@ -67,7 +69,7 @@ class UserServiceImplTest {
     void testFindByUsername() {
         // Given
         String username = "testUser";
-        when(userRepository.findUserByUserName(username)).thenReturn(user);
+        when(userRepository.findUserByUserName(username)).thenReturn(Optional.of(user));
 
         // When
         User foundUser = userService.findByUsername(username);

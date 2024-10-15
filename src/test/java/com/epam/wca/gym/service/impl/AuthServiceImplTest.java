@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -62,7 +64,7 @@ class AuthServiceImplTest {
                 true
         );
 
-        when(userRepository.findUserByUserName(anyString())).thenReturn(user);
+        when(userRepository.findUserByUserName(anyString())).thenReturn(Optional.of(user));
 
         assertThrows(AuthenticationException.class, () -> authService.authenticate(header));
     }
@@ -78,7 +80,7 @@ class AuthServiceImplTest {
                 true
         );
 
-        when(userRepository.findUserByUserName(anyString())).thenReturn(user);
+        when(userRepository.findUserByUserName(anyString())).thenReturn(Optional.of(user));
 
         User authenticatedUser = authService.authenticate(header);
 

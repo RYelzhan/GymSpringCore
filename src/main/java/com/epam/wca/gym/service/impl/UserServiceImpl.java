@@ -6,6 +6,7 @@ import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findUserByUserName(username);
+        return userRepository.findUserByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

@@ -8,12 +8,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -23,7 +27,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +41,6 @@ public class User {
     private String password;
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
-    // delete column
 
     public User(String firstName,
                 String lastName,
@@ -78,5 +81,39 @@ public class User {
                 "lastName = " + lastName + '\n' +
                 "userName = " + userName + '\n' +
                 "isActive = " + isActive + '\n';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("USER"));
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public Object getRole() {
+        return new SimpleGrantedAuthority("USER");
     }
 }

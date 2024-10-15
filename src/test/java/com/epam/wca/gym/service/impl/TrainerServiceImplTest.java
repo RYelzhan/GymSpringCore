@@ -90,7 +90,7 @@ class TrainerServiceImplTest {
             UserAuthenticatedDTO result = trainerService.save(trainerDTO);
 
             // Assert: Validate the result
-            assertEquals(trainer.getUserName(), result.username());
+            assertEquals(trainer.getUsername(), result.username());
             assertEquals(trainer.getPassword(), result.password());
 
             // Verify interactions

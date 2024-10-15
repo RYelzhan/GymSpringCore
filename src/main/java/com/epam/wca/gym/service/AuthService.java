@@ -6,5 +6,5 @@ import com.epam.wca.gym.entity.User;
 public interface AuthService {
     User authenticate(String authHeader);
 
-    void authenticate(UserLoginDTO loginDTO);
+    String authenticate(UserLoginDTO loginDTO);
 }

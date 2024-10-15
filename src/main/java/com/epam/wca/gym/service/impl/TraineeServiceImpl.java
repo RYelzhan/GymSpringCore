@@ -44,7 +44,8 @@ public class TraineeServiceImpl implements TraineeService {
 
         traineeRepository.save(trainee);
 
-        return new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
+        // TODO: find a way to return raw password and save an encoded one
+        return new UserAuthenticatedDTO(trainee.getUsername(), trainee.getPassword());
     }
 
     @Override
@@ -74,6 +75,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Transactional
     public List<TrainerBasicDTO> getListOfNotAssignedTrainers(Trainee trainee) {
         return trainerService.findActiveUnassignedTrainers(trainee.getTrainersAssigned());
     }

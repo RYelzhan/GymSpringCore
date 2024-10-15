@@ -8,6 +8,7 @@ import com.epam.wca.gym.service.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     }
 
     @Override
+    @Transactional
     public List<TrainingTypeBasicDTO> findAll() {
         return trainingTypeRepository.findAll()
                 .stream().map(DTOFactory::createBasicTrainingTypeDTO)
