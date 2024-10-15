@@ -10,6 +10,7 @@ import com.epam.wca.gym.service.JwtService;
 import com.epam.wca.gym.util.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private static final int CREDENTIALS_LENGTH = 2;
     private static final int USERNAME_INDEX = 0;
     private static final int PASSWORD_INDEX = 1;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
@@ -50,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     public String authenticate(UserLoginDTO loginDTO) {
         Optional<User> user = userRepository.findUserByUserName(loginDTO.username());
 
-        if (user.isEmpty() || !user.get().getPassword().equals(loginDTO.password())) {
+        if (user.isEmpty() || !passwordEncoder.matches(loginDTO.password(), user.get().getPassword())) {
             throw new BadControllerRequestException("Invalid Username or Password");
         }
 

@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 // TODO: Consider running through Flyway once more and use it for transition between different environments
 // TODO: Actuator Health Check should check the data in the database
-// TODO: Подключить систему мониторинга Promotheus, чтобы можно было смотреть графики. (Docker Promotheus)
+// TODO: Add Brute Force protector. Block user for 5 minutes on 3 unsuccessful logins
+// TODO: Configure CORS policy in Spring Security
 
 @SpringBootApplication
 public class SpringGymApplication {

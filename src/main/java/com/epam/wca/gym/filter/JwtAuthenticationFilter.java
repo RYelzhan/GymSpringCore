@@ -2,6 +2,8 @@ package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,10 +45,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String jwtToken = authHeader.substring(7);
 
-        final String username = jwtService.extractUsername(jwtToken);
+        try {
+            final String username = jwtService.extractUsername(jwtToken);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            try {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User user = (User) userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwtToken, user)) {
@@ -65,14 +67,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
-            } catch (UsernameNotFoundException e) {
-                // If authentication fails, respond with 401 Unauthorized
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(e.getMessage());
-                return;
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (UsernameNotFoundException e) {
+            // If authentication fails, respond with 401 Unauthorized
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(e.getMessage());
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token is Expired. Refresh it!");
+        } catch (SignatureException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token is invalid.");
+        }
     }
 }
