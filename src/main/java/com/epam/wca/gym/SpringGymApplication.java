@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 // TODO: Consider running through Flyway once more and use it for transition between different environments
 // TODO: Actuator Health Check should check the data in the database
-// TODO: Add Brute Force protector. Block user for 5 minutes on 3 unsuccessful logins
 // TODO: Configure CORS policy in Spring Security
+// TODO: Add Refresh tokens. They are in database
 
 @SpringBootApplication
 public class SpringGymApplication {

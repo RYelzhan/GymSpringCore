@@ -23,6 +23,7 @@ import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.TrainingFactory;
 import com.epam.wca.gym.util.UserFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,16 +37,20 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public UserAuthenticatedDTO save(TraineeRegistrationDTO dto) {
         var trainee = UserFactory.createTrainee(dto);
 
+        var authenticatedUser = new UserAuthenticatedDTO(trainee.getUsername(), trainee.getPassword());
+
+        trainee.setPassword(passwordEncoder.encode(trainee.getPassword()));
+
         traineeRepository.save(trainee);
 
-        // TODO: find a way to return raw password and save an encoded one
-        return new UserAuthenticatedDTO(trainee.getUsername(), trainee.getPassword());
+        return authenticatedUser;
     }
 
     @Override

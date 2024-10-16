@@ -1,7 +1,7 @@
 package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.service.JwtService;
+import com.epam.wca.gym.service.impl.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -52,6 +52,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 User user = (User) userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwtToken, user)) {
+                    // TODO: consider rewriting controllers to get AuthenticatedUsed information from Authentication
+                    // or SecurityContext
                     // Store user in the request attributes
                     request.setAttribute(authenticatedUserRequestAttributeName, user);
 

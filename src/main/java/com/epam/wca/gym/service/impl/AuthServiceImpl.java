@@ -6,10 +6,10 @@ import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.AuthService;
-import com.epam.wca.gym.service.JwtService;
 import com.epam.wca.gym.util.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -48,14 +48,24 @@ public class AuthServiceImpl implements AuthService {
         throw new AuthenticationException("Not authenticated");
     }
 
+    /**
+     * If user credentials are incorrect, throw an exception which will be handled by @ExceptionHandler,
+     * and return Not_Authorised code
+     * @param loginDTO information on login credentials
+     */
+
+    @Deprecated(since = "2.2")
     @Override
-    public String authenticate(UserLoginDTO loginDTO) {
+    public void authenticate(UserLoginDTO loginDTO) {
         Optional<User> user = userRepository.findUserByUserName(loginDTO.username());
 
         if (user.isEmpty() || !passwordEncoder.matches(loginDTO.password(), user.get().getPassword())) {
             throw new BadControllerRequestException("Invalid Username or Password");
         }
+    }
 
-        return jwtService.generateToken(user.get());
+    @Override
+    public String generateToken(UserDetails user) {
+        return jwtService.generateToken(user);
     }
 }

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -25,7 +24,6 @@ public class ProfileServiceImpl implements ProfileService {
     private String characters;
     @Value("${gym.api.profile.password.length}")
     private int passwordLength;
-    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void injectIntoEntities() {
@@ -67,6 +65,6 @@ public class ProfileServiceImpl implements ProfileService {
             password.append(characters.charAt(index));
         }
 
-        return passwordEncoder.encode(password.toString());
+        return password.toString();
     }
 }

@@ -109,6 +109,8 @@ public class TraineeController {
     public void deleteTrainee(HttpServletRequest request) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
+        // TODO: invalidation refresh token logic
+
         traineeService.deleteById(authenticatedTrainee.getId());
     }
 

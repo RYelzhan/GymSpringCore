@@ -7,6 +7,7 @@ import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void update(User user, UserUpdateDTO userDTO) {
-        user.setPassword(userDTO.newPassword());
+        user.setPassword(passwordEncoder.encode(userDTO.newPassword()));
 
         userRepository.save(user);
     }

@@ -105,6 +105,8 @@ public class TrainerController {
     public void deleteTrainer(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
 
+        // TODO: invalidation refresh token logic
+
         trainerService.deleteById(authenticatedTrainer.getId());
     }
 

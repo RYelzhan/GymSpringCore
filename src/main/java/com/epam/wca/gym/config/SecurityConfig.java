@@ -59,6 +59,7 @@ public class SecurityConfig {
     // used by my provider
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // default strength (a.k.a hash rounds) is 10
+        return new BCryptPasswordEncoder(11);
     }
 }

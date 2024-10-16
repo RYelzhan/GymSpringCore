@@ -4,17 +4,21 @@ import com.epam.wca.gym.aop.Logging;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
-import com.epam.wca.gym.dto.user.UserLoginDTO;
 import com.epam.wca.gym.service.AuthService;
+import com.epam.wca.gym.service.impl.JwtService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +32,7 @@ public class AuthenticationController {
     private final AuthService authService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
+    private final JwtService jwtService;
 
     @Operation(
             summary = "User Login",
@@ -38,15 +43,38 @@ public class AuthenticationController {
             description = "Login successful"
     )
     @ApiResponse(
-            responseCode = "400",
-            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @PostMapping("/login")
     @Logging
-    public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
-        String token = authService.authenticate(loginDTO);
+    public String login(@AuthenticationPrincipal UserDetails user) {
+        String token = authService.generateToken(user);
 
         return "Login Successful. Token: %s".formatted(token);
+    }
+
+    @Operation(
+            summary = "User Logout",
+            description = "Logouts a user based on the username and password."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Logout successful"
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @PostMapping("/logout")
+    @Logging
+    public String logout(HttpServletRequest request) {
+        // not sure if there is need as both BasicAuth and JwtToken are stateless
+        SecurityContextHolder.clearContext();
+
+        // TODO: refresh token deleting logic
+
+        return "Logout Successful";
     }
 
     @Operation(
