@@ -20,12 +20,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private static final Set<String> ALLOWED_PREFIXES = Set.of(
+            "/authenticate",
+            "/h2-console",
+            "/admin",
+            "/v3/api-docs"
+    );
 
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;
@@ -36,52 +44,83 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+        Optional<String> uri = Optional.ofNullable(request.getRequestURI());
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (isUriAllowed(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwtToken = authHeader.substring(7);
+        final String authHeader = request.getHeader("Authorization");
+
+        if (!isBearerTokenPresent(authHeader)) {
+            respondWithUnauthorized(response, "Jwt Token is required for Authentication.");
+            return;
+        }
+
+        final String jwtToken = extractJwtToken(authHeader);
 
         try {
-            final String username = jwtService.extractUsername(jwtToken);
+            String username = jwtService.extractUsername(jwtToken);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                User user = (User) userDetailsService.loadUserByUsername(username);
-
-                if (jwtService.isTokenValid(jwtToken, user)) {
-                    // TODO: consider rewriting controllers to get AuthenticatedUsed information from Authentication
-                    // or SecurityContext
-                    // Store user in the request attributes
-                    request.setAttribute(authenticatedUserRequestAttributeName, user);
-
-                    var authenticationToken = new UsernamePasswordAuthenticationToken(
-                            user,
-                            null,
-                            user.getAuthorities()
-                    );
-
-                    authenticationToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                }
+                handleAuthentication(request, response, filterChain, jwtToken, username);
+            } else {
+                filterChain.doFilter(request, response);
             }
-
-            filterChain.doFilter(request, response);
         } catch (UsernameNotFoundException e) {
-            // If authentication fails, respond with 401 Unauthorized
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getMessage());
+            respondWithUnauthorized(response, e.getMessage());
         } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token is Expired. Refresh it!");
+            respondWithUnauthorized(response, "Token is Expired. Refresh it!");
         } catch (SignatureException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token is invalid.");
+            respondWithUnauthorized(response, "Token is invalid.");
         }
+    }
+
+    private boolean isUriAllowed(Optional<String> uri) {
+        return uri.isPresent() && ALLOWED_PREFIXES.stream().anyMatch(uri.get()::startsWith);
+    }
+
+    private boolean isBearerTokenPresent(String authHeader) {
+        return authHeader != null && authHeader.startsWith("Bearer ");
+    }
+
+    private String extractJwtToken(String authHeader) {
+        return authHeader.substring(7); // Remove "Bearer " prefix
+    }
+
+    private void handleAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain,
+            String jwtToken,
+            String username
+    ) throws IOException, ServletException {
+        User user = (User) userDetailsService.loadUserByUsername(username);
+
+        if (jwtService.isTokenValid(jwtToken, user)) {
+            setAuthenticationForUser(request, user);
+            filterChain.doFilter(request, response);
+        } else {
+            respondWithUnauthorized(response, "Token is invalid.");
+        }
+    }
+
+    private void setAuthenticationForUser(HttpServletRequest request, User user) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(
+                user,
+                null,
+                user.getAuthorities()
+        );
+
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        request.setAttribute(authenticatedUserRequestAttributeName, user);
+    }
+
+    private void respondWithUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("Error: %s".formatted(message));
     }
 }

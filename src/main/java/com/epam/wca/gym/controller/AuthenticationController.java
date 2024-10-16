@@ -5,13 +5,13 @@ import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.service.AuthService;
-import com.epam.wca.gym.service.impl.JwtService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
+import com.epam.wca.gym.service.impl.JwtService;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,6 +46,7 @@ public class AuthenticationController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @SecurityRequirement(name = "basicAuth")
     @PostMapping("/login")
     @Logging
     public String login(@AuthenticationPrincipal UserDetails user) {
@@ -66,9 +67,10 @@ public class AuthenticationController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @SecurityRequirement(name = "basicAuth")
     @PostMapping("/logout")
     @Logging
-    public String logout(HttpServletRequest request) {
+    public String logout() {
         // not sure if there is need as both BasicAuth and JwtToken are stateless
         SecurityContextHolder.clearContext();
 

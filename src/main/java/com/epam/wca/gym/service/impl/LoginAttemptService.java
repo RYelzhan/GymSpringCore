@@ -47,7 +47,7 @@ public class LoginAttemptService {
         return attempts >= MAX_ATTEMPT;
     }
 
-    private String getClientIP() {
+    public String getClientIP() {
         HttpServletRequest request = getCurrentHttpRequest();
         if (request != null) {
             final String xfHeader = request.getHeader("X-Forwarded-For");

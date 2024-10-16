@@ -25,7 +25,7 @@ public class ApiTimingAspect {
     }
 
     @Around(value = "apiTimingPointcut()")
-    public Object apiTiming(ProceedingJoinPoint pjp) {
+    public Object apiTiming(ProceedingJoinPoint pjp) throws Throwable {
         String className = pjp.getTarget().getClass().getSimpleName();
         String methodName = pjp.getSignature().getName();
 
@@ -39,10 +39,6 @@ public class ApiTimingAspect {
 
         try {
             return pjp.proceed();
-        } catch (Throwable e) {
-            // TODO: choose some exception
-            // I do not know what exception to throw :(
-            throw new RuntimeException(e);
         } finally {
             long end = System.nanoTime();
             timer.record(Duration.ofNanos(end - start));

@@ -1,5 +1,6 @@
 package com.epam.wca.gym.config;
 
+import com.epam.wca.gym.advice.RestAuthenticationEntryPoint;
 import com.epam.wca.gym.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,7 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorise ->
                         authorise
                                 .requestMatchers(HttpMethod.POST, "/authenticate/register/*").permitAll()
-                                .requestMatchers("/admin/*", "/v3/api-docs", "/h2-console/**").permitAll()
+                                .requestMatchers("/admin/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -40,7 +42,11 @@ public class SecurityConfig {
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
-                ).httpBasic(Customizer.withDefaults());
+                )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint)
+                )
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

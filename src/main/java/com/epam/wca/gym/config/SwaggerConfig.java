@@ -17,8 +17,13 @@ import java.util.List;
         info = @Info(
                 title = "My Gym API",
                 description = "API for GYM management",
-                version = "2.1"
+                version = "2.2"
         )
+)
+@SecurityScheme(
+        name = "jwtToken",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer"
 )
 @SecurityScheme(
         name = "basicAuth",

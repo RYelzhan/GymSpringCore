@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@SecurityRequirement(name = "basicAuth")
+@SecurityRequirement(name = "jwtToken")
 @RestController
 @RequestMapping(value = "/user/trainee")
 @RequiredArgsConstructor
