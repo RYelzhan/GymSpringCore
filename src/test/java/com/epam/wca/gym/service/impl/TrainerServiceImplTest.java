@@ -292,7 +292,7 @@ class TrainerServiceImplTest {
                 null
         );
 
-        when(trainerRepository.findTrainerByUserName(username)).thenReturn(trainer);
+        when(trainerRepository.findTrainerByUserName(username)).thenReturn(Optional.of(trainer));
 
         // When
         Trainer result = trainerService.findByUsername(username);
@@ -320,7 +320,7 @@ class TrainerServiceImplTest {
 
         Trainee trainee = new Trainee("Jane", "Smith", null, null);
         trainee.setTrainersAssigned(new HashSet<>());
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(trainee);
+        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.of(trainee));
 
         // When
         trainerService.createTraining(trainer, trainingDTO);

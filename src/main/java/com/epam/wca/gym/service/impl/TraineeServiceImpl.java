@@ -11,8 +11,7 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.ControllerValidationException;
-import com.epam.wca.gym.exception.ForbiddenActionException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.service.TraineeService;
@@ -101,9 +100,10 @@ public class TraineeServiceImpl implements TraineeService {
                     Trainer trainer = trainerService.findByUsername(username);
 
                     if (trainer == null) {
-                        throw new ForbiddenActionException("No Trainer Found with Username: " +
-                                username +
-                                ". No Trainers Added");
+                        throw new InternalErrorException(
+                                "No Trainer Found with Username: %s. No Trainers Added"
+                                        .formatted(username)
+                        );
                     }
 
                     addedTrainers.add(trainer);
@@ -133,11 +133,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public void createTraining(Trainee trainee, TraineeTrainingCreateDTO trainingDTO) {
-        Trainer trainer = trainerService.findByUsername(trainingDTO.trainerUsername());
-
-        if (trainer == null) {
-            throw new ControllerValidationException("No Trainer Found with Username: " + trainingDTO.trainerUsername());
-        }
+        var trainer = trainerService.findByUsername(trainingDTO.trainerUsername());
 
         trainingService.save(TrainingFactory.createTraining(
                 trainingDTO,

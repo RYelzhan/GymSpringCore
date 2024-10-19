@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,7 +32,7 @@ class TrainingTypeServiceImplTest {
         // Given
         String type = "Yoga";
         TrainingType expectedTrainingType = new TrainingType(); // Create and populate as needed
-        when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(expectedTrainingType);
+        when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(Optional.of(expectedTrainingType));
 
         // When
         TrainingType actualTrainingType = trainingTypeService.findByType(type);

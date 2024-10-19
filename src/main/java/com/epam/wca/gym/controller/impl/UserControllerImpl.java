@@ -38,7 +38,6 @@ public class UserControllerImpl implements UserController {
         return "Password Changed Successfully";
     }
 
-    // TODO: consider ...Query instead of some ...DTO
     // query is better suited for queries to database. e.g. Filter, Search
     @Override
     public String activateDeactivateUser(
@@ -52,30 +51,3 @@ public class UserControllerImpl implements UserController {
         return "Is Active Updated Successfully";
     }
 }
-
-// TODO: change manual training type validation checks in code with this:
-//
-
-//    @Target({ElementType.FIELD, ElementType.PARAMETER})
-//    @Retention(RetentionPolicy.RUNTIME)
-//    @Constraint(validatedBy = TrainingTypeValidator.class)
-//    public @interface ValidTrainingType {
-//
-//        String message() default "Invalid training type"; // Default validation message
-//
-//        Class<?>[] groups() default {}; // Required for grouping constraints
-//
-//        Class<? extends Payload>[] payload() default {}; // Can be used by clients to assign custom payload objects
-//    }
-
-//  public class TrainingTypeValidator implements ConstraintValidator<ValidTrainingType, String> {
-//
-//    private final TrainingTypeDAO trainingTypeDAO;
-//    @Override
-//    public boolean isValid(String trainingType, ConstraintValidatorContext context) {
-//        if (trainingType == null || trainingType.trim().isEmpty()) {
-//            return true;
-//        }
-//        return trainingTypeDAO.findByName(trainingType.toUpperCase()).isPresent();
-//    }
-//}

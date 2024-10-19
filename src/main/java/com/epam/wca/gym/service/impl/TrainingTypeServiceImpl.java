@@ -2,7 +2,7 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.repository.TrainingTypeRepository;
 import com.epam.wca.gym.service.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
@@ -19,13 +19,8 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
 
     @Override
     public TrainingType findByType(String type) {
-        var trainingType = trainingTypeRepository.findTrainingTypeByType(type);
-
-        if (trainingType == null) {
-            throw new ControllerValidationException("Invalid Training Type choice");
-        }
-
-        return trainingType;
+        return trainingTypeRepository.findTrainingTypeByType(type)
+                .orElseThrow(() -> new InternalErrorException("Invalid Training Type choice"));
     }
 
     @Override
