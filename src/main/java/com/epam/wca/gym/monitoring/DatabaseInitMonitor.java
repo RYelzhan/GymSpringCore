@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -19,21 +20,41 @@ public class DatabaseInitMonitor implements HealthIndicator {
     @Override
     public Health health() {
         if (isHealthGood()) {
-            return Health.up().withDetails(Map.of(DATABASE_INIT, "Database was correctly initialised")).build();
+            Map<String, Integer> details = new HashMap<>();
+
+            details.put("users_table", getTableRowCount("users"));
+            details.put("trainees_table", getTableRowCount("trainees"));
+            details.put("trainers_table", getTableRowCount("trainers"));
+            details.put("trainings_table", getTableRowCount("trainings"));
+            details.put("training_type_table", getTableRowCount("training_type"));
+
+            return Health.up()
+                    .withDetails(Map.of(DATABASE_INIT, "Database was correctly initialised"))
+                    .withDetails(details)
+                    .build();
         }
-        return Health.down().withDetails(Map.of(DATABASE_INIT, "Database was not correctly initialised")).build();
+        return Health
+                .down()
+                .withDetails(Map.of(DATABASE_INIT, "Database was not correctly initialised"))
+                .build();
     }
 
     private boolean isHealthGood() {
         try {
             // Example query: checking if a specific table has rows
             String query = "SELECT COUNT(*) FROM USERS"; // Replace with your table name
-            int rowCount = jdbcTemplate.queryForObject(query, Integer.class);
+            Integer rowCount = jdbcTemplate.queryForObject(query, Integer.class);
 
-            return rowCount > 0;
+            return rowCount != null && rowCount > 0;
         } catch (Exception ex) {
             // In case of any exception (e.g., table not found), return DOWN status
             return false;
         }
+    }
+
+    private Integer getTableRowCount(String tableName) {
+        String query = "SELECT COUNT(*) FROM %s".formatted(tableName);
+
+        return jdbcTemplate.queryForObject(query, Integer.class);
     }
 }

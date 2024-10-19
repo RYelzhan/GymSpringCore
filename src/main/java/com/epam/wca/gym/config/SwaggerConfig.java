@@ -23,7 +23,8 @@ import java.util.List;
 @SecurityScheme(
         name = "jwtToken",
         type = SecuritySchemeType.HTTP,
-        scheme = "bearer"
+        scheme = "bearer",
+        bearerFormat = "JWT"
 )
 @SecurityScheme(
         name = "basicAuth",

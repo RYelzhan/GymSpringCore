@@ -8,20 +8,14 @@ import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.service.TraineeService;
-import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,20 +23,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RestController
 @RequestMapping(value = "/user/trainee")
-@RequiredArgsConstructor
-public class TraineeController {
-    private final TraineeService traineeService;
-
-    @Value("${gym.api.request.attribute.user}")
-    private String authenticatedUserRequestAttributeName;
-
+public interface TraineeController {
     @Operation(
             summary = "Get Trainee Profile",
             description = "Retrieves the profile of a trainee by authentication details."
@@ -57,12 +43,7 @@ public class TraineeController {
     )
     @GetMapping("/profiles")
     @CheckTrainee
-    @Transactional
-    public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
-        var trainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return DTOFactory.createTraineeSendDTO(trainee);
-    }
+    TraineeSendDTO getTraineeProfile(HttpServletRequest request);
 
     @Operation(
             summary = "Update Trainee Profile",
@@ -82,14 +63,10 @@ public class TraineeController {
     )
     @PutMapping(value = "/profiles", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
-    public TraineeSendDTO updateTraineeProfile(
+    TraineeSendDTO updateTraineeProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return traineeService.update(authenticatedTrainee, traineeDTO);
-    }
+    );
 
     @Operation(
             summary = "Delete Trainee Profile",
@@ -106,13 +83,7 @@ public class TraineeController {
     @DeleteMapping(value = "/profiles")
     @CheckTrainee
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTrainee(HttpServletRequest request) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        // TODO: invalidation refresh token logic
-
-        traineeService.deleteById(authenticatedTrainee.getId());
-    }
+    void deleteTrainee(HttpServletRequest request);
 
     @Operation(
             summary = "Get Available Trainers for a Trainee",
@@ -128,11 +99,7 @@ public class TraineeController {
     )
     @GetMapping("/trainers/available")
     @CheckTrainee
-    public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
-    }
+    public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request);
 
     @Operation(
             summary = "Update Trainer List for a Trainee",
@@ -152,16 +119,11 @@ public class TraineeController {
     )
     @PutMapping(value = "/trainers/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainee
-    public List<TrainerBasicDTO> updateTrainerList(
+    List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
+    );
 
-        return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
-    }
-
-    //TODO: transfer all input to RequestParam
     @Operation(
             summary = "Retrieve a list of trainings with filter",
             description = "Retrieve a list of trainings for a specific trainee based on filter criteria."
@@ -176,14 +138,10 @@ public class TraineeController {
     )
     @GetMapping("/trainings/filter")
     @CheckTrainee
-    public List<TrainingBasicDTO> getTraineeTrainingsList(
+    List<TrainingBasicDTO> getTraineeTrainingsList(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingQuery);
-    }
+    );
 
     @Operation(
             summary = "Creates training for trainee",
@@ -204,14 +162,8 @@ public class TraineeController {
     @PostMapping("/trainings")
     @CheckTrainee
     @ResponseStatus(HttpStatus.CREATED)
-    public String createTraineeTraining(
+    String createTraineeTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        traineeService.createTraining(authenticatedTrainee, trainingDTO);
-
-        return "Training Created Successfully";
-    }
+    );
 }

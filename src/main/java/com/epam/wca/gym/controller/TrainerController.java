@@ -6,17 +6,12 @@ import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.service.TrainerService;
-import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,20 +21,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RestController
 @RequestMapping(value = "user/trainer")
-@RequiredArgsConstructor
-public class TrainerController {
-    private final TrainerService trainerService;
-
-    @Value("${gym.api.request.attribute.user}")
-    private String authenticatedUserRequestAttributeName;
-
+public interface TrainerController {
     @Operation(
             summary = "Get Trainer Profile",
             description = "Retrieves the profile of a trainer by authentication details."
@@ -54,11 +41,7 @@ public class TrainerController {
     )
     @GetMapping("/profiles")
     @CheckTrainer
-    public TrainerSendDTO getTrainerProfile(HttpServletRequest request) {
-        var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return DTOFactory.createTrainerSendDTO(authenticatedTrainer);
-    }
+    TrainerSendDTO getTrainerProfile(HttpServletRequest request);
 
     @Operation(
             summary = "Update Trainer Profile",
@@ -78,14 +61,10 @@ public class TrainerController {
     )
     @PutMapping(value = "/profiles", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CheckTrainer
-    public TrainerSendDTO updateTrainerProfile(
+    TrainerSendDTO updateTrainerProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return trainerService.update(authenticatedTrainer, trainerUpdateDTO);
-    }
+    );
 
     @Operation(
             summary = "Delete Trainee Profile",
@@ -102,15 +81,8 @@ public class TrainerController {
     @DeleteMapping(value = "/profiles")
     @CheckTrainer
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTrainer(HttpServletRequest request) {
-        var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
+    void deleteTrainer(HttpServletRequest request);
 
-        // TODO: invalidation refresh token logic
-
-        trainerService.deleteById(authenticatedTrainer.getId());
-    }
-
-    //TODO: transfer all input to RequestParam
     @Operation(
             summary = "Get Trainer Trainings List"
     )
@@ -128,14 +100,10 @@ public class TrainerController {
     )
     @PostMapping("/trainings/filter")
     @CheckTrainer
-    public List<TrainingBasicDTO> getTrainerTrainingsList(
+    List<TrainingBasicDTO> getTrainerTrainingsList(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        return trainerService.findTrainingsFiltered(authenticatedTrainer.getId(), trainerTrainingQuery);
-    }
+    );
 
     @Operation(
             summary = "Creates training for trainer",
@@ -156,14 +124,9 @@ public class TrainerController {
     @PostMapping("/trainings")
     @CheckTrainer
     @ResponseStatus(HttpStatus.CREATED)
-    public String createTraineeTraining(
+    String createTraineeTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             HttpServletRequest request
-    ) {
-        var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
-
-        trainerService.createTraining(authenticatedTrainer, trainingDTO);
-
-        return "Training Created Successfully";
-    }
+    );
 }
+
