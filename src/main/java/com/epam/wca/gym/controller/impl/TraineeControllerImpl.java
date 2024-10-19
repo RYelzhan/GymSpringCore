@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
+import com.epam.wca.gym.aop.CheckTrainee;
 import com.epam.wca.gym.controller.TraineeController;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -29,6 +30,7 @@ public class TraineeControllerImpl implements TraineeController {
     private String authenticatedUserRequestAttributeName;
 
     @Override
+    @CheckTrainee
     public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
         var trainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
@@ -36,6 +38,7 @@ public class TraineeControllerImpl implements TraineeController {
     }
 
     @Override
+    @CheckTrainee
     public TraineeSendDTO updateTraineeProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             HttpServletRequest request
@@ -46,6 +49,7 @@ public class TraineeControllerImpl implements TraineeController {
     }
 
     @Override
+    @CheckTrainee
     public void deleteTrainee(HttpServletRequest request) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
@@ -55,6 +59,7 @@ public class TraineeControllerImpl implements TraineeController {
     }
 
     @Override
+    @CheckTrainee
     public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
@@ -62,6 +67,7 @@ public class TraineeControllerImpl implements TraineeController {
     }
 
     @Override
+    @CheckTrainee
     public List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
@@ -73,6 +79,7 @@ public class TraineeControllerImpl implements TraineeController {
 
     //TODO: transfer all input to RequestParam
     @Override
+    @CheckTrainee
     public List<TrainingBasicDTO> getTraineeTrainingsList(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
@@ -83,6 +90,7 @@ public class TraineeControllerImpl implements TraineeController {
     }
 
     @Override
+    @CheckTrainee
     public String createTraineeTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
             HttpServletRequest request

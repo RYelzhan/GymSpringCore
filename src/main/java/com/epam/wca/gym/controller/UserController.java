@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @SecurityRequirement(name = "jwtToken")
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface UserController {
     @Operation(
             summary = "Return User username",
@@ -30,7 +30,7 @@ public interface UserController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @GetMapping("/info")
+    @GetMapping(value = "/info", consumes = MediaType.ALL_VALUE)
     String getUserInfo(HttpServletRequest request);
 
     @Operation(
@@ -48,7 +48,7 @@ public interface UserController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PutMapping(value = "/change/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/change/password")
     String changeUserPassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
             HttpServletRequest request
@@ -69,7 +69,7 @@ public interface UserController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PatchMapping(value = "/change/active", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/change/active")
     String activateDeactivateUser(
             @RequestBody @Valid UserActivationDTO userDTO,
             HttpServletRequest request

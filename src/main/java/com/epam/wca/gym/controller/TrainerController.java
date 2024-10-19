@@ -1,6 +1,5 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.aop.CheckTrainer;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RequestMapping(value = "user/trainer")
+@RequestMapping(value = "user/trainer", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface TrainerController {
     @Operation(
             summary = "Get Trainer Profile",
@@ -39,8 +38,7 @@ public interface TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @GetMapping("/profiles")
-    @CheckTrainer
+    @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     TrainerSendDTO getTrainerProfile(HttpServletRequest request);
 
     @Operation(
@@ -59,8 +57,7 @@ public interface TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PutMapping(value = "/profiles", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @CheckTrainer
+    @PutMapping(value = "/profiles")
     TrainerSendDTO updateTrainerProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
@@ -78,8 +75,7 @@ public interface TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @DeleteMapping(value = "/profiles")
-    @CheckTrainer
+    @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteTrainer(HttpServletRequest request);
 
@@ -99,7 +95,6 @@ public interface TrainerController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @PostMapping("/trainings/filter")
-    @CheckTrainer
     List<TrainingBasicDTO> getTrainerTrainingsList(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             HttpServletRequest request
@@ -122,9 +117,8 @@ public interface TrainerController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @PostMapping("/trainings")
-    @CheckTrainer
     @ResponseStatus(HttpStatus.CREATED)
-    String createTraineeTraining(
+    String createTrainerTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     );

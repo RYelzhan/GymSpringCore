@@ -26,6 +26,8 @@ public class CheckTraineeAspect {
     public Object checkTrainee(ProceedingJoinPoint pjp, HttpServletRequest request) throws Throwable {
         User authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
+        System.out.println(authenticatedUser);
+
         if (authenticatedUser instanceof Trainee) {
             return pjp.proceed();
         }

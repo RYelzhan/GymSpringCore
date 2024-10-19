@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
+import com.epam.wca.gym.aop.CheckTrainer;
 import com.epam.wca.gym.controller.TrainerController;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
@@ -27,6 +28,7 @@ public class TrainerControllerImpl implements TrainerController {
     private String authenticatedUserRequestAttributeName;
 
     @Override
+    @CheckTrainer
     public TrainerSendDTO getTrainerProfile(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
 
@@ -34,6 +36,7 @@ public class TrainerControllerImpl implements TrainerController {
     }
 
     @Override
+    @CheckTrainer
     public TrainerSendDTO updateTrainerProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
@@ -44,6 +47,7 @@ public class TrainerControllerImpl implements TrainerController {
     }
 
     @Override
+    @CheckTrainer
     public void deleteTrainer(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
 
@@ -54,6 +58,7 @@ public class TrainerControllerImpl implements TrainerController {
 
     //TODO: transfer all input to RequestParam
     @Override
+    @CheckTrainer
     public List<TrainingBasicDTO> getTrainerTrainingsList(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             HttpServletRequest request
@@ -64,7 +69,8 @@ public class TrainerControllerImpl implements TrainerController {
     }
 
     @Override
-    public String createTraineeTraining(
+    @CheckTrainer
+    public String createTrainerTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     ) {

@@ -32,7 +32,7 @@ public interface AuthenticationController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @SecurityRequirement(name = "basicAuth")
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes = MediaType.ALL_VALUE)
     String login(@AuthenticationPrincipal UserDetails user);
 
     @Operation(
@@ -48,7 +48,7 @@ public interface AuthenticationController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @SecurityRequirement(name = "basicAuth")
-    @PostMapping("/logout")
+    @PostMapping(value = "/logout", consumes = MediaType.ALL_VALUE)
     String logout();
 
     @Operation(
