@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RequestMapping(value = "user/trainer", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "users/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface TrainerController {
     @Operation(
             summary = "Get Trainer Profile",
@@ -39,7 +39,7 @@ public interface TrainerController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
-    TrainerSendDTO getTrainerProfile(HttpServletRequest request);
+    TrainerSendDTO getProfile(HttpServletRequest request);
 
     @Operation(
             summary = "Update Trainer Profile",
@@ -58,7 +58,7 @@ public interface TrainerController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @PutMapping(value = "/profiles")
-    TrainerSendDTO updateTrainerProfile(
+    TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
     );
@@ -77,7 +77,7 @@ public interface TrainerController {
     )
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteTrainer(HttpServletRequest request);
+    void deleteProfile(HttpServletRequest request);
 
     @Operation(
             summary = "Get Trainer Trainings List"
@@ -94,8 +94,8 @@ public interface TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PostMapping("/trainings/filter")
-    List<TrainingBasicDTO> getTrainerTrainingsList(
+    @PostMapping("/trainings")
+    List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             HttpServletRequest request
     );
@@ -116,9 +116,9 @@ public interface TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PostMapping("/trainings")
+    @PostMapping("/trainings/new")
     @ResponseStatus(HttpStatus.CREATED)
-    String createTrainerTraining(
+    String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     );

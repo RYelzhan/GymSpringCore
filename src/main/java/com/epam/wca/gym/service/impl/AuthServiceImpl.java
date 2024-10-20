@@ -27,8 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
 
     /**
+     * @deprecated deprecated since transfer to spring security
      * Used to get User entity from authentication header. Supports basic authentication.
-     * @param authHeader
      * @throws AuthenticationException if credentials are not right
      * @return User entity
      */
@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
+     * @deprecated deprecated since transfer to spring security
      * If user credentials are incorrect, throw an exception which will be handled by @ExceptionHandler,
      * and return Not_Authorised code
      * @param loginDTO information on login credentials

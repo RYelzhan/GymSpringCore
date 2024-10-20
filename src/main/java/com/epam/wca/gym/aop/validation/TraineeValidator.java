@@ -14,7 +14,7 @@ public class TraineeValidator implements ConstraintValidator<ValidTrainee, Strin
     @Override
     public boolean isValid(String traineeUsername, ConstraintValidatorContext context) {
         if (traineeUsername == null || traineeUsername.trim().isEmpty()) {
-            return false;
+            return true;
         }
         return traineeRepository.findTraineeByUserName(traineeUsername).isPresent();
     }

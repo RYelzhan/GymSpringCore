@@ -14,7 +14,7 @@ public class TrainingTypeValidator implements ConstraintValidator<ValidTrainingT
     @Override
     public boolean isValid(String trainingType, ConstraintValidatorContext constraintValidatorContext) {
         if (trainingType == null || trainingType.trim().isEmpty()) {
-            return false;
+            return true;
         }
         return trainingTypeRepository.findTrainingTypeByType(trainingType).isPresent();
     }

@@ -11,6 +11,29 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Aspect for enforcing access control based on the `Trainer` role.
+ *
+ * <p>This aspect intercepts method calls annotated with {@link CheckTrainer} and ensures that
+ * the authenticated user is a Trainer. The authenticated user is retrieved from the
+ * {@link HttpServletRequest} based on the attribute specified in the application's configuration.
+ *
+ * <p>If the user is not an instance of {@code Trainer}, a {@link ForbiddenActionException} is thrown,
+ * indicating that the user is not authorized to perform the action.
+ *
+ * <p>Example usage:
+ * <pre>
+ * {@code
+ * @CheckTrainer
+ * public void someMethod(HttpServletRequest request) {
+ *     // method implementation
+ * }
+ * }
+ * </pre>
+ *
+ * @see com.epam.wca.gym.aop.check.CheckTrainer
+ */
+
 @Aspect
 @Component
 public class CheckTrainerAspect {

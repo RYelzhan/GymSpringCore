@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -19,23 +18,28 @@ public class AuthenticationFailureListener implements
 
     @Override
     public void onApplicationEvent(@NonNull AuthenticationFailureBadCredentialsEvent e) {
-        HttpServletRequest request = getCurrentHttpRequest();
+        var request = getCurrentHttpRequest();
         if (request != null) {
             final String xfHeader = request.getHeader("X-Forwarded-For");
             String clientIp;
 
-            if (xfHeader == null || xfHeader.isEmpty() || !xfHeader.contains(request.getRemoteAddr())) {
+            if (isHeaderInvalid(request, xfHeader)) {
                 clientIp = request.getRemoteAddr();
             } else {
-                clientIp = xfHeader.split(",")[0];
+                int clientIpIndex = 0;
+                clientIp = xfHeader.split(",")[clientIpIndex];
             }
 
             loginAttemptService.loginFailed(clientIp);
         }
     }
 
+    private static boolean isHeaderInvalid(HttpServletRequest request, String xfHeader) {
+        return xfHeader == null || xfHeader.isEmpty() || !xfHeader.contains(request.getRemoteAddr());
+    }
+
     private HttpServletRequest getCurrentHttpRequest() {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        var requestAttributes = RequestContextHolder.getRequestAttributes();
 
         if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
             return servletRequestAttributes.getRequest();

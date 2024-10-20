@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private static final Set<String> ALLOWED_PREFIXES = Set.of(
-            "/authenticate",
+            "/authentication",
             "/h2-console",
             "/admin",
             "/v3/api-docs"

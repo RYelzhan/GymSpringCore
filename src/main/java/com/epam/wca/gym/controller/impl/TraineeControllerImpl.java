@@ -31,7 +31,7 @@ public class TraineeControllerImpl implements TraineeController {
 
     @Override
     @CheckTrainee
-    public TraineeSendDTO getTraineeProfile(HttpServletRequest request) {
+    public TraineeSendDTO getProfile(HttpServletRequest request) {
         var trainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return DTOFactory.createTraineeSendDTO(trainee);
@@ -39,7 +39,7 @@ public class TraineeControllerImpl implements TraineeController {
 
     @Override
     @CheckTrainee
-    public TraineeSendDTO updateTraineeProfile(
+    public TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             HttpServletRequest request
     ) {
@@ -50,7 +50,7 @@ public class TraineeControllerImpl implements TraineeController {
 
     @Override
     @CheckTrainee
-    public void deleteTrainee(HttpServletRequest request) {
+    public void deleteProfile(HttpServletRequest request) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
 
         // TODO: invalidation refresh token logic
@@ -80,7 +80,7 @@ public class TraineeControllerImpl implements TraineeController {
     //TODO: transfer all input to RequestParam
     @Override
     @CheckTrainee
-    public List<TrainingBasicDTO> getTraineeTrainingsList(
+    public List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
     ) {
@@ -91,7 +91,7 @@ public class TraineeControllerImpl implements TraineeController {
 
     @Override
     @CheckTrainee
-    public String createTraineeTraining(
+    public String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     ) {

@@ -29,7 +29,7 @@ public class TrainerControllerImpl implements TrainerController {
 
     @Override
     @CheckTrainer
-    public TrainerSendDTO getTrainerProfile(HttpServletRequest request) {
+    public TrainerSendDTO getProfile(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return DTOFactory.createTrainerSendDTO(authenticatedTrainer);
@@ -37,7 +37,7 @@ public class TrainerControllerImpl implements TrainerController {
 
     @Override
     @CheckTrainer
-    public TrainerSendDTO updateTrainerProfile(
+    public TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             HttpServletRequest request
     ) {
@@ -48,7 +48,7 @@ public class TrainerControllerImpl implements TrainerController {
 
     @Override
     @CheckTrainer
-    public void deleteTrainer(HttpServletRequest request) {
+    public void deleteProfile(HttpServletRequest request) {
         var authenticatedTrainer = (Trainer) request.getAttribute(authenticatedUserRequestAttributeName);
 
         // TODO: invalidation refresh token logic
@@ -59,7 +59,7 @@ public class TrainerControllerImpl implements TrainerController {
     //TODO: transfer all input to RequestParam
     @Override
     @CheckTrainer
-    public List<TrainingBasicDTO> getTrainerTrainingsList(
+    public List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             HttpServletRequest request
     ) {
@@ -70,7 +70,7 @@ public class TrainerControllerImpl implements TrainerController {
 
     @Override
     @CheckTrainer
-    public String createTrainerTraining(
+    public String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     ) {

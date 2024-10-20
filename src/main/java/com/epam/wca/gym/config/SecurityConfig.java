@@ -40,7 +40,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorise ->
                         authorise
-                                .requestMatchers(HttpMethod.POST, "/authenticate/register/*").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/authentication/account/*").permitAll()
                                 .requestMatchers("/admin/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session ->
@@ -69,6 +69,7 @@ public class SecurityConfig {
         var config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(Collections.singletonList("https://editor.swagger.io"));
+        // TODO: specify methods and headers
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setAllowCredentials(true);
@@ -78,7 +79,6 @@ public class SecurityConfig {
         return new CorsFilter(source);
     }
 
-    // custom provider
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -89,10 +89,9 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    // used by my provider
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // default strength (a.k.a hash rounds) is 10
-        return new BCryptPasswordEncoder(11);
+        final int passwordEncoderStrength = 11;
+        return new BCryptPasswordEncoder(passwordEncoderStrength);
     }
 }

@@ -14,7 +14,7 @@ public class TrainingControllerImpl implements TrainingController {
     private final TrainingTypeService trainingTypeService;
 
     @Override
-    public List<TrainingTypeBasicDTO> getTrainingTypes() {
+    public List<TrainingTypeBasicDTO> getTypes() {
         return trainingTypeService.findAll();
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/authentication", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface AuthenticationController {
     @Operation(
             summary = "User Login",
@@ -63,7 +63,7 @@ public interface AuthenticationController {
             responseCode = "400",
             description = ResponseMessages.INVALID_INPUT_DESCRIPTION
     )
-    @PostMapping(value = "/register/trainee")
+    @PostMapping(value = "/account/trainee")
     @ResponseStatus(HttpStatus.CREATED)
     UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO);
 
@@ -79,7 +79,7 @@ public interface AuthenticationController {
             responseCode = "400",
             description = ResponseMessages.INVALID_INPUT_DESCRIPTION
     )
-    @PostMapping(value = "/register/trainer")
+    @PostMapping(value = "/account/trainer")
     @ResponseStatus(HttpStatus.CREATED)
     UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO);
 }

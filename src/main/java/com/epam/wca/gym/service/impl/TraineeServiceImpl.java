@@ -68,8 +68,12 @@ public class TraineeServiceImpl implements TraineeService {
     public TraineeSendDTO update(Trainee trainee, TraineeUpdateDTO traineeUpdateDTO) {
         trainee.setFirstName(traineeUpdateDTO.firstName());
         trainee.setLastName(traineeUpdateDTO.lastName());
-        trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
-        trainee.setAddress(traineeUpdateDTO.address());
+        if (traineeUpdateDTO.dateOfBirth() != null) {
+            trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
+        }
+        if (traineeUpdateDTO.address() != null) {
+            trainee.setAddress(traineeUpdateDTO.address());
+        }
         trainee.setActive(traineeUpdateDTO.isActive());
 
         // it turns out finByUserName detaches object

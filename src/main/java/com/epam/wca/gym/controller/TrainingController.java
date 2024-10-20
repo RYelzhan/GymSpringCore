@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RequestMapping(value = "/training", consumes = MediaType.ALL_VALUE)
+@RequestMapping(value = "/trainings", consumes = MediaType.ALL_VALUE)
 public interface TrainingController {
     @Operation(
             summary = "Get Training Types"
@@ -26,5 +26,5 @@ public interface TrainingController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @GetMapping("/types")
-    List<TrainingTypeBasicDTO> getTrainingTypes();
+    List<TrainingTypeBasicDTO> getTypes();
 }

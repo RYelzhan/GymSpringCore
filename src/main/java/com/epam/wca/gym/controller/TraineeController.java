@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RequestMapping(value = "/user/trainee", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/users/trainees", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface TraineeController {
     @Operation(
             summary = "Get Trainee Profile",
@@ -41,7 +41,7 @@ public interface TraineeController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
-    TraineeSendDTO getTraineeProfile(HttpServletRequest request);
+    TraineeSendDTO getProfile(HttpServletRequest request);
 
     @Operation(
             summary = "Update Trainee Profile",
@@ -60,7 +60,7 @@ public interface TraineeController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @PutMapping(value = "/profiles")
-    TraineeSendDTO updateTraineeProfile(
+    TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             HttpServletRequest request
     );
@@ -79,7 +79,7 @@ public interface TraineeController {
     )
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteTrainee(HttpServletRequest request);
+    void deleteProfile(HttpServletRequest request);
 
     @Operation(
             summary = "Get Available Trainers for a Trainee",
@@ -93,7 +93,7 @@ public interface TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @GetMapping(value = "/trainers/available", consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/trainers", consumes = MediaType.ALL_VALUE)
     List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request);
 
     @Operation(
@@ -112,7 +112,7 @@ public interface TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PutMapping(value = "/trainers/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
     List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             HttpServletRequest request
@@ -130,8 +130,8 @@ public interface TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @GetMapping("/trainings/filter")
-    List<TrainingBasicDTO> getTraineeTrainingsList(
+    @PostMapping(value = "/trainings", consumes = MediaType.ALL_VALUE)
+    List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             HttpServletRequest request
     );
@@ -152,9 +152,9 @@ public interface TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PostMapping("/trainings")
+    @PostMapping("/trainings/new")
     @ResponseStatus(HttpStatus.CREATED)
-    String createTraineeTraining(
+    String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
             HttpServletRequest request
     );

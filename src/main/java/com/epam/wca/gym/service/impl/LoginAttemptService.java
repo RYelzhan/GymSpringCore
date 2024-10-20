@@ -14,8 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Service
 public class LoginAttemptService {
+    private static final int STARTING_ATTEMPT = 0;
     private static final int MAX_ATTEMPT = 3;
-    private static final int BLOCK_TIME_MILLIS = 300000;
+    private static final int BLOCK_TIME_MILLIS = 300_000;
     private final Map<String, Integer> attemptsMap;
     private final Map<String, Date> blockTime;
 
@@ -25,7 +26,7 @@ public class LoginAttemptService {
     }
 
     public void loginFailed(final String key) {
-        int attempts = attemptsMap.getOrDefault(key, 0);
+        int attempts = attemptsMap.getOrDefault(key, STARTING_ATTEMPT);
 
         attempts ++;
 
@@ -39,11 +40,11 @@ public class LoginAttemptService {
     public boolean isBlocked() {
         String clientIp = getClientIP();
 
-        int attempts = attemptsMap.getOrDefault(clientIp, 0);
+        int attempts = attemptsMap.getOrDefault(clientIp, STARTING_ATTEMPT);
 
         if (attempts >= MAX_ATTEMPT && blockTime.get(clientIp).before(new Date())) {
-            attemptsMap.put(clientIp, 0);
-            attempts = 0;
+            attemptsMap.put(clientIp, STARTING_ATTEMPT);
+            attempts = STARTING_ATTEMPT;
         }
 
         return attempts >= MAX_ATTEMPT;
@@ -54,7 +55,8 @@ public class LoginAttemptService {
         if (request != null) {
             final String xfHeader = request.getHeader("X-Forwarded-For");
             if (xfHeader != null) {
-                return xfHeader.split(",")[0];
+                int clientIpIndex = 0;
+                return xfHeader.split(",")[clientIpIndex];
             }
             return request.getRemoteAddr();
         }

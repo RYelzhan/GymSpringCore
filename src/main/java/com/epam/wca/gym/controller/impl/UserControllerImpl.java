@@ -20,14 +20,14 @@ public class UserControllerImpl implements UserController {
     private String authenticatedUserRequestAttributeName;
 
     @Override
-    public String getUserInfo(HttpServletRequest request) {
+    public String getInfo(HttpServletRequest request) {
         var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
         return authenticatedUser.getUsername();
     }
 
     @Override
-    public String changeUserPassword(
+    public String changePassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
             HttpServletRequest request
     ) {
@@ -40,7 +40,7 @@ public class UserControllerImpl implements UserController {
 
     // query is better suited for queries to database. e.g. Filter, Search
     @Override
-    public String activateDeactivateUser(
+    public String activateDeactivate(
             @RequestBody @Valid UserActivationDTO userDTO,
             HttpServletRequest request
     ) {
