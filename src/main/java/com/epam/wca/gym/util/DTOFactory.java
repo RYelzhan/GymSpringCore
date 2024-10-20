@@ -39,7 +39,7 @@ public class DTOFactory {
 
     public static TrainerBasicDTO createBasicTrainerDTO(Trainer trainer) {
         return new TrainerBasicDTO(
-                trainer.getUserName(),
+                trainer.getUsername(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
                 trainer.getSpecialization().toString()
@@ -48,7 +48,7 @@ public class DTOFactory {
 
     public static TrainerSendDTO createTrainerSendDTO(Trainer trainer) {
         return new TrainerSendDTO(
-                trainer.getUserName(),
+                trainer.getUsername(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
                 trainer.getSpecialization().toString(),
@@ -67,7 +67,7 @@ public class DTOFactory {
 
     public static TraineeBasicDTO createBasicTraineeDTO(Trainee trainee) {
         return new TraineeBasicDTO(
-                trainee.getUserName(),
+                trainee.getUsername(),
                 trainee.getFirstName(),
                 trainee.getLastName()
         );
@@ -79,7 +79,7 @@ public class DTOFactory {
                 training.getTrainingDate(),
                 training.getTrainingType().toString(),
                 training.getTrainingDuration(),
-                training.getTrainer().getUserName()
+                training.getTrainer().getUsername()
         );
     }
 
@@ -89,7 +89,7 @@ public class DTOFactory {
                 training.getTrainingDate(),
                 training.getTrainingType().toString(),
                 training.getTrainingDuration(),
-                training.getTrainee().getUserName()
+                training.getTrainee().getUsername()
         );
     }
 

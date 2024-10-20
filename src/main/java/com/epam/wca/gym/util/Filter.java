@@ -18,7 +18,7 @@ public class Filter {
                 .filter(training -> traineeTrainingQuery.dateTo() == null ||
                         training.getTrainingDate().isBefore(traineeTrainingQuery.dateTo()))
                 .filter(training -> traineeTrainingQuery.trainerName() == null ||
-                        training.getTrainer().getUserName().equals(traineeTrainingQuery.trainerName()))
+                        training.getTrainer().getUsername().equals(traineeTrainingQuery.trainerName()))
                 .filter(training -> traineeTrainingQuery.trainingType() == null ||
                         training.getTrainingType().toString().equals(traineeTrainingQuery.trainingType()))
                 .toList();
@@ -32,7 +32,7 @@ public class Filter {
                 .filter(training -> trainerTrainingQuery.dateTo() == null ||
                         training.getTrainingDate().isBefore(trainerTrainingQuery.dateTo()))
                 .filter(training -> trainerTrainingQuery.traineeName() == null ||
-                        training.getTrainee().getUserName().equals(trainerTrainingQuery.traineeName()))
+                        training.getTrainee().getUsername().equals(trainerTrainingQuery.traineeName()))
                 .toList();
     }
 }

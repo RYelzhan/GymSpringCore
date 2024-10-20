@@ -8,9 +8,8 @@ import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
-import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
@@ -22,6 +21,7 @@ import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.TrainingFactory;
 import com.epam.wca.gym.util.UserFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +36,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final TraineeRepository traineeRepository;
     private final TrainingTypeService trainingTypeService;
     private final TrainingService trainingService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -44,9 +45,13 @@ public class TrainerServiceImpl implements TrainerService {
 
         var trainer = UserFactory.createTrainer(trainerDTO, trainingType);
 
+        var authenticatedUser = new UserAuthenticatedDTO(trainer.getUsername(), trainer.getPassword());
+
+        trainer.setPassword(passwordEncoder.encode(trainer.getPassword()));
+
         trainerRepository.save(trainer);
 
-        return new UserAuthenticatedDTO(trainer.getUserName(), trainer.getPassword());
+        return authenticatedUser;
     }
 
     @Override
@@ -77,6 +82,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Transactional
     public List<TrainerBasicDTO> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers) {
         return trainerRepository.findActiveUnassignedTrainers(assignedTrainers)
                 .stream().map(DTOFactory::createBasicTrainerDTO)
@@ -102,24 +108,28 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public Trainer findByUsername(String username) {
-        return trainerRepository.findTrainerByUserName(username);
+        return trainerRepository.findTrainerByUserName(username)
+                .orElseThrow(() -> new InternalErrorException(
+                        "No Trainer Found with Username: %s".formatted(username)
+                ));
     }
 
     @Override
     @Transactional
     public void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO) {
-        Trainee trainee = traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername());
+        // TODO: replace with service call
+        var trainee = traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername());
 
-        if (trainee == null) {
-            throw new ControllerValidationException("No Trainee Found with Username: " + trainingDTO.traineeUsername());
+        if (trainee.isEmpty()) {
+            throw new InternalErrorException("No Trainee Found with Username: " + trainingDTO.traineeUsername());
         }
 
         // trainer might create training without assigning himself to trainee, so, we do it manually
-        trainee.getTrainersAssigned().add(trainer);
+        trainee.get().getTrainersAssigned().add(trainer);
 
         trainingService.save(TrainingFactory.createTraining(
                 trainingDTO,
-                trainee, trainer
+                trainee.get(), trainer
         ));
     }
 }

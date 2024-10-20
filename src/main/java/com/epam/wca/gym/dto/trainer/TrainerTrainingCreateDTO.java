@@ -1,5 +1,6 @@
 package com.epam.wca.gym.dto.trainer;
 
+import com.epam.wca.gym.aop.validation.ValidTrainee;
 import com.epam.wca.gym.util.AppConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
@@ -14,6 +15,7 @@ import java.time.ZonedDateTime;
 public record TrainerTrainingCreateDTO(
         @NotBlank(message = "Trainee username is required")
         @Size(min = 2, max = 25, message = "Trainee username must be between 2 and 50 characters")
+        @ValidTrainee
         String traineeUsername,
         @NotBlank(message = "Training name is required")
         @Size(min = 2, max = 25, message = "Training name must be between 2 and 50 characters")

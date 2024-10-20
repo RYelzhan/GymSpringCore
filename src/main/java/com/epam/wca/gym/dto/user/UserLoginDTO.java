@@ -8,7 +8,7 @@ public record UserLoginDTO(
         @Size(min = 2, max = 50, message = "Username must be between 2 and 50 characters")
         String username,
         @NotBlank(message = "Password is required")
-        @Size(min = 10, max = 10, message = "Password must be exactly 10 characters")
+        @Size(min = 11, max = 11, message = "Password must be exactly 11 characters")
         String password
 ){
         @Override

@@ -12,7 +12,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
@@ -26,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,9 @@ class TrainerServiceImplTest {
     private TrainingServiceImpl trainingService;
     @Mock
     private ProfileServiceImpl profileService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private TrainerServiceImpl trainerService;
 
@@ -78,8 +82,11 @@ class TrainerServiceImplTest {
                 "CROSSFIT"
         );
 
+        String encodedPassword = "encoded_password";
+
         // Mock trainingTypeService to return a specific TrainingType
         when(trainingTypeService.findByType(trainerDTO.trainingType())).thenReturn(trainingType);
+        when(passwordEncoder.encode(any())).thenReturn(encodedPassword);
 
         // Mock static UserFactory.createTrainer to return a Trainer object
         try (MockedStatic<UserFactory> mockedUserFactory = mockStatic(UserFactory.class)) {
@@ -90,8 +97,7 @@ class TrainerServiceImplTest {
             UserAuthenticatedDTO result = trainerService.save(trainerDTO);
 
             // Assert: Validate the result
-            assertEquals(trainer.getUserName(), result.username());
-            assertEquals(trainer.getPassword(), result.password());
+            assertEquals(trainer.getUsername(), result.username());
 
             // Verify interactions
             verify(trainingTypeService, times(1)).findByType(trainerDTO.trainingType());
@@ -292,7 +298,7 @@ class TrainerServiceImplTest {
                 null
         );
 
-        when(trainerRepository.findTrainerByUserName(username)).thenReturn(trainer);
+        when(trainerRepository.findTrainerByUserName(username)).thenReturn(Optional.of(trainer));
 
         // When
         Trainer result = trainerService.findByUsername(username);
@@ -320,7 +326,7 @@ class TrainerServiceImplTest {
 
         Trainee trainee = new Trainee("Jane", "Smith", null, null);
         trainee.setTrainersAssigned(new HashSet<>());
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(trainee);
+        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.of(trainee));
 
         // When
         trainerService.createTraining(trainer, trainingDTO);
@@ -334,12 +340,12 @@ class TrainerServiceImplTest {
     @Test
     void testCreateTraining_TraineeNotFound() {
         // Given
-        Trainer trainer = new Trainer(
+        var trainer = new Trainer(
                 "John",
                 "Doe",
                 null
         );
-        TrainerTrainingCreateDTO trainingDTO = new TrainerTrainingCreateDTO(
+        var trainingDTO = new TrainerTrainingCreateDTO(
                 "nonExistentTrainee",
                 "Workout",
                 null,
@@ -347,10 +353,13 @@ class TrainerServiceImplTest {
         );
 
         // Mocking that no trainee is found
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(null);
+        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.empty());
 
         // When & Then
-        Exception exception = assertThrows(ControllerValidationException.class, () -> trainerService.createTraining(trainer, trainingDTO));
+        var exception = assertThrows(
+                InternalErrorException.class,
+                () -> trainerService.createTraining(trainer, trainingDTO)
+        );
 
         String expectedMessage = "No Trainee Found with Username: " + trainingDTO.traineeUsername();
         String actualMessage = exception.getMessage();

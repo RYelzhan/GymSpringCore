@@ -20,6 +20,13 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * @deprecated Deprecated since transfer to spring security.
+ * Custom filter used for basic authentication checks.
+ * Enabling pass of request is through basic authentication header or being in allowed prefixes.
+ */
+
+@Deprecated(since = "2.2")
 @Component
 @RequiredArgsConstructor
 @Profile("secure")

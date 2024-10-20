@@ -33,7 +33,7 @@ public class LoggingAspect {
         String methodName = pjp.getSignature().toShortString();
         Object[] methodArgs = pjp.getArgs();
 
-        log.info("Transaction ID: {} | Invoking method: {} with args: {}", transactionId, methodName, methodArgs);
+        log.debug("Transaction ID: {} | Invoking method: {} with args: {}", transactionId, methodName, methodArgs);
 
         Object result;
         try {

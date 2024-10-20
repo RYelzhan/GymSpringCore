@@ -1,34 +1,24 @@
 package com.epam.wca.gym.controller;
 
-import com.epam.wca.gym.aop.Logging;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
-import com.epam.wca.gym.dto.user.UserLoginDTO;
-import com.epam.wca.gym.service.AuthService;
-import com.epam.wca.gym.service.TraineeService;
-import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
-public class AuthenticationController {
-    private final AuthService authService;
-    private final TraineeService traineeService;
-    private final TrainerService trainerService;
-
+@RequestMapping(value = "/authentication", consumes = MediaType.APPLICATION_JSON_VALUE)
+public interface AuthenticationController {
     @Operation(
             summary = "User Login",
             description = "Authenticates a user based on the username and password."
@@ -38,16 +28,28 @@ public class AuthenticationController {
             description = "Login successful"
     )
     @ApiResponse(
-            responseCode = "400",
-            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    @PostMapping("/login")
-    @Logging
-    public String login(@RequestBody @Valid UserLoginDTO loginDTO) {
-        authService.authenticate(loginDTO);
+    @SecurityRequirement(name = "basicAuth")
+    @PostMapping(value = "/login", consumes = MediaType.ALL_VALUE)
+    String login(@AuthenticationPrincipal UserDetails user);
 
-        return "Login Successful";
-    }
+    @Operation(
+            summary = "User Logout",
+            description = "Logouts a user based on the username and password."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Logout successful"
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @SecurityRequirement(name = "basicAuth")
+    @PostMapping(value = "/logout", consumes = MediaType.ALL_VALUE)
+    String logout();
 
     @Operation(
             summary = "Register a new trainee",
@@ -61,11 +63,9 @@ public class AuthenticationController {
             responseCode = "400",
             description = ResponseMessages.INVALID_INPUT_DESCRIPTION
     )
-    @PostMapping(value = "/register/trainee")
+    @PostMapping(value = "/account/trainee")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO) {
-        return traineeService.save(traineeDTO);
-    }
+    UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO);
 
     @Operation(
             summary = "Register a new trainer",
@@ -79,9 +79,7 @@ public class AuthenticationController {
             responseCode = "400",
             description = ResponseMessages.INVALID_INPUT_DESCRIPTION
     )
-    @PostMapping(value = "/register/trainer")
+    @PostMapping(value = "/account/trainer")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO) {
-        return trainerService.save(trainerDTO);
-    }
+    UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO);
 }
