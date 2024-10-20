@@ -54,7 +54,10 @@ public class DatabaseInitMonitor implements HealthIndicator {
 
     private Integer getTableRowCount(String tableName) {
         String query = "SELECT COUNT(*) FROM %s".formatted(tableName);
-
-        return jdbcTemplate.queryForObject(query, Integer.class);
+        try {
+            return jdbcTemplate.queryForObject(query, Integer.class);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }

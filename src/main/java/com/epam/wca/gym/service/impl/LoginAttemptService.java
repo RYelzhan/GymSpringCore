@@ -1,6 +1,7 @@
 package com.epam.wca.gym.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 @Service
 public class LoginAttemptService {
     private static final int MAX_ATTEMPT = 3;

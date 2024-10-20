@@ -26,6 +26,14 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
+    /**
+     * Used to get User entity from authentication header. Supports basic authentication.
+     * @param authHeader
+     * @throws AuthenticationException if credentials are not right
+     * @return User entity
+     */
+
+    @Deprecated(since = "2.2")
     @Override
     public User authenticate(String authHeader) {
         try {

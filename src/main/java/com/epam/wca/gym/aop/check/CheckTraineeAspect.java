@@ -1,6 +1,6 @@
-package com.epam.wca.gym.aop;
+package com.epam.wca.gym.aop.check;
 
-import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,22 +13,24 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class CheckTrainerAspect {
+public class CheckTraineeAspect {
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;
 
-    @Pointcut("@annotation(CheckTrainer) && args(.., request)")
-    public void checkTrainerPointcut(HttpServletRequest request) {
+    @Pointcut("@annotation(com.epam.wca.gym.aop.check.CheckTrainee) && args(.., request)")
+    public void checkTraineePointcut(HttpServletRequest request) {
         // This method is empty because it serves as a pointcut definition.
     }
 
-    @Around(value = "checkTrainerPointcut(request)", argNames = "pjp,request")
-    public Object checkTrainer(ProceedingJoinPoint pjp, HttpServletRequest request) throws Throwable {
+    @Around(value = "checkTraineePointcut(request)", argNames = "pjp,request")
+    public Object checkTrainee(ProceedingJoinPoint pjp, HttpServletRequest request) throws Throwable {
         User authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
 
-        if (authenticatedUser instanceof Trainer) {
+        System.out.println(authenticatedUser);
+
+        if (authenticatedUser instanceof Trainee) {
             return pjp.proceed();
         }
-        throw new ForbiddenActionException("You are not Trainer.");
+        throw new ForbiddenActionException("You are not Trainee.");
     }
 }

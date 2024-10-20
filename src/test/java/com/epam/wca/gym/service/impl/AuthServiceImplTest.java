@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,8 @@ import static org.mockito.Mockito.when;
 class AuthServiceImplTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private JwtService jwtService;
     @InjectMocks
     private AuthServiceImpl authService;
 
@@ -48,7 +51,7 @@ class AuthServiceImplTest {
     @ParameterizedTest
     @CsvSource({"Basic VGVzdDp0ZXN0"})
     void testUserNotFound(String header) {
-        when(userRepository.findUserByUserName(anyString())).thenReturn(null);
+        when(userRepository.findUserByUserName(anyString())).thenReturn(Optional.empty());
 
         assertThrows(AuthenticationException.class, () -> authService.authenticate(header));
     }
@@ -86,5 +89,15 @@ class AuthServiceImplTest {
 
         Mockito.verify(userRepository, times(1)).findUserByUserName(anyString());
         assertEquals(authenticatedUser, user);
+    }
+
+    @Test
+    void testGenerateToken() {
+        String token = "123456";
+        when(jwtService.generateToken(any())).thenReturn(token);
+
+        String generatedToken = authService.generateToken(null);
+
+        assertEquals(token, generatedToken);
     }
 }

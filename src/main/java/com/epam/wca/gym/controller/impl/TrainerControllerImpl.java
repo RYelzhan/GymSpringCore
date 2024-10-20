@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
-import com.epam.wca.gym.aop.CheckTrainer;
+import com.epam.wca.gym.aop.check.CheckTrainer;
 import com.epam.wca.gym.controller.TrainerController;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;

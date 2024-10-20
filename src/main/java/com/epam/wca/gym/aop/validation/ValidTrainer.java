@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
         ElementType.RECORD_COMPONENT
 })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = TrainerExistsValidator.class)
-public @interface TrainerExists {
+@Constraint(validatedBy = TrainerValidator.class)
+public @interface ValidTrainer {
     String message() default "Trainer does not exist"; // default to an error message
     Class<?>[] groups() default {}; // for user to customize the targeted groups
     Class<? extends Payload>[] payload() default {}; // default {}; for extensibility purposes

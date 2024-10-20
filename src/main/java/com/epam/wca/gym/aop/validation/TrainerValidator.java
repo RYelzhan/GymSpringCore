@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TrainerExistsValidator implements ConstraintValidator<TrainerExists, String> {
+public class TrainerValidator implements ConstraintValidator<ValidTrainer, String> {
     private final TrainerRepository trainerRepository;
 
     @Override
