@@ -12,7 +12,6 @@ import java.io.IOException;
 
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
     @Override
     public void commence(
             HttpServletRequest request,
@@ -21,12 +20,10 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     ) throws IOException {
         String errorMessage;
 
-        if (authException.getCause() instanceof UserBlockedException userBlockedException) {
+        if (authException.getCause() instanceof UserBlockedException ||
+                authException.getCause() instanceof UsernameNotFoundException) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            errorMessage = userBlockedException.getMessage();
-        } else if (authException.getCause() instanceof UsernameNotFoundException usernameNotFoundException) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            errorMessage = usernameNotFoundException.getMessage();
+            errorMessage = authException.getCause().getMessage();
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             errorMessage = authException.getMessage();

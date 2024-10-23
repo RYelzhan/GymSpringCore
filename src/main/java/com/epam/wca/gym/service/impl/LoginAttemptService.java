@@ -2,6 +2,7 @@ package com.epam.wca.gym.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -14,9 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Service
 public class LoginAttemptService {
-    private static final int STARTING_ATTEMPT = 0;
-    private static final int MAX_ATTEMPT = 3;
-    private static final int BLOCK_TIME_MILLIS = 300_000;
+
+    @Value("${authentication.starting-attempt}")
+    private int startingAttempt;
+
+    @Value("${authentication.max-attempt}")
+    private int maxAttempt;
+
+    @Value("${authentication.block-time-millis}")
+    private int blockTimeMillis;
+
     private final Map<String, Integer> attemptsMap;
     private final Map<String, Date> blockTime;
 
@@ -26,28 +34,28 @@ public class LoginAttemptService {
     }
 
     public void loginFailed(final String key) {
-        int attempts = attemptsMap.getOrDefault(key, STARTING_ATTEMPT);
+        int attempts = attemptsMap.getOrDefault(key, startingAttempt);
 
         attempts ++;
 
         attemptsMap.put(key, attempts);
 
-        if (attempts == MAX_ATTEMPT) {
-            blockTime.put(key, new Date(System.currentTimeMillis() + BLOCK_TIME_MILLIS));
+        if (attempts == maxAttempt) {
+            blockTime.put(key, new Date(System.currentTimeMillis() + blockTimeMillis));
         }
     }
 
     public boolean isBlocked() {
         String clientIp = getClientIP();
 
-        int attempts = attemptsMap.getOrDefault(clientIp, STARTING_ATTEMPT);
+        int attempts = attemptsMap.getOrDefault(clientIp, startingAttempt);
 
-        if (attempts >= MAX_ATTEMPT && blockTime.get(clientIp).before(new Date())) {
-            attemptsMap.put(clientIp, STARTING_ATTEMPT);
-            attempts = STARTING_ATTEMPT;
+        if (attempts >= maxAttempt && blockTime.get(clientIp).before(new Date())) {
+            attemptsMap.put(clientIp, startingAttempt);
+            attempts = startingAttempt;
         }
 
-        return attempts >= MAX_ATTEMPT;
+        return attempts >= maxAttempt;
     }
 
     public String getClientIP() {

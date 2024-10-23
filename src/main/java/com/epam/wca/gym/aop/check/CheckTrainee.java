@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * @deprecated since transfer to Spring Security
  * Annotation to restrict access to methods that are intended to be executed only by users
  * with a `Trainee` role. It is used in conjunction with an Aspect to check the role of the
  * currently authenticated user.
@@ -19,6 +20,8 @@ import java.lang.annotation.Target;
  *
  * @see com.epam.wca.gym.aop.check.CheckTraineeAspect
  */
+
+@Deprecated(since = "2.2")
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

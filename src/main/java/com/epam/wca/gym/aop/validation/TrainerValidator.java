@@ -13,9 +13,13 @@ public class TrainerValidator implements ConstraintValidator<ValidTrainer, Strin
 
     @Override
     public boolean isValid(String trainerUsername, ConstraintValidatorContext context) {
-        if (trainerUsername == null || trainerUsername.trim().isEmpty()) {
+        if (usernameNotRequired(trainerUsername)) {
             return true;
         }
         return trainerRepository.findTrainerByUserName(trainerUsername).isPresent();
+    }
+
+    private boolean usernameNotRequired(String trainerUsername) {
+        return trainerUsername == null || trainerUsername.trim().isEmpty();
     }
 }

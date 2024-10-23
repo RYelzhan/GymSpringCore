@@ -1,7 +1,7 @@
 package com.epam.wca.gym.controller.impl;
 
 import com.epam.wca.gym.aop.Logging;
-import com.epam.wca.gym.controller.AuthenticationController;
+import com.epam.wca.gym.controller.AuthenticationControllerDocumentation;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 //@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RequiredArgsConstructor
-public class AuthenticationControllerImpl implements AuthenticationController {
+public class AuthenticationControllerImpl implements
+        AuthenticationControllerDocumentation {
     private final AuthService authService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;

@@ -20,20 +20,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private static final Set<String> ALLOWED_PREFIXES = Set.of(
-            "/authentication",
-            "/h2-console",
-            "/admin",
-            "/v3/api-docs"
-    );
+    private Set<String> allowedPrefixes;
+
+    @Value("${allowed.prefixes}")
+    public void setAllowedPrefixes(String[] prefixes) {
+        allowedPrefixes = Arrays.stream(prefixes).collect(Collectors.toSet());
+    }
 
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;
@@ -78,7 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isUriAllowed(Optional<String> uri) {
-        return uri.isPresent() && ALLOWED_PREFIXES.stream().anyMatch(uri.get()::startsWith);
+        return uri.isPresent() && allowedPrefixes.stream().anyMatch(uri.get()::startsWith);
     }
 
     private boolean isBearerTokenPresent(String authHeader) {

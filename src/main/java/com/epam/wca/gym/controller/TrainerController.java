@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @SecurityRequirement(name = "jwtToken")
-@RequestMapping(value = "users/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/users/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface TrainerController {
     @Operation(
             summary = "Get Trainer Profile",

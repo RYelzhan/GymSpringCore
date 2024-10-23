@@ -42,6 +42,8 @@ public class SecurityConfig {
                         authorise
                                 .requestMatchers(HttpMethod.POST, "/authentication/account/*").permitAll()
                                 .requestMatchers("/admin/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
+                                .requestMatchers("/users/trainees/**").hasRole("TRAINEE")
+                                .requestMatchers("/users/trainers/**").hasRole("TRAINER")
                                 .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

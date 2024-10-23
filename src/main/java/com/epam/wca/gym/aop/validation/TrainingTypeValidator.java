@@ -13,9 +13,13 @@ public class TrainingTypeValidator implements ConstraintValidator<ValidTrainingT
 
     @Override
     public boolean isValid(String trainingType, ConstraintValidatorContext constraintValidatorContext) {
-        if (trainingType == null || trainingType.trim().isEmpty()) {
+        if (trainingTypeNotRequired(trainingType)) {
             return true;
         }
         return trainingTypeRepository.findTrainingTypeByType(trainingType).isPresent();
+    }
+
+    private boolean trainingTypeNotRequired(String trainingType) {
+        return trainingType == null || trainingType.trim().isEmpty();
     }
 }

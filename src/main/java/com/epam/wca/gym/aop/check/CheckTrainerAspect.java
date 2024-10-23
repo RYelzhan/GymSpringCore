@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
+ * @deprecated since transfer to Spring Security
  * Aspect for enforcing access control based on the `Trainer` role.
  *
  * <p>This aspect intercepts method calls annotated with {@link CheckTrainer} and ensures that
@@ -33,6 +34,8 @@ import org.springframework.stereotype.Component;
  *
  * @see com.epam.wca.gym.aop.check.CheckTrainer
  */
+
+@Deprecated(since = "2.2")
 
 @Aspect
 @Component
