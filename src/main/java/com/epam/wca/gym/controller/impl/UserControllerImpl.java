@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
-import com.epam.wca.gym.controller.UserController;
+import com.epam.wca.gym.controller.documentation.UserControllerDocumentation;
 import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
 import com.epam.wca.gym.entity.User;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class UserControllerImpl implements UserController {
+public class UserControllerImpl implements UserControllerDocumentation {
     private final UserService userService;
     @Value("${gym.api.request.attribute.user}")
     private String authenticatedUserRequestAttributeName;

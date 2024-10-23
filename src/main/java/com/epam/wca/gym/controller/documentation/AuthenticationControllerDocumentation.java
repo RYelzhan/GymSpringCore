@@ -1,5 +1,6 @@
-package com.epam.wca.gym.controller;
+package com.epam.wca.gym.controller.documentation;
 
+import com.epam.wca.gym.controller.AuthenticationController;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;

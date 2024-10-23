@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
-import com.epam.wca.gym.controller.TraineeController;
+import com.epam.wca.gym.controller.documentation.TraineeControllerDocumentation;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class TraineeControllerImpl implements TraineeController {
+public class TraineeControllerImpl implements TraineeControllerDocumentation {
     private final TraineeService traineeService;
 
     @Value("${gym.api.request.attribute.user}")
@@ -78,7 +78,10 @@ public class TraineeControllerImpl implements TraineeController {
             HttpServletRequest request
     ) {
         var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
+        // TODO: READ!!!
+        // callable statement
+        // principle of least knowledge
+        // anonimization of user details
         return traineeService.findTrainingsFiltered(authenticatedTrainee.getId(), traineeTrainingQuery);
     }
 

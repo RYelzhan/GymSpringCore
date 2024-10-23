@@ -2,10 +2,6 @@ package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
-import com.epam.wca.gym.util.ResponseMessages;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -15,60 +11,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@SecurityRequirement(name = "jwtToken")
 @RequestMapping(value = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface UserController {
-    @Operation(
-            summary = "Return User username",
-            description = "First ever endpoint."
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Returns authenticated user's username."
-    )
-    @ApiResponse(
-            responseCode = "401",
-            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
-    )
     @GetMapping(value = "/info", consumes = MediaType.ALL_VALUE)
     String getInfo(HttpServletRequest request);
 
-    @Operation(
-            summary = "Change User Password"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Password changed successfully."
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
-    )
-    @ApiResponse(
-            responseCode = "401",
-            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
-    )
     @PutMapping(value = "/password")
     String changePassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
             HttpServletRequest request
     );
 
-    @Operation(
-            summary = "Activate or Deactivate User"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "User activation status updated successfully."
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
-    )
-    @ApiResponse(
-            responseCode = "401",
-            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
-    )
     @PatchMapping(value = "/active")
     String activateDeactivate(
             @RequestBody @Valid UserActivationDTO userDTO,

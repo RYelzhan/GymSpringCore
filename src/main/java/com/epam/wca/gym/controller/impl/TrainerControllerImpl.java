@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
-import com.epam.wca.gym.controller.TrainerController;
+import com.epam.wca.gym.controller.documentation.TrainerControllerDocumentation;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class TrainerControllerImpl implements TrainerController {
+public class TrainerControllerImpl implements TrainerControllerDocumentation {
     private final TrainerService trainerService;
 
     @Value("${gym.api.request.attribute.user}")

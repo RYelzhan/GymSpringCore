@@ -26,8 +26,10 @@ import java.util.function.Function;
 public class JwtService {
     @Value("${security.jwt.signing.key}")
     private String jwtSigningKey;
+
     @Value("${security.jwt.expiration-time}")
     private long jwtExpirationTime;
+
     private JwtParser jwtParser;
     private final JwtBuilder jwtBuilder;
 
@@ -74,6 +76,7 @@ public class JwtService {
         return jwtBuilder
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
+                // JAVA 8 time
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationTime))
                 .signWith(getSigningKey(), Jwts.SIG.HS256)

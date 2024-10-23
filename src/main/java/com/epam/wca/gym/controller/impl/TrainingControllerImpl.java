@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
-import com.epam.wca.gym.controller.TrainingController;
+import com.epam.wca.gym.controller.documentation.TrainingControllerDocumentation;
 import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class TrainingControllerImpl implements TrainingController {
+public class TrainingControllerImpl implements TrainingControllerDocumentation {
     private final TrainingTypeService trainingTypeService;
 
     @Override
