@@ -20,7 +20,7 @@
     </appender>
 
     <!-- Root logger configuration -->
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="CONSOLE" />
     </root>
 

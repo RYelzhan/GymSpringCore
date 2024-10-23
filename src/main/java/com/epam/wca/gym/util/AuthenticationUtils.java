@@ -6,12 +6,13 @@ import java.util.Base64;
 
 @UtilityClass
 public class AuthenticationUtils {
-    private static final String AUTHENTICATION_TYPE = "Basic ";
+    private static final String AUTHENTICATION_TYPE_BASIC = "Basic ";
     private static final String SPLIT_TYPE = ":";
     private static final int LIMIT_OF_CREDENTIALS = 3;
+
     public static String[] extractCredentials(String authHeader) {
-        if (authHeader != null && authHeader.startsWith(AUTHENTICATION_TYPE)) {
-            String base64Credentials = authHeader.substring(AUTHENTICATION_TYPE.length());
+        if (authHeader != null && authHeader.startsWith(AUTHENTICATION_TYPE_BASIC)) {
+            String base64Credentials = authHeader.substring(AUTHENTICATION_TYPE_BASIC.length());
             String credentials = new String(Base64.getDecoder().decode(base64Credentials));
             return credentials.split(SPLIT_TYPE, LIMIT_OF_CREDENTIALS);
         }

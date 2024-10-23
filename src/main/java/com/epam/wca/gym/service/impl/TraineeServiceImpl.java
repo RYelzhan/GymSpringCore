@@ -11,8 +11,7 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.ControllerValidationException;
-import com.epam.wca.gym.exception.ForbiddenActionException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.service.TraineeService;
@@ -23,6 +22,7 @@ import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.TrainingFactory;
 import com.epam.wca.gym.util.UserFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,15 +36,20 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public UserAuthenticatedDTO save(TraineeRegistrationDTO dto) {
         var trainee = UserFactory.createTrainee(dto);
 
+        var authenticatedUser = new UserAuthenticatedDTO(trainee.getUsername(), trainee.getPassword());
+
+        trainee.setPassword(passwordEncoder.encode(trainee.getPassword()));
+
         traineeRepository.save(trainee);
 
-        return new UserAuthenticatedDTO(trainee.getUserName(), trainee.getPassword());
+        return authenticatedUser;
     }
 
     @Override
@@ -63,8 +68,12 @@ public class TraineeServiceImpl implements TraineeService {
     public TraineeSendDTO update(Trainee trainee, TraineeUpdateDTO traineeUpdateDTO) {
         trainee.setFirstName(traineeUpdateDTO.firstName());
         trainee.setLastName(traineeUpdateDTO.lastName());
-        trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
-        trainee.setAddress(traineeUpdateDTO.address());
+        if (traineeUpdateDTO.dateOfBirth() != null) {
+            trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
+        }
+        if (traineeUpdateDTO.address() != null) {
+            trainee.setAddress(traineeUpdateDTO.address());
+        }
         trainee.setActive(traineeUpdateDTO.isActive());
 
         // it turns out finByUserName detaches object
@@ -74,6 +83,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Transactional
     public List<TrainerBasicDTO> getListOfNotAssignedTrainers(Trainee trainee) {
         return trainerService.findActiveUnassignedTrainers(trainee.getTrainersAssigned());
     }
@@ -94,9 +104,10 @@ public class TraineeServiceImpl implements TraineeService {
                     Trainer trainer = trainerService.findByUsername(username);
 
                     if (trainer == null) {
-                        throw new ForbiddenActionException("No Trainer Found with Username: " +
-                                username +
-                                ". No Trainers Added");
+                        throw new InternalErrorException(
+                                "No Trainer Found with Username: %s. No Trainers Added"
+                                        .formatted(username)
+                        );
                     }
 
                     addedTrainers.add(trainer);
@@ -126,11 +137,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public void createTraining(Trainee trainee, TraineeTrainingCreateDTO trainingDTO) {
-        Trainer trainer = trainerService.findByUsername(trainingDTO.trainerUsername());
-
-        if (trainer == null) {
-            throw new ControllerValidationException("No Trainer Found with Username: " + trainingDTO.trainerUsername());
-        }
+        var trainer = trainerService.findByUsername(trainingDTO.trainerUsername());
 
         trainingService.save(TrainingFactory.createTraining(
                 trainingDTO,

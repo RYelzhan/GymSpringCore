@@ -13,8 +13,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.exception.ControllerValidationException;
-import com.epam.wca.gym.exception.ForbiddenActionException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.util.AppConstants;
@@ -30,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -62,6 +62,9 @@ class TraineeServiceImplTest {
     private ProfileServiceImpl profileService;
     @Mock
     private TrainingServiceImpl trainingService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
@@ -83,6 +86,7 @@ class TraineeServiceImplTest {
 
         when(profileService.createUsername(firstname, lastname)).thenReturn(username);
         when(profileService.createPassword()).thenReturn(password);
+        when(passwordEncoder.encode(any())).thenReturn("encoded_password");
 
         Trainee trainee = UserFactory.createTrainee(traineeRegistrationDTO);
 
@@ -284,13 +288,16 @@ class TraineeServiceImplTest {
         when(trainerService.findByUsername("invalidTrainer")).thenReturn(null);
 
         // When & Then
-        ForbiddenActionException exception = assertThrows(
-                ForbiddenActionException.class,
+        InternalErrorException exception = assertThrows(
+                InternalErrorException.class,
                 () -> traineeService.addTrainers(trainee, dto)
         );
 
         // Verify exception message
-        assertEquals("No Trainer Found with Username: invalidTrainer. No Trainers Added", exception.getMessage());
+        assertEquals(
+                "No Trainer Found with Username: invalidTrainer. No Trainers Added",
+                exception.getMessage()
+        );
 
         // Ensure that save was not called since an exception was thrown
         verify(traineeRepository, never()).save(trainee);
@@ -357,19 +364,22 @@ class TraineeServiceImplTest {
     @Test
     void testCreateTrainingThrowsExceptionWhenTrainerNotFound() {
         // Given
-        Trainee trainee = new Trainee();
-        TraineeTrainingCreateDTO trainingDTO = new TraineeTrainingCreateDTO(
+        var trainee = new Trainee();
+        var trainingDTO = new TraineeTrainingCreateDTO(
                 "invalidTrainerUser",
                 "b",
                 ZonedDateTime.parse("05.05.1995 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
                 1);
 
-        when(trainerService.findByUsername("invalidTrainerUser")).thenReturn(null);
+        var expectedException =
+                new InternalErrorException("No Trainer Found with Username: invalidTrainerUser");
+
+        when(trainerService.findByUsername("invalidTrainerUser")).thenThrow(expectedException);
 
         // When & Then
-        ControllerValidationException exception = assertThrows(
-                ControllerValidationException.class,
+        var exception = assertThrows(
+                InternalErrorException.class,
                 () -> traineeService.createTraining(trainee, trainingDTO)
         );
 

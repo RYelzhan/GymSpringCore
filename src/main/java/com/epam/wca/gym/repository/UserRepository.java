@@ -3,6 +3,8 @@ package com.epam.wca.gym.repository;
 import com.epam.wca.gym.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findUserByUserName(String username);
+    Optional<User> findUserByUserName(String username);
 }

@@ -10,9 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +24,8 @@ import static org.mockito.Mockito.when;
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -38,8 +44,10 @@ class UserServiceImplTest {
     @Test
     void testUpdatePassword() {
         // Given
-        String newPassword = "newPassword123";
+        String newPassword = "newEncodedPassword";
         userUpdateDTO = new UserUpdateDTO(newPassword);
+
+        when(passwordEncoder.encode(any())).thenReturn(newPassword);
 
         // When
         userService.update(user, userUpdateDTO);
@@ -67,7 +75,7 @@ class UserServiceImplTest {
     void testFindByUsername() {
         // Given
         String username = "testUser";
-        when(userRepository.findUserByUserName(username)).thenReturn(user);
+        when(userRepository.findUserByUserName(username)).thenReturn(Optional.of(user));
 
         // When
         User foundUser = userService.findByUsername(username);

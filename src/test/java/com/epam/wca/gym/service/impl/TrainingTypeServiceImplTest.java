@@ -2,7 +2,7 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.exception.ControllerValidationException;
+import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.repository.TrainingTypeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,7 +32,7 @@ class TrainingTypeServiceImplTest {
         // Given
         String type = "Yoga";
         TrainingType expectedTrainingType = new TrainingType(); // Create and populate as needed
-        when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(expectedTrainingType);
+        when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(Optional.of(expectedTrainingType));
 
         // When
         TrainingType actualTrainingType = trainingTypeService.findByType(type);
@@ -45,11 +46,11 @@ class TrainingTypeServiceImplTest {
     void testFindByType_InvalidType() {
         // Given
         String type = "InvalidType";
-        when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(null);
+        when(trainingTypeRepository.findTrainingTypeByType(type)).thenReturn(Optional.empty());
 
         // When & Then
-        ControllerValidationException exception = assertThrows(
-                ControllerValidationException.class,
+        var exception = assertThrows(
+                InternalErrorException.class,
                 () -> trainingTypeService.findByType(type)
         );
         assertEquals("Invalid Training Type choice", exception.getMessage());
