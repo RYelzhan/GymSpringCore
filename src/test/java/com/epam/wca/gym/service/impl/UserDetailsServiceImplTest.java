@@ -1,7 +1,7 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.exception.UserBlockedException;
+import com.epam.wca.gym.exception.authentication.UserBlockedAuthException;
 import com.epam.wca.gym.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +36,7 @@ class UserDetailsServiceImplTest {
         when(loginAttemptService.getClientIP()).thenReturn("127.0.0.1");
 
         // Assert that a UserBlockedException is thrown when the user is blocked
-        assertThrows(UserBlockedException.class, () -> userDetailsService.loadUserByUsername("testuser"),
+        assertThrows(UserBlockedAuthException.class, () -> userDetailsService.loadUserByUsername("testuser"),
                 "Expected UserBlockedException to be thrown when the user is blocked");
 
         // Verify that the login attempt service was checked

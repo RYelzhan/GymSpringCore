@@ -1,8 +1,11 @@
 package com.epam.wca.gym.filter;
 
 import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.exception.authentication.JwtAuthException;
 import com.epam.wca.gym.service.impl.JwtService;
+import com.epam.wca.gym.service.impl.LoginAttemptService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +14,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private Set<String> allowedPrefixes;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final LoginAttemptService loginAttemptService;
 
     @Value("${allowed.prefixes}")
     public void setAllowedPrefixes(String[] prefixes) {
@@ -53,10 +61,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (loginAttemptService.isBlocked()) {
+            response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+            response.getWriter().write("Too much Authentication Attempts. Wait 15 minutes.");
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
 
-        if (!isBearerTokenPresent(authHeader)) {
-            respondWithUnauthorized(response, "Jwt Token is required for Authentication.");
+        try {
+            validateBearerTokenIsPresent(authHeader);
+        } catch (com.epam.wca.gym.exception.AuthenticationException e) {
+            respondWithUnauthorized(
+                    response,
+                    new JwtAuthException(e.getMessage(), e)
+            );
             return;
         }
 
@@ -70,12 +89,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 filterChain.doFilter(request, response);
             }
-        } catch (UsernameNotFoundException e) {
-            respondWithUnauthorized(response, e.getMessage());
         } catch (ExpiredJwtException e) {
-            respondWithUnauthorized(response, "Token is Expired. Refresh it!");
-        } catch (SignatureException e) {
-            respondWithUnauthorized(response, "Token is invalid.");
+            respondWithUnauthorized(
+                    response,
+                    new JwtAuthException("Token is Expired. Refresh it!", e)
+            );
+        } catch (SignatureException | MalformedJwtException e) {
+            respondWithUnauthorized(
+                    response,
+                    new JwtAuthException("Token is invalid.", e)
+            );
         }
     }
 
@@ -83,8 +106,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return uri.isPresent() && allowedPrefixes.stream().anyMatch(uri.get()::startsWith);
     }
 
-    private boolean isBearerTokenPresent(String authHeader) {
-        return authHeader != null && authHeader.startsWith("Bearer ");
+    private void validateBearerTokenIsPresent(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new com.epam.wca.gym.exception.AuthenticationException("Missing or malformed Bearer JWT token.");
+        }
     }
 
     private String extractJwtToken(String authHeader) {
@@ -98,13 +123,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwtToken,
             String username
     ) throws IOException, ServletException {
-        User user = (User) userDetailsService.loadUserByUsername(username);
+        try {
+            User user = (User) userDetailsService.loadUserByUsername(username);
 
-        if (jwtService.isTokenValid(jwtToken, user)) {
+            jwtService.validateToken(jwtToken, user);
             setAuthenticationForUser(request, user);
             filterChain.doFilter(request, response);
-        } else {
-            respondWithUnauthorized(response, "Token is invalid.");
+        } catch (com.epam.wca.gym.exception.AuthenticationException | UsernameNotFoundException e) {
+            respondWithUnauthorized(
+                    response,
+                    new JwtAuthException("Token is invalid.", e)
+            );
         }
     }
 
@@ -121,8 +150,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         request.setAttribute(authenticatedUserRequestAttributeName, user);
     }
 
-    private void respondWithUnauthorized(HttpServletResponse response, String message) throws IOException {
+    private void respondWithUnauthorized(HttpServletResponse response, AuthenticationException e) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("Error: %s".formatted(message));
+        response.getWriter().write("Error: %s".formatted(e.getMessage()));
+
+
+        applicationEventPublisher.publishEvent(
+                new AuthenticationFailureBadCredentialsEvent(
+                        new UsernamePasswordAuthenticationToken(null, null, null),
+                        e)
+        );
     }
 }

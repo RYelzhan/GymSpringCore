@@ -1,6 +1,7 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.exception.AuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
@@ -57,10 +58,12 @@ public class JwtService {
         return generateToken(claims, userDetails);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public void validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
 
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        if (!username.equals(userDetails.getUsername()) || isTokenExpired(token)) {
+            throw new AuthenticationException("Not correct JWT token.");
+        }
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

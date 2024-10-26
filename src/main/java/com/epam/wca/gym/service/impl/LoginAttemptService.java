@@ -2,6 +2,7 @@ package com.epam.wca.gym.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Service
+@Slf4j
 public class LoginAttemptService {
 
     @Value("${authentication.starting-attempt}")
@@ -41,6 +43,8 @@ public class LoginAttemptService {
         attemptsMap.put(key, attempts);
 
         if (attempts == maxAttempt) {
+            log.info("User got blocked. IP: %s".formatted(key));
+
             blockTime.put(key, new Date(System.currentTimeMillis() + blockTimeMillis));
         }
     }

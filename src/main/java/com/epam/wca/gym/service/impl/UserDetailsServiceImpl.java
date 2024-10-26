@@ -1,6 +1,7 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.exception.UserBlockedException;
+import com.epam.wca.gym.exception.authentication.UserBlockedAuthException;
 import com.epam.wca.gym.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, UserBlockedAuthException {
         if (loginAttemptService.isBlocked()) {
             log.info("User got blocked. IP: %s".formatted(loginAttemptService.getClientIP()));
-            throw new UserBlockedException("User is blocked");
+
+            throw new UserBlockedAuthException("User is blocked", new UserBlockedException("User is blocked"));
         }
 
         return userRepository.findUserByUserName(username)

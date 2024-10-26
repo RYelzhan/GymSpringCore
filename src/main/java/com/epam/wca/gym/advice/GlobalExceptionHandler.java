@@ -1,9 +1,9 @@
 package com.epam.wca.gym.advice;
 
 import com.epam.wca.gym.exception.AuthenticationException;
+import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
-import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.util.AppConstants;
@@ -15,6 +15,8 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     private static final String INVALID_DATE_FORMAT = "Invalid date format. Please use the correct format (e.g., %s ).";
+    private static final String URL_NOT_FOUND_MESSAGE = "The requested URL was not found on the server.";
     private static final String SERVER_ERROR_MESSAGE = "Error happened on server side.";
 
     @ExceptionHandler(ControllerValidationException.class)
@@ -82,6 +85,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<String> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<String> handleNoHandlerFoundException() {
+        return new ResponseEntity<>(URL_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<String> handleNoResourceFoundException() {
+        return new ResponseEntity<>(URL_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
