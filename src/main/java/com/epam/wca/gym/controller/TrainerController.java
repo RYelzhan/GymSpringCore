@@ -5,10 +5,11 @@ import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import jakarta.servlet.http.HttpServletRequest;
+import com.epam.wca.gym.entity.Trainer;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,29 +23,33 @@ import java.util.List;
 @RequestMapping(value = "/users/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
 public interface TrainerController {
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
-    TrainerSendDTO getProfile(HttpServletRequest request);
+    TrainerSendDTO getProfile(
+            @AuthenticationPrincipal Trainer authenticatedTrainer
+    );
 
     @PutMapping(value = "/profiles")
     TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainer authenticatedTrainer
     );
 
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteProfile(HttpServletRequest request);
+    void deleteProfile(
+            @AuthenticationPrincipal Trainer authenticatedTrainer
+    );
 
     @PostMapping("/trainings")
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainer authenticatedTrainer
     );
 
     @PostMapping("/trainings/new")
     @ResponseStatus(HttpStatus.CREATED)
     String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainer authenticatedTrainer
     );
 }
 

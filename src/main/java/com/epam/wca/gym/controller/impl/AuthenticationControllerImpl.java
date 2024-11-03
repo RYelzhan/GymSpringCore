@@ -5,6 +5,7 @@ import com.epam.wca.gym.controller.documentation.AuthenticationControllerDocumen
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.AuthService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
@@ -12,12 +13,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RequiredArgsConstructor
 public class AuthenticationControllerImpl implements
         AuthenticationControllerDocumentation {
@@ -27,7 +26,7 @@ public class AuthenticationControllerImpl implements
 
     @Override
     @Logging
-    public String login(@AuthenticationPrincipal UserDetails user) {
+    public String login(@AuthenticationPrincipal User user) {
         String token = authService.generateToken(user);
 
         return "Login Successful. Token: %s".formatted(token);

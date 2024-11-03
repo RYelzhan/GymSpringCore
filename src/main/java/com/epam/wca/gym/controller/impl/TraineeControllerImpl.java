@@ -11,10 +11,9 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,49 +24,40 @@ import java.util.List;
 public class TraineeControllerImpl implements TraineeControllerDocumentation {
     private final TraineeService traineeService;
 
-    @Value("${gym.api.request.attribute.user}")
-    private String authenticatedUserRequestAttributeName;
-
     @Override
-    public TraineeSendDTO getProfile(HttpServletRequest request) {
-        var trainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
+    public TraineeSendDTO getProfile(@AuthenticationPrincipal Trainee trainee) {
         return DTOFactory.createTraineeSendDTO(trainee);
     }
 
     @Override
     public TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
         return traineeService.update(authenticatedTrainee, traineeDTO);
     }
 
     @Override
-    public void deleteProfile(HttpServletRequest request) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
+    public void deleteProfile(
+            @AuthenticationPrincipal Trainee authenticatedTrainee
+    ) {
         // TODO: invalidation refresh token logic
 
         traineeService.deleteById(authenticatedTrainee.getId());
     }
 
     @Override
-    public List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
+    public List<TrainerBasicDTO> getNotAssignedTrainers(
+            @AuthenticationPrincipal Trainee authenticatedTrainee
+    ) {
         return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
     }
 
     @Override
     public List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
         return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
     }
 
@@ -75,9 +65,8 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     @Override
     public List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
         // TODO: READ!!!
         // callable statement
         // principle of least knowledge
@@ -88,10 +77,8 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     @Override
     public String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     ) {
-        var authenticatedTrainee = (Trainee) request.getAttribute(authenticatedUserRequestAttributeName);
-
         traineeService.createTraining(authenticatedTrainee, trainingDTO);
 
         return "Training Created Successfully";

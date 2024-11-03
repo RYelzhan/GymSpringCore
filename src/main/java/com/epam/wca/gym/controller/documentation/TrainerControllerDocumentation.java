@@ -6,12 +6,13 @@ import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
+import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -30,7 +31,9 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    TrainerSendDTO getProfile(HttpServletRequest request);
+    TrainerSendDTO getProfile(
+            @AuthenticationPrincipal Trainer authenticatedTrainer
+    );
 
     @Operation(
             summary = "Update Trainer Profile",
@@ -50,7 +53,7 @@ public interface TrainerControllerDocumentation extends TrainerController {
     )
     TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainer authenticatedTrainer
     );
 
     @Operation(
@@ -65,7 +68,9 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    void deleteProfile(HttpServletRequest request);
+    void deleteProfile(
+            @AuthenticationPrincipal Trainer authenticatedTrainer
+    );
 
     @Operation(
             summary = "Get Trainer Trainings List"
@@ -84,7 +89,7 @@ public interface TrainerControllerDocumentation extends TrainerController {
     )
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainer authenticatedTrainer
     );
 
     @Operation(
@@ -105,6 +110,6 @@ public interface TrainerControllerDocumentation extends TrainerController {
     )
     String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainer authenticatedTrainer
     );
 }

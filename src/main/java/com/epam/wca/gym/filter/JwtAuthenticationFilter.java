@@ -45,9 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         allowedPrefixes = Arrays.stream(prefixes).collect(Collectors.toSet());
     }
 
-    @Value("${gym.api.request.attribute.user}")
-    private String authenticatedUserRequestAttributeName;
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -146,8 +143,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        request.setAttribute(authenticatedUserRequestAttributeName, user);
     }
 
     private void respondWithUnauthorized(HttpServletResponse response, AuthenticationException e) throws IOException {

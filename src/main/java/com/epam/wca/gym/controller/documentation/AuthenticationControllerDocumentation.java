@@ -4,13 +4,13 @@ import com.epam.wca.gym.controller.AuthenticationController;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface AuthenticationControllerDocumentation extends AuthenticationController {
@@ -27,7 +27,7 @@ public interface AuthenticationControllerDocumentation extends AuthenticationCon
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @SecurityRequirement(name = "basicAuth")
-    String login(@AuthenticationPrincipal UserDetails user);
+    String login(@AuthenticationPrincipal User user);
 
     @Operation(
             summary = "User Logout",

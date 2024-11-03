@@ -3,12 +3,13 @@ package com.epam.wca.gym.controller.documentation;
 import com.epam.wca.gym.controller.UserController;
 import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
+import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @SecurityRequirement(name = "jwtToken")
@@ -25,7 +26,7 @@ public interface UserControllerDocumentation extends UserController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    String getInfo(HttpServletRequest request);
+    String getInfo(@AuthenticationPrincipal User authenticatedUser);
 
     @Operation(
             summary = "Change User Password"
@@ -44,7 +45,7 @@ public interface UserControllerDocumentation extends UserController {
     )
     String changePassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal User authenticatedUser
     );
 
     @Operation(
@@ -64,6 +65,6 @@ public interface UserControllerDocumentation extends UserController {
     )
     String activateDeactivate(
             @RequestBody @Valid UserActivationDTO userDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal User authenticatedUser
     );
 }

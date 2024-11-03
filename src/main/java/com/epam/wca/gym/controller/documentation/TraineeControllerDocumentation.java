@@ -8,13 +8,14 @@ import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
+import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -35,7 +36,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
-    TraineeSendDTO getProfile(HttpServletRequest request);
+    TraineeSendDTO getProfile(
+            @AuthenticationPrincipal Trainee authenticatedTrainee
+    );
 
     @Operation(
             summary = "Update Trainee Profile",
@@ -55,7 +58,7 @@ public interface TraineeControllerDocumentation extends TraineeController {
     )
     TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -70,7 +73,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    void deleteProfile(HttpServletRequest request);
+    void deleteProfile(
+            @AuthenticationPrincipal Trainee authenticatedTrainee
+    );
 
     @Operation(
             summary = "Get Available Trainers for a Trainee",
@@ -84,7 +89,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
-    List<TrainerBasicDTO> getNotAssignedTrainers(HttpServletRequest request);
+    List<TrainerBasicDTO> getNotAssignedTrainers(
+            @AuthenticationPrincipal Trainee authenticatedTrainee
+    );
 
     @Operation(
             summary = "Update Trainer List for a Trainee",
@@ -104,7 +111,7 @@ public interface TraineeControllerDocumentation extends TraineeController {
     )
     List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -121,7 +128,7 @@ public interface TraineeControllerDocumentation extends TraineeController {
     )
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -142,6 +149,6 @@ public interface TraineeControllerDocumentation extends TraineeController {
     )
     String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal Trainee authenticatedTrainee
     );
 }

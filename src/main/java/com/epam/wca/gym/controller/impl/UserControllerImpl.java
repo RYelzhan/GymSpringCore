@@ -5,10 +5,9 @@ import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,23 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserControllerDocumentation {
     private final UserService userService;
-    @Value("${gym.api.request.attribute.user}")
-    private String authenticatedUserRequestAttributeName;
 
     @Override
-    public String getInfo(HttpServletRequest request) {
-        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
-
+    public String getInfo(@AuthenticationPrincipal User authenticatedUser) {
         return authenticatedUser.getUsername();
     }
 
     @Override
     public String changePassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal User authenticatedUser
     ) {
-        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
-
         userService.update(authenticatedUser, userDTO);
 
         return "Password Changed Successfully";
@@ -42,10 +35,8 @@ public class UserControllerImpl implements UserControllerDocumentation {
     @Override
     public String activateDeactivate(
             @RequestBody @Valid UserActivationDTO userDTO,
-            HttpServletRequest request
+            @AuthenticationPrincipal User authenticatedUser
     ) {
-        var authenticatedUser = (User) request.getAttribute(authenticatedUserRequestAttributeName);
-
         userService.update(authenticatedUser, userDTO);
 
         return "Is Active Updated Successfully";
