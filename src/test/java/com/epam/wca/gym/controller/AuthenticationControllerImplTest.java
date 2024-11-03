@@ -7,7 +7,6 @@ import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.service.AuthService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,12 +37,10 @@ class AuthenticationControllerImplTest {
     @MockBean
     private TrainerService trainerService;
 
-    private User user;
+    private final User user = new User();
 
-    @BeforeEach
-    void setUp() {
-        user = new User();
-    }
+    private final String traineeRegisterUrl = "/authentication/account/trainee";
+    private final String trainerRegisterUrl = "/authentication/account/trainer";
 
     @Test
     void testLogin() throws Exception {
@@ -66,7 +63,7 @@ class AuthenticationControllerImplTest {
     }
 
     @Test
-    void testRegisterTrainee() throws Exception {
+    void testRegisterTrainee_ValidRequest_ShouldReturnCreated() throws Exception {
         String username = "username";
         String password = "password";
 
@@ -74,7 +71,7 @@ class AuthenticationControllerImplTest {
 
         when(traineeService.save(any(TraineeRegistrationDTO.class))).thenReturn(userAuthenticatedDTO);
 
-        mockMvc.perform(post("/authentication/account/trainee")
+        mockMvc.perform(post(traineeRegisterUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -88,13 +85,149 @@ class AuthenticationControllerImplTest {
                 .andExpect(content().json("""
                 {
                     "username": %s,
-                    "password": %s"
+                    "password": %s
                 }
             """.formatted(username, password)));
     }
 
     @Test
-    void testRegisterTrainer() throws Exception {
+    void testRegisterTrainee_MissingRequiredLastname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                    {
+                        "firstName": "John",
+                        "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                        "address": "123 Main St"
+                    }
+                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_MissingRequiredFirstname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                    {
+                        "lastname": "Smith",
+                        "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                        "address": "123 Main St"
+                    }
+                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_InvalidDateFormat_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "dateOfBirth": "1990-01-01T10:10:10",
+                            "address": "123 Main St"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_FutureDate_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "dateOfBirth": "01.01.3000 10:10:10 UTC",
+                            "address": "123 Main St"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_EmptyFirstname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "",
+                            "lastName": "Doe",
+                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                            "address": "123 Main St"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_EmptyLastname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "John",
+                            "lastName": "",
+                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                            "address": "123 Main St"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_ExceedingFirstnameLength_ShouldReturnBadRequest() throws Exception {
+        String longFirstName = "John".repeat(100); // Exceeds typical length constraints
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "%s",
+                            "lastName": "Doe",
+                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                            "address": "123 Main St"
+                        }
+                    """.formatted(longFirstName)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_ExceedingLastnameLength_ShouldReturnBadRequest() throws Exception {
+        String longLastName = "Doe".repeat(100); // Exceeds typical length constraints
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "John",
+                            "lastName": "%s",
+                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                            "address": "123 Main St"
+                        }
+                    """.formatted(longLastName)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_ExceedingAddressLength_ShouldReturnBadRequest() throws Exception {
+        String longAddress = "address".repeat(100); // Exceeds typical length constraints
+        mockMvc.perform(post(traineeRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                            "address": "%s"
+                        }
+                    """.formatted(longAddress)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_ValidRequest_ShouldReturnCreated() throws Exception {
         String username = "username";
         String password = "password";
 
@@ -102,7 +235,7 @@ class AuthenticationControllerImplTest {
 
         when(trainerService.save(any(TrainerRegistrationDTO.class))).thenReturn(userAuthenticatedDTO);
 
-        mockMvc.perform(post("/authentication/account/trainer")
+        mockMvc.perform(post(trainerRegisterUrl)
                         .contentType("application/json")
                         .content("""
                         {
@@ -118,5 +251,115 @@ class AuthenticationControllerImplTest {
                     "password": %s
                 }
             """.formatted(username, password)));
+    }
+
+    @Test
+    void testRegisterTrainer_InvalidTrainingType_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "Jane",
+                            "lastName": "Smith",
+                            "trainingType": "INVALID_TYPE"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_MissingRequiredLastname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "Jane",
+                            "trainingType": "YOGA"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_MissingRequiredFirstname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "lastname": "Smith",
+                            "trainingType": "YOGA"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_MissingRequiredTrainingType_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "Jane",
+                            "lastname": "Smith"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_EmptyLastname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "Jane",
+                            "lastName": "",
+                            "trainingType": "YOGA"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_EmptyFirstname_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "",
+                            "lastName": "Smith",
+                            "trainingType": "YOGA"
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainer_EmptyTrainingType_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "Jane",
+                            "lastName": "Smith",
+                            "trainingType": ""
+                        }
+                    """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testRegisterTrainee_ExceedingTrainingTypeLength_ShouldReturnBadRequest() throws Exception {
+        String longTrainingType = "YOGA".repeat(100); // Exceeds typical length constraints
+        mockMvc.perform(post(trainerRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                            "firstName": "Jane",
+                            "lastName": "Smith",
+                            "trainingType": "%s"
+                        }
+                    """.formatted(longTrainingType)))
+                .andExpect(status().isBadRequest());
     }
 }
