@@ -98,7 +98,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleServerError() {
+    public ResponseEntity<String> handleServerError(Exception e) {
+        log.error(e.getMessage());
+
         return new ResponseEntity<>(SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

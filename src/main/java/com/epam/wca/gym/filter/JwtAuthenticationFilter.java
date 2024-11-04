@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         Optional<String> uri = Optional.ofNullable(request.getRequestURI());
 
-        if (isUriAllowed(uri)) {
+        if (isUriAllowed(uri) || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -81,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String username = jwtService.extractUsername(jwtToken);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null) {
                 handleAuthentication(request, response, filterChain, jwtToken, username);
             } else {
                 filterChain.doFilter(request, response);
