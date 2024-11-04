@@ -441,7 +441,7 @@ class TraineeControllerImplTest {
     }
 
     @Test
-    void testCreateTraining() throws Exception {
+    void testCreateTraining_ValidRequest() throws Exception {
         mockMvc.perform(post("/users/trainees/trainings/new")
                         .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
