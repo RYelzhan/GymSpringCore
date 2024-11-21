@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,6 +29,7 @@ public class GlobalExceptionHandler {
     private static final String INVALID_DATE_FORMAT = "Invalid date format. Please use the correct format (e.g., %s ).";
     private static final String URL_NOT_FOUND_MESSAGE = "The requested URL was not found on the server.";
     private static final String SERVER_ERROR_MESSAGE = "Error happened on server side.";
+    private static final String METHODS_NOT_SUPPORTED_MESSAGE = "Method is not supported ny endpoint.";
 
     @ExceptionHandler(ControllerValidationException.class)
     public ResponseEntity<String> handleMethodArgumentValidationExceptions(ControllerValidationException ex) {
@@ -95,6 +97,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<String> handleNoResourceFoundException() {
         return new ResponseEntity<>(URL_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<String> handleHttpRequestMethodNotSupportedException() {
+        return new ResponseEntity<>(METHODS_NOT_SUPPORTED_MESSAGE, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
