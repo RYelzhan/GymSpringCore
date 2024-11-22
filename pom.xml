@@ -12,6 +12,7 @@
     <modules>
         <module>Statistics</module>
         <module>GymSpringCore</module>
+        <module>ServiceDiscovery</module>
     </modules>
 
     <!-- All Spring Boot Starter versions -->
