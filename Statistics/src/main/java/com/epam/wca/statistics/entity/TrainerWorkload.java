@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,26 +13,25 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "TRAINER_WORKLOAD")
 public class TrainerWorkload {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME", nullable = false)
     private String username;
-    @Column(name = "FIRSTNAME")
+    @Column(name = "FIRSTNAME", nullable = false)
     private String firstname;
-    @Column(name = "LASTNAME")
+    @Column(name = "LASTNAME", nullable = false)
     private String lastname;
-    @Column(name = "IS_ACTIVE")
+    @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive;
-    @Column(name = "YEAR")
+    @Column(name = "TRAINING_YEAR", nullable = false)
     private Integer year;
-    @Column(name = "MONTH")
+    @Column(name = "TRAINING_MONTH", nullable = false)
     private Integer month;
-    @Column(name = "DURATION")
+    @Column(name = "DURATION", nullable = false)
     private Integer duration;
 
     public TrainerWorkload(
@@ -51,5 +49,19 @@ public class TrainerWorkload {
         this.year = year;
         this.month = month;
         this.duration = duration;
+    }
+
+    @Override
+    public String toString() {
+        return "TrainerWorkload{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", isActive=" + isActive +
+                ", year=" + year +
+                ", month=" + month +
+                ", duration=" + duration +
+                '}';
     }
 }

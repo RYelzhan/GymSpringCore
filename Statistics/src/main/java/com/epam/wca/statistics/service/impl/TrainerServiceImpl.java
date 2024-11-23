@@ -1,12 +1,15 @@
-package com.epam.wca.statistics.service;
+package com.epam.wca.statistics.service.impl;
 
+import com.epam.wca.statistics.aop.Logging;
 import com.epam.wca.statistics.dto.TrainerTrainingAddDTO;
 import com.epam.wca.statistics.dto.TrainerWorkloadSummary;
 import com.epam.wca.statistics.entity.TrainerWorkload;
 import com.epam.wca.statistics.repository.TrainerWorkloadRepository;
+import com.epam.wca.statistics.service.TrainerService;
 import com.epam.wca.statistics.util.DTOFactory;
 import com.epam.wca.statistics.util.EntityFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class TrainerServiceImpl implements TrainerService{
+public class TrainerServiceImpl implements TrainerService {
     private final TrainerWorkloadRepository trainerWorkloadRepository;
 
     @Override
@@ -30,10 +34,13 @@ public class TrainerServiceImpl implements TrainerService{
 
         trainerWorkload.setDuration(trainerWorkload.getDuration() + trainingAddDTO.duration());
 
+        log.info("Saved Workload: " + trainerWorkload);
+
         trainerWorkloadRepository.save(trainerWorkload);
     }
 
     @Override
+    @Logging
     public TrainerWorkloadSummary getWorkload(String username) {
         List<TrainerWorkload> trainerWorkloads = trainerWorkloadRepository.findAllByUsername(username);
 

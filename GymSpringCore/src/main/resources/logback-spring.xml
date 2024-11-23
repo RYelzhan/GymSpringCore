@@ -2,7 +2,7 @@
 
     <!-- Access log appender -->
     <appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/access.log</file>
+        <file>GymSpringCore/logs/access.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/access-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -20,12 +20,12 @@
     </appender>
 
     <!-- Root logger configuration -->
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="CONSOLE" />
     </root>
 
     <!-- Logger for access logs -->
-    <logger name="com.epam.wca.gym.filter.LoggerFilter" level="WARN" additivity="false">
+    <logger name="com.epam.wca.gym.filter.LoggerFilter" level="ERROR" additivity="false">
         <appender-ref ref="ACCESS" />
     </logger>
 

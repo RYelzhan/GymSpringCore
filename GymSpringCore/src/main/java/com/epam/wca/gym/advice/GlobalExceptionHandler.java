@@ -104,6 +104,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(METHODS_NOT_SUPPORTED_MESSAGE, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(NoSuchMethodError.class)
+    public ResponseEntity<String> handleNoSuchMethodError(NoSuchMethodError e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleServerError(Exception e) {
         log.error(e.getMessage());

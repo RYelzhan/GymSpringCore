@@ -51,5 +51,10 @@ public interface TrainerController {
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             @AuthenticationPrincipal Trainer authenticatedTrainer
     );
+
+    @GetMapping("/trainings/statistics")
+    Object getStatistics(
+            @AuthenticationPrincipal Trainer trainer
+    );
 }
 

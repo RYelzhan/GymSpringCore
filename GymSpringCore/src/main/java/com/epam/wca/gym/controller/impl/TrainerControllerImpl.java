@@ -1,12 +1,14 @@
 package com.epam.wca.gym.controller.impl;
 
 import com.epam.wca.gym.controller.documentation.TrainerControllerDocumentation;
+import com.epam.wca.gym.dto.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.feign.StatisticsClient;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.util.DTOFactory;
 import jakarta.validation.Valid;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerControllerImpl implements TrainerControllerDocumentation {
     private final TrainerService trainerService;
+    private final StatisticsClient statisticsClient;
 
     @Override
     public TrainerSendDTO getProfile(
@@ -63,5 +66,13 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
         trainerService.createTraining(authenticatedTrainer, trainingDTO);
 
         return "Training Created Successfully";
+    }
+
+    @Override
+    public TrainerWorkloadSummary getStatistics(
+            @AuthenticationPrincipal Trainer trainer
+    ) {
+        System.out.println(trainer.getUsername());
+        return statisticsClient.getWorkload(trainer.getUsername());
     }
 }

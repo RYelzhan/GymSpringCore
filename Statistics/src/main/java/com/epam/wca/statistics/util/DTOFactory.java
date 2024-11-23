@@ -1,5 +1,6 @@
 package com.epam.wca.statistics.util;
 
+import com.epam.wca.gym.aop.Logging;
 import com.epam.wca.statistics.dto.TrainerWorkloadSummary;
 import lombok.experimental.UtilityClass;
 
@@ -7,6 +8,7 @@ import java.util.Map;
 
 @UtilityClass
 public class DTOFactory {
+    @Logging
     public static TrainerWorkloadSummary convertToDto(
             String username,
             Map<Integer, Map<Integer,Integer>> trainerWorkloads

@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+// TODO: /v3/api-docs stopped working
+
 @SecurityScheme(
         name = "jwtToken",
         type = SecuritySchemeType.HTTP,
