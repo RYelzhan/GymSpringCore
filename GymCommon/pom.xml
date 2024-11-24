@@ -32,7 +32,6 @@
             <version>2.18.1</version>
         </dependency>
 
-
         <!-- Data Validation (includes Hibernate Validator) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,4 +1,4 @@
-package com.epam.wca.gym.feign;
+package com.epam.wca.gym.communication.feign;
 
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;

@@ -11,9 +11,9 @@ import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
-import com.epam.wca.gym.feign.StatisticsClient;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.service.TrainingService;
 import com.epam.wca.gym.service.TrainingTypeService;
@@ -41,7 +41,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainingTypeService trainingTypeService;
     private final TrainingService trainingService;
     private final PasswordEncoder passwordEncoder;
-    private final StatisticsClient statisticsClient;
+    private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
     @Transactional
@@ -108,9 +108,9 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     @Transactional
     public void deleteById(Long id) {
-        trainerRepository.deleteById(id);
-
         deleteAssociatedTrainings(id);
+
+        trainerRepository.deleteById(id);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class TrainerServiceImpl implements TrainerService {
 
             log.info("Calling the Statistics service with argument: " + trainingsDeleteDTO);
 
-            statisticsClient.deleteTrainings(trainingsDeleteDTO);
+            statisticsCommunicationService.deleteTrainings(trainingsDeleteDTO);
         } catch (EntityNotFoundException e) {
             throw new InternalErrorException("Deletion of non-existent trainee trainings.");
         }

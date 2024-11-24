@@ -13,8 +13,8 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
-import com.epam.wca.gym.feign.StatisticsClient;
 import com.epam.wca.gym.repository.TraineeRepository;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.service.TrainingService;
@@ -41,7 +41,7 @@ public class TraineeServiceImpl implements TraineeService {
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final PasswordEncoder passwordEncoder;
-    private final StatisticsClient statisticsClient;
+    private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
     @Transactional
@@ -111,7 +111,7 @@ public class TraineeServiceImpl implements TraineeService {
 
             log.info("Calling the Statistics service with argument: " + trainingsDeleteDTO);
 
-            statisticsClient.deleteTrainings(trainingsDeleteDTO);
+            statisticsCommunicationService.deleteTrainings(trainingsDeleteDTO);
         } catch (EntityNotFoundException e) {
             throw new InternalErrorException("Deletion of non-existent trainee trainings.");
         }

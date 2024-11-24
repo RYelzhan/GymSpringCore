@@ -6,6 +6,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = "com.epam.wca.gym.feign")
+@EnableFeignClients(basePackages = "com.epam.wca.gym.communication.feign")
 public class EurekaConfig {
 }

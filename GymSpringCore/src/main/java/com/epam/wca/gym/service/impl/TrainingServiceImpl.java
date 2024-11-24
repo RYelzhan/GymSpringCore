@@ -1,8 +1,8 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.entity.Training;
-import com.epam.wca.gym.feign.StatisticsClient;
 import com.epam.wca.gym.repository.TrainingRepository;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.service.TrainingService;
 import com.epam.wca.gym.util.DTOFactory;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
-    private final StatisticsClient statisticsClient;
+    private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
     @Transactional
@@ -26,6 +26,6 @@ public class TrainingServiceImpl implements TrainingService {
 
         log.info("Sending request to Statistics Service: {}", request);
 
-        statisticsClient.addNewTraining(request);
+        statisticsCommunicationService.addNewTraining(request);
     }
 }

@@ -49,9 +49,13 @@
 
         <!-- Spring Cloud Version management -->
         <spring-cloud.version>2024.0.0-RC1</spring-cloud.version>
+
+        <!-- Circuit Breaker version -->
+        <resillience4j.circuitbreaker.version>2.2.0</resillience4j.circuitbreaker.version>
     </properties>
 
     <dependencies>
+        <!-- Common Classes needed for smooth communication -->
         <dependency>
             <groupId>com.epam.wca.common</groupId>
             <artifactId>GymCommon</artifactId>
@@ -171,12 +175,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Dev Tools -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-        </dependency>
-
         <!-- Metrics -->
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -198,6 +196,14 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+
+        <!-- Circuit Breaker -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-circuitbreaker</artifactId>
+            <version>${resillience4j.circuitbreaker.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
