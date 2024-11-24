@@ -16,6 +16,9 @@
 	<properties>
 		<java.version>17</java.version>
 
+		<!--  Database version  -->
+		<postgresql.version>42.7.4</postgresql.version>
+
 		<!-- Spring Cloud Version management -->
 		<spring-cloud.version>2024.0.0-RC1</spring-cloud.version>
 	</properties>
@@ -23,21 +26,21 @@
 	<dependencies>
 		<!-- Dependency of Main Working Application -->
 		<dependency>
-			<groupId>com.epam.wca.gym</groupId>
-			<artifactId>GymSpringCore</artifactId>
-			<version>2.2-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-security</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>com.epam.wca.common</groupId>
+			<artifactId>GymCommon</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Database (includes Hibernate and JPA support) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
 		</dependency>
 
 		<!-- Data Validation (includes Hibernate Validator) -->
@@ -56,7 +59,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Utility Dependency -->
@@ -77,6 +79,10 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 	</dependencies>
 

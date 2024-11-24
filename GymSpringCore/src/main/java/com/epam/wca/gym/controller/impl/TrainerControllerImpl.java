@@ -1,7 +1,7 @@
 package com.epam.wca.gym.controller.impl;
 
 import com.epam.wca.gym.controller.documentation.TrainerControllerDocumentation;
-import com.epam.wca.gym.dto.statistics_dto.TrainerWorkloadSummary;
+import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;

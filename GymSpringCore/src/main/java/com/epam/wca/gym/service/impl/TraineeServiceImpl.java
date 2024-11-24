@@ -13,6 +13,7 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
+import com.epam.wca.gym.feign.StatisticsClient;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
@@ -21,7 +22,9 @@ import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.TrainingFactory;
 import com.epam.wca.gym.util.UserFactory;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TraineeServiceImpl implements TraineeService {
@@ -37,6 +41,7 @@ public class TraineeServiceImpl implements TraineeService {
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final PasswordEncoder passwordEncoder;
+    private final StatisticsClient statisticsClient;
 
     @Override
     @Transactional
@@ -91,7 +96,25 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public void deleteById(Long id) {
+        deleteAssociatedTrainings(id);
+
         traineeRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteAssociatedTrainings(Long id) {
+        try {
+            var trainee = traineeRepository.getReferenceById(id);
+
+            var trainingsDeleteDTO =
+                    DTOFactory.createTrainersTrainingsDeleteDTO(trainee.getTrainings());
+
+            log.info("Calling the Statistics service with argument: " + trainingsDeleteDTO);
+
+            statisticsClient.deleteTrainings(trainingsDeleteDTO);
+        } catch (EntityNotFoundException e) {
+            throw new InternalErrorException("Deletion of non-existent trainee trainings.");
+        }
     }
 
     @Override

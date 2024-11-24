@@ -14,6 +14,7 @@
         <module>GymSpringCore</module>
         <module>ServiceDiscovery</module>
         <module>ApiGateway</module>
+        <module>GymCommon</module>
     </modules>
 
     <!-- All Spring Boot Starter versions -->

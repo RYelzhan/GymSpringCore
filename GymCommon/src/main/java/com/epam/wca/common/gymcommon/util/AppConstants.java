@@ -1,4 +1,4 @@
-package com.epam.wca.gym.util;
+package com.epam.wca.common.gymcommon.util;
 
 import lombok.experimental.UtilityClass;
 

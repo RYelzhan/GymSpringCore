@@ -1,6 +1,6 @@
 package com.epam.wca.gym.dto.trainee;
 
-import com.epam.wca.gym.util.AppConstants;
+import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

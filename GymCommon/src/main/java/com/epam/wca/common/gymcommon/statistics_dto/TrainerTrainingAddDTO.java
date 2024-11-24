@@ -1,6 +1,6 @@
-package com.epam.wca.statistics.dto;
+package com.epam.wca.common.gymcommon.statistics_dto;
 
-import com.epam.wca.gym.util.AppConstants;
+import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;

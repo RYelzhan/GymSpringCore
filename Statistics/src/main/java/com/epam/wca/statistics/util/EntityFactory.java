@@ -1,6 +1,6 @@
 package com.epam.wca.statistics.util;
 
-import com.epam.wca.statistics.dto.TrainerTrainingAddDTO;
+import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
 import com.epam.wca.statistics.entity.TrainerWorkload;
 import lombok.experimental.UtilityClass;
 

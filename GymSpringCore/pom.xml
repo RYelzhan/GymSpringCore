@@ -52,6 +52,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.epam.wca.common</groupId>
+            <artifactId>GymCommon</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- Web (includes Spring, Jackson, Tomcat) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -24,6 +24,8 @@ public interface TraineeService {
 
     void deleteById(Long id);
 
+    void deleteAssociatedTrainings(Long id);
+
     List<TrainerBasicDTO> addTrainers(Trainee trainee, TraineeTrainersUpdateDTO dto);
 
     Trainee findById(Long id);

@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface TrainerWorkloadRepository extends JpaRepository<TrainerWorkload, Long> {
     Optional<TrainerWorkload> findByUsernameAndYearAndMonth(String username, Integer year, Integer month);
+
     List<TrainerWorkload> findAllByUsername(String username);
 }

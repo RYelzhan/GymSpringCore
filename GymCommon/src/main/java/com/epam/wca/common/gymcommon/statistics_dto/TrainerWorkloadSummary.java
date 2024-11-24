@@ -1,4 +1,4 @@
-package com.epam.wca.gym.dto.statistics_dto;
+package com.epam.wca.common.gymcommon.statistics_dto;
 
 import java.util.Map;
 

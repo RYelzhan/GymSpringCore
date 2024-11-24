@@ -1,12 +1,12 @@
 package com.epam.wca.gym.advice;
 
+import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
-import com.epam.wca.gym.util.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

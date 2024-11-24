@@ -1,5 +1,7 @@
 package com.epam.wca.gym.util;
 
+import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
+import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
 import com.epam.wca.gym.dto.trainee.TraineeBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
@@ -12,7 +14,10 @@ import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
 import lombok.experimental.UtilityClass;
 
+import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @UtilityClass
@@ -97,6 +102,34 @@ public class DTOFactory {
         return new TrainingTypeBasicDTO(
                 trainingType.getType(),
                 trainingType.getId()
+        );
+    }
+
+    public static TrainersTrainingsDeleteDTO createTrainersTrainingsDeleteDTO(Set<Training> trainings) {
+        Map<String, Map<ZonedDateTime, Integer>> trainingsInfo = new HashMap<>();
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        trainings.stream()
+                .filter(training -> training.getTrainingDate().isAfter(now))
+                .forEach(training ->
+                    trainingsInfo.computeIfAbsent(training.getTrainer().getUsername(), k -> new HashMap<>())
+                        .merge(training.getTrainingDate(), training.getTrainingDuration(), Integer::sum)
+        );
+
+        return new TrainersTrainingsDeleteDTO(trainingsInfo);
+    }
+
+    public static TrainerTrainingAddDTO createTrainerTrainingAddDTO(Training training) {
+        Trainer trainer = training.getTrainer();
+
+        return new TrainerTrainingAddDTO(
+                trainer.getUsername(),
+                trainer.getFirstName(),
+                trainer.getLastName(),
+                trainer.isActive(),
+                training.getTrainingDate(),
+                training.getTrainingDuration()
         );
     }
 }

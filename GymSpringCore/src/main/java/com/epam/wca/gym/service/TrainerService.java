@@ -24,6 +24,8 @@ public interface TrainerService {
 
     Trainer findById(Long id);
 
+    void deleteAssociatedTrainings(Long id);
+
     void deleteById(Long id);
 
     Trainer findByUsername(String username);

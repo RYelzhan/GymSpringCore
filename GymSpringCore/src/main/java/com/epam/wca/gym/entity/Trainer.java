@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
@@ -41,8 +42,7 @@ public class Trainer extends User {
             orphanRemoval = true)
     private Set<Training> trainings;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
             joinColumns = @JoinColumn(name = "TRAINER_ID"),
             inverseJoinColumns = @JoinColumn(name = "TRAINEE_ID"))
@@ -60,6 +60,11 @@ public class Trainer extends User {
         this.specialization = specialization;
         this.trainings = new HashSet<>();
         this.traineesAssigned = new HashSet<>();
+    }
+
+    @PreRemove
+    public void clearJoinTableEntriesWithTrainees() {
+        traineesAssigned.clear();
     }
 
     public static void setProfileService(ProfileService profileService) {

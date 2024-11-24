@@ -33,7 +33,6 @@ VALUES
     ('Avery', 'Hill', 'avery.hill', '$2b$12$egu8.534d/MzIGfzQ2T7IusKQnGvpw5dfITkyW91QfnQk4dx8ao86', true), -- password718
     ('Evelyn', 'Green', 'evelyn.green', '$2b$12$HiF9TMx9zuyuKqXB3nV7xuM0fbgl0gpCKgaixGPVEGzE.veEPPXSO', true); -- password819
 
-
 -- Populating the TRAINING_TYPE table
 INSERT INTO TRAINING_TYPE (TYPE)
 VALUES
@@ -81,13 +80,33 @@ VALUES
     (4, 29),
     (5, 30);
 
+-- Associating Trainees with Trainers in the TRAINEE_TRAINER_MAPPING table
+INSERT INTO TRAINEE_TRAINER_MAPPING (TRAINEE_ID, TRAINER_ID)
+VALUES
+    (1, 16),  -- Trainee 1 is assigned to Trainer 16
+    (2, 17),  -- Trainee 2 is assigned to Trainer 17
+    (3, 18),  -- Trainee 3 is assigned to Trainer 18
+    (4, 19),  -- Trainee 4 is assigned to Trainer 19
+    (5, 20),  -- Trainee 5 is assigned to Trainer 20
+    (6, 21),  -- Trainee 6 is assigned to Trainer 21
+    (7, 22),  -- Trainee 7 is assigned to Trainer 22
+    (8, 23),  -- Trainee 8 is assigned to Trainer 23
+    (9, 24),  -- Trainee 9 is assigned to Trainer 24
+    (10, 25), -- Trainee 10 is assigned to Trainer 25
+    (11, 26), -- Trainee 11 is assigned to Trainer 26
+    (12, 27), -- Trainee 12 is assigned to Trainer 27
+    (13, 28), -- Trainee 13 is assigned to Trainer 28
+    (14, 29), -- Trainee 14 is assigned to Trainer 29
+    (15, 30); -- Trainee 15 is assigned to Trainer 30
+
 -- Populating the TRAININGS table (15 trainings)
 INSERT INTO TRAININGS (TRAINEE_ID, TRAINER_ID, NAME, TRAINING_TYPE_ID, DATE, DURATION)
 VALUES
-    (1, 16, 'Morning Strength', 1, '2024-10-10T07:30:00Z', 60),
-    (2, 17, 'Powerlifting Session', 2, '2024-10-11T10:00:00Z', 90),
-    (3, 18, 'CrossFit Endurance', 3, '2024-10-12T08:00:00Z', 75),
-    (4, 19, 'Yoga Basics', 4, '2024-10-13T09:30:00Z', 60),
+    (1, 16, 'Morning Strength', 1, '2025-10-10T07:30:00Z', 60),
+    (1, 16, 'Morning Strength', 1, '2024-10-10T07:30:00Z', 120), -- In Past
+    (2, 17, 'Powerlifting Session', 2, '2025-10-11T10:00:00Z', 90),
+    (3, 18, 'CrossFit Endurance', 3, '2025-10-12T08:00:00Z', 75),
+    (4, 19, 'Yoga Basics', 4, '2025-10-13T09:30:00Z', 60),
     (5, 20, 'Pilates Stretch', 5, '2024-10-14T10:00:00Z', 50),
     (6, 21, 'Strength Training', 1, '2024-10-15T07:30:00Z', 70),
     (7, 22, 'Advanced Powerlifting', 2, '2024-10-16T10:30:00Z', 95),
