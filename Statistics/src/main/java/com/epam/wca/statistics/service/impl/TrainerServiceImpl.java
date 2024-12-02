@@ -27,7 +27,8 @@ import java.util.Map;
 public class TrainerServiceImpl implements TrainerService {
     public static final String TRAINING_DURATION_FOR_DELETION_CAN_NOT_BE_BIGGER_THAN_EXISTING_TRAINING_DURATION =
             "Training duration for deletion can not be bigger than training duration of trainer on that day.";
-    public static final String NO_TRAINING_INFO_FOUND_FOR_TRAINER_ON_GIVEN_YEAR_AND_MONTH = "No training info found for trainer \"%s\" on year \"%s\" and month \"%s\"";
+    public static final String NO_TRAINING_INFO_FOUND_FOR_TRAINER_ON_GIVEN_YEAR_AND_MONTH =
+            "No training info found for trainer \"%s\" on year \"%s\" and month \"%s\"";
 
     private final TrainerWorkloadRepository trainerWorkloadRepository;
 
@@ -75,6 +76,7 @@ public class TrainerServiceImpl implements TrainerService {
                         trainerWorkloadRepository.deleteById(trainingWorkload.getId());
                     } else {
                         reduceTrainingDuration(trainingWorkload, duration);
+                        trainerWorkloadRepository.save(trainingWorkload);
                     }
                 })
         );
@@ -101,6 +103,5 @@ public class TrainerServiceImpl implements TrainerService {
 
     private void reduceTrainingDuration(TrainerWorkload trainingWorkload, Integer duration) {
         trainingWorkload.setDuration(trainingWorkload.getDuration() - duration);
-        trainerWorkloadRepository.save(trainingWorkload);
     }
 }

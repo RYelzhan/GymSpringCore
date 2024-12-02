@@ -1,5 +1,8 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.common.gymcommon.util.AppConstants;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -13,10 +16,8 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
-import com.epam.wca.gym.util.AppConstants;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.UserFactory;
@@ -64,6 +65,8 @@ class TraineeServiceImplTest {
     private TrainingServiceImpl trainingService;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private StatisticsCommunicationService statisticsCommunicationService;
 
     @InjectMocks
     private TraineeServiceImpl traineeService;
@@ -239,12 +242,26 @@ class TraineeServiceImplTest {
         // Given
         Long traineeId = 1L;
 
+        Trainee trainee = new Trainee();
+        trainee.setId(traineeId);
+        trainee.setFirstName("John");
+        trainee.setLastName("Doe");
+        trainee.setDateOfBirth(
+                ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
+                        DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)));
+        trainee.setAddress("123 Street");
+        trainee.setActive(true);
+        trainee.setTrainings(new HashSet<>());
+
         // When
-        traineeService.deleteById(traineeId);
+        when(traineeRepository.getReferenceById(traineeId)).thenReturn(trainee);
 
         // Then
-        // Verify that the deleteById method of traineeRepository was called once with the correct id
+        traineeService.deleteById(traineeId);
+
+        // Verify
         verify(traineeRepository, times(1)).deleteById(traineeId);
+        verify(statisticsCommunicationService, times(1)).deleteTrainings(any());
     }
 
     @Test

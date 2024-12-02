@@ -1,5 +1,7 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
@@ -12,7 +14,6 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
@@ -60,6 +61,8 @@ class TrainerServiceImplTest {
     private ProfileServiceImpl profileService;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private StatisticsCommunicationService statisticsCommunicationService;
 
     @InjectMocks
     private TrainerServiceImpl trainerService;
@@ -279,13 +282,24 @@ class TrainerServiceImplTest {
     @Test
     void testDeleteById() {
         // Given
-        Long id = 1L;
+        Long trainerId = 1L;
+
+        Trainer trainer = new Trainer();
+        trainer.setId(trainerId);
+        trainer.setFirstName("John");
+        trainer.setLastName("Doe");
+        trainer.setActive(true);
+        trainer.setTrainings(new HashSet<>());
 
         // When
-        trainerService.deleteById(id);
+        when(trainerRepository.getReferenceById(trainerId)).thenReturn(trainer);
 
         // Then
-        verify(trainerRepository).deleteById(id); // Verify the repository's deleteById method was called with the correct ID
+        trainerService.deleteById(trainerId);
+
+        // Verify
+        verify(trainerRepository).deleteById(trainerId); // Verify the repository's deleteById method was called with the correct ID
+        verify(statisticsCommunicationService, times(1)).deleteTrainings(any());
     }
 
     @Test
