@@ -1,5 +1,6 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
@@ -9,7 +10,7 @@ import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.InternalErrorException;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
@@ -44,6 +45,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
+    @Logging
     @Transactional
     public UserAuthenticatedDTO save(TrainerRegistrationDTO trainerDTO) {
         var trainingType = trainingTypeService.findByType(trainerDTO.trainingType());
@@ -60,6 +62,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     @Transactional
     public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TrainerTrainingQuery trainerTrainingQuery) {
         var trainer = findById(id);
@@ -71,6 +74,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     @Transactional
     public TrainerSendDTO update(Trainer trainer, TrainerUpdateDTO trainerUpdateDTO) {
         var trainingType = trainingTypeService.findByType(trainerUpdateDTO.trainingType());
@@ -87,6 +91,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     @Transactional
     public List<TrainerBasicDTO> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers) {
         return trainerRepository.findActiveUnassignedTrainers(assignedTrainers)
@@ -95,6 +100,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     public Trainer findById(Long id) {
         Optional<Trainer> trainerOptional = trainerRepository.findById(id);
 
@@ -106,6 +112,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     @Transactional
     public void deleteById(Long id) {
         deleteAssociatedTrainings(id);
@@ -114,6 +121,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     public void deleteAssociatedTrainings(Long id) {
         try {
             var trainer = trainerRepository.getReferenceById(id);
@@ -130,6 +138,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     public Trainer findByUsername(String username) {
         return trainerRepository.findTrainerByUserName(username)
                 .orElseThrow(() -> new InternalErrorException(
@@ -138,6 +147,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Logging
     @Transactional
     public void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO) {
         // TODO: replace with service call

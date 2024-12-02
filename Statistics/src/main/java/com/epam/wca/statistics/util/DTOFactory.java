@@ -1,7 +1,7 @@
 package com.epam.wca.statistics.util;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
-import com.epam.wca.statistics.aop.Logging;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;

@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.controller.documentation.TraineeControllerDocumentation;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -25,11 +26,13 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     private final TraineeService traineeService;
 
     @Override
+    @Logging
     public TraineeSendDTO getProfile(@AuthenticationPrincipal Trainee trainee) {
         return DTOFactory.createTraineeSendDTO(trainee);
     }
 
     @Override
+    @Logging
     public TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
             @AuthenticationPrincipal Trainee authenticatedTrainee
@@ -38,6 +41,7 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     }
 
     @Override
+    @Logging
     public void deleteProfile(
             @AuthenticationPrincipal Trainee authenticatedTrainee
     ) {
@@ -47,6 +51,7 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     }
 
     @Override
+    @Logging
     public List<TrainerBasicDTO> getNotAssignedTrainers(
             @AuthenticationPrincipal Trainee authenticatedTrainee
     ) {

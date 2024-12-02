@@ -1,6 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
-import com.epam.wca.gym.aop.Logging;
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.controller.documentation.AuthenticationControllerDocumentation;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
@@ -25,7 +25,6 @@ public class AuthenticationControllerImpl implements
     private final TrainerService trainerService;
 
     @Override
-    @Logging
     public String login(@AuthenticationPrincipal User user) {
         String token = authService.generateToken(user);
 
@@ -44,11 +43,13 @@ public class AuthenticationControllerImpl implements
     }
 
     @Override
+    @Logging
     public UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO) {
         return traineeService.save(traineeDTO);
     }
 
     @Override
+    @Logging
     public UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO) {
         return trainerService.save(trainerDTO);
     }

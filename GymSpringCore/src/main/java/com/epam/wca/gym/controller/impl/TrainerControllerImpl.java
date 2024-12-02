@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.gym.controller.documentation.TrainerControllerDocumentation;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
@@ -26,6 +27,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
+    @Logging
     public TrainerSendDTO getProfile(
             @AuthenticationPrincipal Trainer authenticatedTrainer
     ) {
@@ -33,6 +35,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     }
 
     @Override
+    @Logging
     public TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
             @AuthenticationPrincipal Trainer authenticatedTrainer
@@ -41,6 +44,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     }
 
     @Override
+    @Logging
     public void deleteProfile(
             @AuthenticationPrincipal Trainer authenticatedTrainer
     ) {
@@ -51,6 +55,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
 
     //TODO: transfer all input to RequestParam
     @Override
+    @Logging
     public List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             @AuthenticationPrincipal Trainer authenticatedTrainer
@@ -59,6 +64,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     }
 
     @Override
+    @Logging
     public String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             @AuthenticationPrincipal Trainer authenticatedTrainer
@@ -69,6 +75,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     }
 
     @Override
+    @Logging
     public TrainerWorkloadSummary getStatistics(
             @AuthenticationPrincipal Trainer trainer
     ) {

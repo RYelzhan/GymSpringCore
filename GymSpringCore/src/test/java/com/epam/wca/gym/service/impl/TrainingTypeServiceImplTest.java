@@ -2,7 +2,7 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.exception.InternalErrorException;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.repository.TrainingTypeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

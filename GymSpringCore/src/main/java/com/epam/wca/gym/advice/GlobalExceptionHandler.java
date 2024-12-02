@@ -1,11 +1,11 @@
 package com.epam.wca.gym.advice;
 
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
-import com.epam.wca.gym.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.exception.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
@@ -64,12 +64,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InternalErrorException.class)
-    public ResponseEntity<String> handleInternalErrorException(InternalErrorException ex) {
-        log.error(ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleInvalidLoginAttempt(IllegalArgumentException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -113,6 +107,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceUnavailableException.class)
     public ResponseEntity<String> handleServiceUnavailableException(ServiceUnavailableException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(InternalErrorException.class)
+    public ResponseEntity<String> handleInternalErrorException(InternalErrorException ex) {
+        log.error(ex.getMessage());
+
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

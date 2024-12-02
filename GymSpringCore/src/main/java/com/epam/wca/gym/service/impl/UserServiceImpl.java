@@ -1,5 +1,6 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
 import com.epam.wca.gym.entity.User;
@@ -18,6 +19,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Logging
     @Transactional
     public void update(User user, UserUpdateDTO userDTO) {
         user.setPassword(passwordEncoder.encode(userDTO.newPassword()));
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Logging
     @Transactional
     public void update(User user, UserActivationDTO userDTO) {
         user.setActive(userDTO.isActive());
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Logging
     public User findByUsername(String username) {
         return userRepository.findUserByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

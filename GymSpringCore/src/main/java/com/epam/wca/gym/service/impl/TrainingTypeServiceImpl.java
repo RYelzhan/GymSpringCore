@@ -1,8 +1,9 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.dto.training_type.TrainingTypeBasicDTO;
 import com.epam.wca.gym.entity.TrainingType;
-import com.epam.wca.gym.exception.InternalErrorException;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.repository.TrainingTypeRepository;
 import com.epam.wca.gym.service.TrainingTypeService;
 import com.epam.wca.gym.util.DTOFactory;
@@ -18,12 +19,14 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     private final TrainingTypeRepository trainingTypeRepository;
 
     @Override
+    @Logging
     public TrainingType findByType(String type) {
         return trainingTypeRepository.findTrainingTypeByType(type)
                 .orElseThrow(() -> new InternalErrorException("Invalid Training Type choice"));
     }
 
     @Override
+    @Logging
     @Transactional
     public List<TrainingTypeBasicDTO> findAll() {
         return trainingTypeRepository.findAll()

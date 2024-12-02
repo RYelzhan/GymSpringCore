@@ -76,7 +76,7 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "id = " + id + '\n' +
+        return "\nid = " + id + '\n' +
                 "firstName = " + firstName + '\n' +
                 "lastName = " + lastName + '\n' +
                 "userName = " + userName + '\n' +

@@ -1,5 +1,6 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -11,7 +12,7 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.exception.InternalErrorException;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
@@ -44,6 +45,7 @@ public class TraineeServiceImpl implements TraineeService {
     private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
+    @Logging
     @Transactional
     public UserAuthenticatedDTO save(TraineeRegistrationDTO dto) {
         var trainee = UserFactory.createTrainee(dto);
@@ -58,6 +60,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     @Transactional
     public List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingQuery traineeTrainingQuery) {
         var trainee = findById(id);
@@ -69,6 +72,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     @Transactional
     public TraineeSendDTO update(Trainee trainee, TraineeUpdateDTO traineeUpdateDTO) {
         trainee.setFirstName(traineeUpdateDTO.firstName());
@@ -88,12 +92,14 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     @Transactional
     public List<TrainerBasicDTO> getListOfNotAssignedTrainers(Trainee trainee) {
         return trainerService.findActiveUnassignedTrainers(trainee.getTrainersAssigned());
     }
 
     @Override
+    @Logging
     @Transactional
     public void deleteById(Long id) {
         deleteAssociatedTrainings(id);
@@ -102,6 +108,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     public void deleteAssociatedTrainings(Long id) {
         try {
             var trainee = traineeRepository.getReferenceById(id);
@@ -118,6 +125,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     @Transactional
     public List<TrainerBasicDTO> addTrainers(Trainee trainee, TraineeTrainersUpdateDTO dto) {
         List<Trainer> addedTrainers = new ArrayList<>();
@@ -147,6 +155,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     public Trainee findById(Long id) {
         Optional<Trainee> traineeOptional = traineeRepository.findById(id);
 
@@ -158,6 +167,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Logging
     @Transactional
     public void createTraining(Trainee trainee, TraineeTrainingCreateDTO trainingDTO) {
         var trainer = trainerService.findByUsername(trainingDTO.trainerUsername());

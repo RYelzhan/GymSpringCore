@@ -1,5 +1,6 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.repository.TrainingRepository;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
@@ -18,6 +19,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
+    @Logging
     @Transactional
     public void save(Training training) {
         trainingRepository.save(training);

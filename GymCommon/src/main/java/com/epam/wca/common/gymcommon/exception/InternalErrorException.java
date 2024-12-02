@@ -1,4 +1,4 @@
-package com.epam.wca.gym.exception;
+package com.epam.wca.common.gymcommon.exception;
 
 public class InternalErrorException extends RuntimeException {
     public InternalErrorException(String message) {

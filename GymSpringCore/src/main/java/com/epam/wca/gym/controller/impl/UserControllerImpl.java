@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.controller.documentation.UserControllerDocumentation;
 import com.epam.wca.gym.dto.user.UserActivationDTO;
 import com.epam.wca.gym.dto.user.UserUpdateDTO;
@@ -17,11 +18,13 @@ public class UserControllerImpl implements UserControllerDocumentation {
     private final UserService userService;
 
     @Override
+    @Logging
     public String getInfo(@AuthenticationPrincipal User authenticatedUser) {
         return authenticatedUser.getUsername();
     }
 
     @Override
+    @Logging
     public String changePassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
             @AuthenticationPrincipal User authenticatedUser
@@ -33,6 +36,7 @@ public class UserControllerImpl implements UserControllerDocumentation {
 
     // query is better suited for queries to database. e.g. Filter, Search
     @Override
+    @Logging
     public String activateDeactivate(
             @RequestBody @Valid UserActivationDTO userDTO,
             @AuthenticationPrincipal User authenticatedUser

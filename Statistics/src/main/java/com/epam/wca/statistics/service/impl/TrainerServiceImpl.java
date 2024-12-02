@@ -1,9 +1,9 @@
 package com.epam.wca.statistics.service.impl;
 
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
-import com.epam.wca.statistics.aop.Logging;
 import com.epam.wca.statistics.entity.TrainerWorkload;
 import com.epam.wca.statistics.exception.BadDataException;
 import com.epam.wca.statistics.exception.NoDataException;

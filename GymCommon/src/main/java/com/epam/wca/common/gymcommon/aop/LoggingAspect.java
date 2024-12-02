@@ -1,39 +1,36 @@
-package com.epam.wca.statistics.aop;
+package com.epam.wca.common.gymcommon.aop;
 
-import com.epam.wca.statistics.transaction.TransactionDetails;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Slf4j
 @Aspect
-@Component
 @RequiredArgsConstructor
 public class LoggingAspect {
-    private final TransactionDetails transactionDetails;
 
-    @Pointcut(value = "@annotation(Logging)")
+    @Pointcut(value = "@annotation(com.epam.wca.common.gymcommon.aop.Logging)")
     public void loggingPointcut() {
         // This method is empty because it serves as a pointcut definition.
     }
 
     @Around(value = "loggingPointcut()")
     public Object logMethodDetails(ProceedingJoinPoint pjp) throws Throwable {
-        if (transactionDetails.getId() == null) {
-            transactionDetails.setId(generateTransactionId());
+        String transactionId = TransactionContext.getTransactionId();
+
+        if (transactionId == null) {
+            throw new InternalErrorException("Method reached without creation of Transaction Id.");
         }
 
-        String transactionId = transactionDetails.getId();
         String methodName = pjp.getSignature().toShortString();
         Object[] methodArgs = pjp.getArgs();
 
-        log.debug("Transaction ID: {} | Invoking method: {} with args: {}", transactionId, methodName, methodArgs);
+        log.info("Transaction ID: {} | Invoking method: {} with args: {}", transactionId, methodName, methodArgs);
 
         Object result;
         try {
@@ -46,10 +43,5 @@ public class LoggingAspect {
 
         log.info("Transaction ID: {} | Method: {} returned: {}", transactionId, methodName, result);
         return result;
-    }
-
-    private String generateTransactionId() {
-        // You can generate the transaction ID here if needed
-        return UUID.randomUUID().toString();
     }
 }
