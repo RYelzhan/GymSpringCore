@@ -18,29 +18,6 @@ class TransactionManagementTest {
     }
 
     // TODO: finish it
-/*    @ParameterizedTest
-    @Transactional
-    @Sql("data.sql")
-    @CsvSource("Test.Transaction")
-    void testRollbackBehaviour(String username) {
-        User userBeforeUpdate = userService.findByUsername(username);
-
-        UserUpdateDTO userDTO = new UserUpdateDTO(
-                "1234567890"
-        );
-
-        String oldPassword = userBeforeUpdate.getPassword();
-
-        userService.update(userBeforeUpdate, userDTO);
-
-        User userAfterUpdate = userService.findByUsername(username);
-
-        assertEquals(oldPassword, userAfterUpdate.getPassword());
-    }
-
- */
-
-    // TODO: finish it
     @Test
     @Transactional
     @Rollback(value = false)

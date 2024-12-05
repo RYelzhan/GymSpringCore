@@ -2,7 +2,7 @@
 
     <!-- Access log appender -->
     <appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>GymSpringCore/logs/access.log</file>
+        <file>logs/access.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/access-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>

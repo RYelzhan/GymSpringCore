@@ -8,12 +8,17 @@ import com.epam.wca.gym.service.AuthService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -28,19 +33,19 @@ class AuthenticationControllerImplTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AuthService authService;
 
-    @MockBean
+    @MockitoBean
     private TraineeService traineeService;
 
-    @MockBean
+    @MockitoBean
     private TrainerService trainerService;
 
     private final User user = new User();
 
-    private final String traineeRegisterUrl = "/authentication/account/trainee";
-    private final String trainerRegisterUrl = "/authentication/account/trainer";
+    private static final String TRAINEE_REGISTER_URL = "/authentication/account/trainee";
+    private static final String TRAINER_REGISTER_URL = "/authentication/account/trainer";
 
     @Test
     void testLogin() throws Exception {
@@ -71,7 +76,7 @@ class AuthenticationControllerImplTest {
 
         when(traineeService.save(any(TraineeRegistrationDTO.class))).thenReturn(userAuthenticatedDTO);
 
-        mockMvc.perform(post(traineeRegisterUrl)
+        mockMvc.perform(post(TRAINEE_REGISTER_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -90,139 +95,108 @@ class AuthenticationControllerImplTest {
             """.formatted(username, password)));
     }
 
-    @Test
-    void testRegisterTrainee_MissingRequiredLastname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                    {
-                        "firstName": "John",
-                        "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                        "address": "123 Main St"
-                    }
-                """))
-                .andExpect(status().isBadRequest());
+    static Stream<Arguments> provideInvalidTraineeData() {
+        return Stream.of(
+                Arguments.of("Missing lastname",
+                        """
+                            {
+                                Missing required last name,
+                                {
+                                "firstName": "John",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "123 Main St"
+                                }
+                            }
+                        """
+                ),
+                Arguments.of("Missing firstname", """
+                            {
+                                Missing required first name,
+                                {
+                                "lastName": "Smith",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "123 Main St"
+                                }
+                            }
+                        """
+                ),
+                Arguments.of("Invalid date format",
+                        """
+                            {
+                                "firstName": "John",
+                                "lastName": "Doe",
+                                "dateOfBirth": "1990-01-01T10:10:10",
+                                "address": "123 Main St"
+                            }
+                        """
+                ),
+                Arguments.of("Future date of birth",
+                        """
+                            {
+                                "firstName": "John",
+                                "lastName": "Doe",
+                                "dateOfBirth": "01.01.3000 10:10:10 UTC",
+                                "address": "123 Main St"
+                            }
+                        """
+                ),
+                Arguments.of("Empty first name",
+                        """
+                            {
+                                "firstName": "",
+                                "lastName": "Doe",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "123 Main St"
+                            }
+                        """
+                ),
+                Arguments.of("Empty last name",
+                        """
+                            {
+                                "firstName": "John",
+                                "lastName": "",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "123 Main St"
+                            }
+                        """
+                ),
+                Arguments.of("Exceeding first name length", """
+                            {
+                                "firstName": "%s",
+                                "lastName": "Doe",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "123 Main St"
+                            }
+                        """.formatted("John".repeat(100))
+                ),
+                Arguments.of("Exceeding last name length", """
+                            {
+                                "firstName": "John",
+                                "lastName": "%s",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "123 Main St"
+                            }
+                        """.formatted("Doe".repeat(100))
+                ),
+                Arguments.of("Exceeding address length", """
+                            {
+                                "firstName": "John",
+                                "lastName": "Doe",
+                                "dateOfBirth": "01.01.1990 10:10:10 UTC",
+                                "address": "%s"
+                            }
+                        """.formatted("address".repeat(100))
+                )
+
+        );
     }
 
-    @Test
-    void testRegisterTrainee_MissingRequiredFirstname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(traineeRegisterUrl)
+    @ParameterizedTest(name = "{index} - {0}")
+    @MethodSource("provideInvalidTraineeData")
+    void testRegisterTrainee_BadRequest_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        mockMvc.perform(post(TRAINEE_REGISTER_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                    {
-                        "lastname": "Smith",
-                        "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                        "address": "123 Main St"
-                    }
-                """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_InvalidDateFormat_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "John",
-                            "lastName": "Doe",
-                            "dateOfBirth": "1990-01-01T10:10:10",
-                            "address": "123 Main St"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_FutureDate_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "John",
-                            "lastName": "Doe",
-                            "dateOfBirth": "01.01.3000 10:10:10 UTC",
-                            "address": "123 Main St"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_EmptyFirstname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "",
-                            "lastName": "Doe",
-                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                            "address": "123 Main St"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_EmptyLastname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "John",
-                            "lastName": "",
-                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                            "address": "123 Main St"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_ExceedingFirstnameLength_ShouldReturnBadRequest() throws Exception {
-        String longFirstName = "John".repeat(100); // Exceeds typical length constraints
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "%s",
-                            "lastName": "Doe",
-                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                            "address": "123 Main St"
-                        }
-                    """.formatted(longFirstName)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_ExceedingLastnameLength_ShouldReturnBadRequest() throws Exception {
-        String longLastName = "Doe".repeat(100); // Exceeds typical length constraints
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "John",
-                            "lastName": "%s",
-                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                            "address": "123 Main St"
-                        }
-                    """.formatted(longLastName)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_ExceedingAddressLength_ShouldReturnBadRequest() throws Exception {
-        String longAddress = "address".repeat(100); // Exceeds typical length constraints
-        mockMvc.perform(post(traineeRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "John",
-                            "lastName": "Doe",
-                            "dateOfBirth": "01.01.1990 10:10:10 UTC",
-                            "address": "%s"
-                        }
-                    """.formatted(longAddress)))
+                        .content(body))
                 .andExpect(status().isBadRequest());
     }
 
@@ -235,7 +209,7 @@ class AuthenticationControllerImplTest {
 
         when(trainerService.save(any(TrainerRegistrationDTO.class))).thenReturn(userAuthenticatedDTO);
 
-        mockMvc.perform(post(trainerRegisterUrl)
+        mockMvc.perform(post(TRAINER_REGISTER_URL)
                         .contentType("application/json")
                         .content("""
                         {
@@ -253,113 +227,78 @@ class AuthenticationControllerImplTest {
             """.formatted(username, password)));
     }
 
-    @Test
-    void testRegisterTrainer_InvalidTrainingType_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "Jane",
-                            "lastName": "Smith",
-                            "trainingType": "INVALID_TYPE"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
+    static Stream<Arguments> provideInvalidTrainerData() {
+        return Stream.of(
+                Arguments.of("Invalid training type", """
+                            {
+                                "firstName": "Jane",
+                                "lastName": "Smith",
+                                "trainingType": "INVALID_TYPE"
+                            }
+                        """
+                ),
+                Arguments.of("Missing required last name", """
+                            {
+                                "firstName": "Jane",
+                                "trainingType": "YOGA"
+                            }
+                        """
+                ),
+                Arguments.of("Missing required first name", """
+                            {
+                                "lastName": "Smith",
+                                "trainingType": "YOGA"
+                            }
+                        """
+                ),
+                Arguments.of("Missing required training type", """
+                            {
+                                "firstName": "Jane",
+                                "lastName": "Smith"
+                            }
+                        """
+                ),
+                Arguments.of("Empty last name", """
+                            {
+                                "firstName": "Jane",
+                                "lastName": "",
+                                "trainingType": "YOGA"
+                            }
+                        """
+                ),
+                Arguments.of("Empty first name", """
+                            {
+                                "firstName": "",
+                                "lastName": "Smith",
+                                "trainingType": "YOGA"
+                            }
+                        """
+                ),
+                Arguments.of("Empty training type", """
+                            {
+                                "firstName": "Jane",
+                                "lastName": "Smith",
+                                "trainingType": ""
+                            }
+                        """
+                ),
+                Arguments.of("Exceeding training type length", """
+                            {
+                                "firstName": "Jane",
+                                "lastName": "Smith",
+                                "trainingType": "%s"
+                            }
+                        """.formatted("YOGA".repeat(100))
+                )
+        );
     }
 
-    @Test
-    void testRegisterTrainer_MissingRequiredLastname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
+    @ParameterizedTest(name = "{index} - {0}")
+    @MethodSource("provideInvalidTrainerData")
+    void testRegisterTrainer_BadRequest_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        mockMvc.perform(post(TRAINER_REGISTER_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "Jane",
-                            "trainingType": "YOGA"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainer_MissingRequiredFirstname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "lastname": "Smith",
-                            "trainingType": "YOGA"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainer_MissingRequiredTrainingType_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "Jane",
-                            "lastname": "Smith"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainer_EmptyLastname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "Jane",
-                            "lastName": "",
-                            "trainingType": "YOGA"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainer_EmptyFirstname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "",
-                            "lastName": "Smith",
-                            "trainingType": "YOGA"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainer_EmptyTrainingType_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "Jane",
-                            "lastName": "Smith",
-                            "trainingType": ""
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testRegisterTrainee_ExceedingTrainingTypeLength_ShouldReturnBadRequest() throws Exception {
-        String longTrainingType = "YOGA".repeat(100); // Exceeds typical length constraints
-        mockMvc.perform(post(trainerRegisterUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                            "firstName": "Jane",
-                            "lastName": "Smith",
-                            "trainingType": "%s"
-                        }
-                    """.formatted(longTrainingType)))
+                        .content(body))
                 .andExpect(status().isBadRequest());
     }
 }

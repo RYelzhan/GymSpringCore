@@ -10,16 +10,20 @@ import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -39,7 +43,7 @@ class TraineeControllerImplTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private TraineeService traineeService;
 
     private final Trainee trainee = new Trainee();
@@ -79,12 +83,10 @@ class TraineeControllerImplTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void testUpdateProfile_EmptyFirstname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+    static Stream<Arguments> updateProfileBadData() {
+        return Stream.of(
+                Arguments.of("Empty first name",
+                        """
                         {
                              "firstName": "",
                              "lastName": "Doe",
@@ -92,16 +94,10 @@ class TraineeControllerImplTest {
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_EmptyLastname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Empty lastname",
+                        """
                         {
                              "firstName": "John",
                              "lastName": "",
@@ -109,64 +105,40 @@ class TraineeControllerImplTest {
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_MissingFirstname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Missing firstname",
+                        """
                         {
                              "lastName": "Doe",
                              "dateOfBirth": "01.01.1990 00:00:00 UTC",
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_MissingLastname_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Missing lastname",
+                        """
                         {
                              "firstName": "John",
                              "dateOfBirth": "01.01.1990 00:00:00 UTC",
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_MissingRequiredIsActive_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Missing required isActive",
+                        """
                         {
                              "firstName": "John",
                              "lastName": "Doe",
                              "dateOfBirth": "01.01.1990 00:00:00 UTC",
                              "address": "123 Main St"
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_ExceedingFirstnameLength_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Exceeding firstname length",
+                        """
                         {
                              "firstName": "Averylongfirstnameexceedinglimits",
                              "lastName": "Doe",
@@ -174,16 +146,10 @@ class TraineeControllerImplTest {
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_ExceedingLastnameLength_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Exceeding lastname length",
+                        """
                         {
                              "firstName": "John",
                              "lastName": "Averylonglastnameexceedinglimits",
@@ -191,16 +157,10 @@ class TraineeControllerImplTest {
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_ExceedingAddressLength_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Exceeding address length",
+                        """
                         {
                              "firstName": "John",
                              "lastName": "Doe",
@@ -208,16 +168,10 @@ class TraineeControllerImplTest {
                              "address": "This address is far too long and exceeds fifty characters",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_FutureDate_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Future date",
+                        """
                         {
                              "firstName": "John",
                              "lastName": "Doe",
@@ -225,16 +179,10 @@ class TraineeControllerImplTest {
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateProfile_InvalidDateFormat_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Invalid date format",
+                        """
                         {
                              "firstName": "John",
                              "lastName": "Doe",
@@ -242,7 +190,18 @@ class TraineeControllerImplTest {
                              "address": "123 Main St",
                              "isActive": true
                         }
-                    """))
+                        """
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} - {0}")
+    @MethodSource("updateProfileBadData")
+    void testUpdateProfile_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        mockMvc.perform(put("/users/trainees/profiles")
+                        .with(user(trainee))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andExpect(status().isBadRequest());
     }
 
@@ -283,62 +242,42 @@ class TraineeControllerImplTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void testUpdateTrainerList_EmptyTrainersList_ShouldReturnBadRequest() throws Exception {
-        List<TrainerBasicDTO> newlyAssignedTrainers = new ArrayList<>();
-
-        when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
-                .thenReturn(newlyAssignedTrainers);
-
-        mockMvc.perform(put("/users/trainees/trainers")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+    static Stream<Arguments> updateTrainersListBadData() {
+        return Stream.of(
+                Arguments.of("Empty trainers list",
+                        """
                         {
                              "trainerUsernames": []
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateTrainerList_EmptyTrainerUsername_ShouldReturnBadRequest() throws Exception {
-        List<TrainerBasicDTO> newlyAssignedTrainers = new ArrayList<>();
-
-        when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
-                .thenReturn(newlyAssignedTrainers);
-
-        mockMvc.perform(put("/users/trainees/trainers")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Empty trainer username",
+                        """
                         {
                              "trainerUsernames": [""]
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testUpdateTrainerList_ExceedingTrainerUsernameLength_ShouldReturnBadRequest() throws Exception {
-        List<TrainerBasicDTO> newlyAssignedTrainers = new ArrayList<>();
-
-        when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
-                .thenReturn(newlyAssignedTrainers);
-
-        mockMvc.perform(put("/users/trainees/trainers")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Exceeding trainer username length",
+                        """
                         {
                              "trainerUsernames": ["averylongtrainerusernamethatexceedsthefiftycharacterlimit"]
                         }
-                    """))
-                .andExpect(status().isBadRequest());
+                        """
+                ),
+                Arguments.of("Invalid trainer username",
+                        """
+                        {
+                             "trainerUsernames": ["invalid_trainer"]
+                        }
+                        """
+                )
+        );
     }
 
-    @Test
-    void testUpdateTrainerList_InvalidTrainerUsername_ShouldReturnBadRequest() throws Exception {
+    @ParameterizedTest(name = "{index} - {0}")
+    @MethodSource("updateTrainersListBadData")
+    void testUpdateTrainerList_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         List<TrainerBasicDTO> newlyAssignedTrainers = new ArrayList<>();
 
         when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
@@ -347,11 +286,7 @@ class TraineeControllerImplTest {
         mockMvc.perform(put("/users/trainees/trainers")
                         .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                             "trainerUsernames": ["invalid_trainer"]
-                        }
-                    """))
+                        .content(body))
                 .andExpect(status().isBadRequest());
     }
 
@@ -376,67 +311,58 @@ class TraineeControllerImplTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void testGetTrainings_TrainerNameTooShort_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+    static Stream<Arguments> getTrainingsBadData() {
+        return Stream.of(
+                Arguments.of("Trainer name too short",
+                        """
                         {
                              "trainerName": "J",
                              "dateFrom": "01.01.2020 10:00:00 UTC",
                              "dateTo": "31.12.2030 10:00:00 UTC",
                              "trainingType": "YOGA"
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetTrainings_TrainerNameTooLong_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Trainer name too long",
+                        """
                         {
                              "trainerName": "ANameThatIsWayTooLongForTheSpecifiedLimitOfFiftyCharacters",
                              "dateFrom": "01.01.2020 10:00:00 UTC",
                              "dateTo": "31.12.2030 10:00:00 UTC",
                              "trainingType": "YOGA"
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetTrainings_InvalidDateFormat_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Invalid date format",
+                        """
                         {
                               "trainerName": "ethan.white",
                               "dateFrom": "01-01-2023",
                               "dateTo": "2023-12-31T10:00:00Z",
                               "trainingType": "YOGA"
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetTrainings_TrainingTypeTooLong_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training type too long",
+                        """
                         {
                              "trainerName": "ethan.white",
                              "dateFrom": "01.01.2020 10:00:00 UTC",
                              "dateTo": "31.12.2030 10:00:00 UTC",
                              "trainingType": "VeryLongTrainingTypeThatExceedsLimit"
                         }
-                    """))
+                        """
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} - {0}")
+    @MethodSource("getTrainingsBadData")
+    void testGetTrainings_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        mockMvc.perform(post("/users/trainees/trainings")
+                        .with(user(trainee))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andExpect(status().isBadRequest());
     }
 
@@ -456,175 +382,115 @@ class TraineeControllerImplTest {
                 .andExpect(status().isCreated());
     }
 
-    @Test
-    void testCreateTraining_TrainerUsernameTooShort_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+    static Stream<Arguments> createTrainingsBadData() {
+        return Stream.of(
+                Arguments.of("Trainer username too short",
+                        """
                         {
                              "trainerUsername": "J",
                              "trainingName": "YogaSession",
                              "date": "31.12.2024 10:00:00 UTC",
                              "trainingDuration": 60
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainerUsernameTooLong_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Trainer username too long",
+                        """
                         {
                              "trainerUsername": "ANameThatIsWayTooLongForTheLimitOfTwentyFiveCharacters",
                              "trainingName": "YogaSession",
                              "date": "31.12.2024 10:00:00 UTC",
                              "trainingDuration": 60
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingNameTooShort_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training name too short",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "trainingName": "Y",
                              "date": "31.12.2024 10:00:00 UTC",
                              "trainingDuration": 60
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingNameTooLong_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training name too long",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "trainingName": "VeryLongTrainingNameThatExceedsLimitOfTwentyFiveCharacters",
                              "date": "31.12.2024 10:00:00 UTC",
                              "trainingDuration": 60
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_DateNull_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Date null",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "trainingName": "YogaSession",
                              "trainingDuration": 60
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingDateInPast_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training date in past",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "trainingName": "YogaSession",
                              "date": "31.12.2023 10:00:00 UTC",
                              "trainingDuration": 60
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingDurationTooShort_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training duration too short",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "trainingName": "YogaSession",
                              "date": "31.12.2025 10:00:00 UTC",
                              "trainingDuration": 5
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingDurationTooLong_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training duration too long",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "trainingName": "YogaSession",
                              "date": "31.12.2025 10:00:00 UTC",
                              "trainingDuration": 400
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingDurationNull_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                             "trainerUsername": "ethan.white",
-                             "trainingName": "YogaSession",
-                             "date": "31.12.2025 10:00:00 UTC"
-                        }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainingNameNull_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Training duration null",
+                        """
                         {
                              "trainerUsername": "ethan.white",
                              "date": "31.12.2025 10:00:00 UTC",
                              "trainingDuration": 400
                         }
-                    """))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testCreateTraining_TrainerUsernameNull_ShouldReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
+                        """
+                ),
+                Arguments.of("Trainer username null",
+                        """
                         {
                              "trainingName": "YogaSession",
                              "date": "31.12.2025 10:00:00 UTC",
                              "trainingDuration": 400
                         }
-                    """))
+                        """
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} - {0}")
+    @MethodSource("createTrainingsBadData")
+    void testCreateTraining_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        mockMvc.perform(post("/users/trainees/trainings/new")
+                        .with(user(trainee))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andExpect(status().isBadRequest());
     }
 }

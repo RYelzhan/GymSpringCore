@@ -44,23 +44,25 @@ public class StatisticsCommunicationServiceImpl implements StatisticsCommunicati
     }
 
     public void fallbackResponse(TrainersTrainingsDeleteDTO trainingsDeleteDTO, Throwable e) {
-        log.error("TransactionId: {}, Fallback for getWorkload: {}",
-                TransactionContext.getTransactionId(), e.getMessage());
+        logErrorMessage(e);
 
         throw new ServiceUnavailableException(STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE);
     }
 
     public void fallbackResponse(TrainerTrainingAddDTO trainingAddDTO, Throwable e) {
-        log.error("TransactionId: {}, Fallback for getWorkload: {}",
-                TransactionContext.getTransactionId(), e.getMessage());
+        logErrorMessage(e);
 
         throw new ServiceUnavailableException(STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE);
     }
 
     public TrainerWorkloadSummary fallbackResponse(String username, Throwable e) {
-        log.error("TransactionId: {}, Fallback for getWorkload: {}",
-                TransactionContext.getTransactionId(), e.getMessage());
+        logErrorMessage(e);
 
         throw new ServiceUnavailableException(STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE);
+    }
+
+    private static void logErrorMessage(Throwable e) {
+        log.error("TransactionId: {}, Fallback for getWorkload: {}",
+                TransactionContext.getTransactionId(), e.getMessage());
     }
 }
