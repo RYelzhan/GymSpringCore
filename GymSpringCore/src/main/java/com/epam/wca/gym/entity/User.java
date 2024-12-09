@@ -2,57 +2,33 @@ package com.epam.wca.gym.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User implements UserDetails {
+public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "FIRSTNAME", nullable = false)
-    private String firstName;
+    private String firstname;
     @Column(name = "LASTNAME", nullable = false)
-    private String lastName;
+    private String lastname;
     @Column(name = "USERNAME", nullable = false)
-    private String userName;
-    @Column(name = "PASSWORD", nullable = false)
-    private String password;
+    private String username;
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
-
-    public User(String firstName,
-                String lastName,
-                String userName,
-                String password,
-                boolean isActive) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userName = userName;
-        this.password = password;
-        this.isActive = isActive;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -65,7 +41,7 @@ public class User implements UserDetails {
         }
 
         return Objects.equals(this.id, otherUser.id) &&
-                Objects.equals(this.userName, otherUser.userName);
+                Objects.equals(this.username, otherUser.username);
     }
 
     @Override
@@ -77,43 +53,9 @@ public class User implements UserDetails {
     @Override
     public String toString() {
         return "\nid = " + id + '\n' +
-                "firstName = " + firstName + '\n' +
-                "lastName = " + lastName + '\n' +
-                "userName = " + userName + '\n' +
+                "firstName = " + firstname + '\n' +
+                "lastName = " + lastname + '\n' +
+                "userName = " + username + '\n' +
                 "isActive = " + isActive + '\n';
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public Object getRole() {
-        return new SimpleGrantedAuthority("USER");
     }
 }

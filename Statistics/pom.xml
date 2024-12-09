@@ -24,7 +24,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- Dependency of Main Working Application -->
+		<!-- Common dependency classes -->
 		<dependency>
 			<groupId>com.epam.wca.common</groupId>
 			<artifactId>GymCommon</artifactId>

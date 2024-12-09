@@ -1,6 +1,9 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
+import com.epam.wca.gym.communication.feign.AuthenticationFeign;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
@@ -10,11 +13,9 @@ import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.repository.TrainerRepository;
-import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.service.TrainingService;
 import com.epam.wca.gym.service.TrainingTypeService;
@@ -25,9 +26,11 @@ import com.epam.wca.gym.util.UserFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,20 +44,20 @@ public class TrainerServiceImpl implements TrainerService {
     private final TraineeRepository traineeRepository;
     private final TrainingTypeService trainingTypeService;
     private final TrainingService trainingService;
-    private final PasswordEncoder passwordEncoder;
     private final StatisticsCommunicationService statisticsCommunicationService;
+    private final AuthenticationFeign authenticationFeign;
 
     @Override
     @Logging
     @Transactional
     public UserAuthenticatedDTO save(TrainerRegistrationDTO trainerDTO) {
+        //TODO: Call register of Authentication and get Username/Id
+
         var trainingType = trainingTypeService.findByType(trainerDTO.trainingType());
 
         var trainer = UserFactory.createTrainer(trainerDTO, trainingType);
 
-        var authenticatedUser = new UserAuthenticatedDTO(trainer.getUsername(), trainer.getPassword());
-
-        trainer.setPassword(passwordEncoder.encode(trainer.getPassword()));
+        var authenticatedUser = new UserAuthenticatedDTO(trainer.getUsername(), null);
 
         trainerRepository.save(trainer);
 
@@ -79,8 +82,8 @@ public class TrainerServiceImpl implements TrainerService {
     public TrainerSendDTO update(Trainer trainer, TrainerUpdateDTO trainerUpdateDTO) {
         var trainingType = trainingTypeService.findByType(trainerUpdateDTO.trainingType());
 
-        trainer.setFirstName(trainerUpdateDTO.firstName());
-        trainer.setLastName(trainerUpdateDTO.lastName());
+        trainer.setFirstname(trainerUpdateDTO.firstName());
+        trainer.setLastname(trainerUpdateDTO.lastName());
         trainer.setSpecialization(trainingType);
         trainer.setActive(trainerUpdateDTO.isActive());
 
@@ -115,9 +118,24 @@ public class TrainerServiceImpl implements TrainerService {
     @Logging
     @Transactional
     public void deleteById(Long id) {
+        deleteAuthAccount();
         deleteAssociatedTrainings(id);
 
         trainerRepository.deleteById(id);
+    }
+
+    @Logging
+    private void deleteAuthAccount() {
+        var request =
+                ((ServletRequestAttributes) RequestContextHolder
+                        .getRequestAttributes())
+                        .getRequest();
+
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        log.info("Auth Header Sent to Auth Service: {}", authHeader);
+
+        authenticationFeign.delete(authHeader);
     }
 
     @Override
@@ -140,7 +158,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     @Logging
     public Trainer findByUsername(String username) {
-        return trainerRepository.findTrainerByUserName(username)
+        return trainerRepository.findTrainerByUsername(username)
                 .orElseThrow(() -> new InternalErrorException(
                         "No Trainer Found with Username: %s".formatted(username)
                 ));
@@ -151,7 +169,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional
     public void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO) {
         // TODO: replace with service call
-        var trainee = traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername());
+        var trainee = traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername());
 
         if (trainee.isEmpty()) {
             throw new InternalErrorException("No Trainee Found with Username: " + trainingDTO.traineeUsername());

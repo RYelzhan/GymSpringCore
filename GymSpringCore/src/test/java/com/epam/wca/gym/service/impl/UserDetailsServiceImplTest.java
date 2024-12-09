@@ -49,7 +49,7 @@ class UserDetailsServiceImplTest {
         when(loginAttemptService.isBlocked()).thenReturn(false);
 
         // Mock the repository to return an empty result, simulating a user not found scenario
-        when(userRepository.findUserByUserName("nonexistentuser")).thenReturn(Optional.empty());
+        when(userRepository.findUserByUsername("nonexistentuser")).thenReturn(Optional.empty());
 
         // Assert that a UsernameNotFoundException is thrown when the user is not found
         assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("nonexistentuser"),
@@ -57,7 +57,7 @@ class UserDetailsServiceImplTest {
 
         // Verify that the login attempt service and repository methods were called
         verify(loginAttemptService).isBlocked();
-        verify(userRepository).findUserByUserName("nonexistentuser");
+        verify(userRepository).findUserByUsername("nonexistentuser");
     }
 
     @Test
@@ -67,7 +67,7 @@ class UserDetailsServiceImplTest {
 
         // Mock a user entity and return it when the repository is called
         User mockUser = new User();
-        when(userRepository.findUserByUserName("testuser")).thenReturn(Optional.of(mockUser));
+        when(userRepository.findUserByUsername("testuser")).thenReturn(Optional.of(mockUser));
 
         // Call the method and assert the returned user details are correct
         UserDetails userDetails = userDetailsService.loadUserByUsername("testuser");
@@ -75,6 +75,6 @@ class UserDetailsServiceImplTest {
 
         // Verify that the login attempt service and repository methods were called
         verify(loginAttemptService).isBlocked();
-        verify(userRepository).findUserByUserName("testuser");
+        verify(userRepository).findUserByUsername("testuser");
     }
 }

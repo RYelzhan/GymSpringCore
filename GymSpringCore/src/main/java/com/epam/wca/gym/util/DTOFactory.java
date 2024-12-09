@@ -25,8 +25,8 @@ public class DTOFactory {
 
     public static TraineeSendDTO createTraineeSendDTO(Trainee trainee) {
         return new TraineeSendDTO(
-                trainee.getFirstName(),
-                trainee.getLastName(),
+                trainee.getFirstname(),
+                trainee.getLastname(),
                 trainee.getDateOfBirth(),
                 trainee.getAddress(),
                 trainee.isActive(),
@@ -45,8 +45,8 @@ public class DTOFactory {
     public static TrainerBasicDTO createBasicTrainerDTO(Trainer trainer) {
         return new TrainerBasicDTO(
                 trainer.getUsername(),
-                trainer.getFirstName(),
-                trainer.getLastName(),
+                trainer.getFirstname(),
+                trainer.getLastname(),
                 trainer.getSpecialization().toString()
         );
     }
@@ -54,8 +54,8 @@ public class DTOFactory {
     public static TrainerSendDTO createTrainerSendDTO(Trainer trainer) {
         return new TrainerSendDTO(
                 trainer.getUsername(),
-                trainer.getFirstName(),
-                trainer.getLastName(),
+                trainer.getFirstname(),
+                trainer.getLastname(),
                 trainer.getSpecialization().toString(),
                 trainer.isActive(),
                 createBasicTraineeDTOSet(trainer.getTraineesAssigned())
@@ -73,8 +73,8 @@ public class DTOFactory {
     public static TraineeBasicDTO createBasicTraineeDTO(Trainee trainee) {
         return new TraineeBasicDTO(
                 trainee.getUsername(),
-                trainee.getFirstName(),
-                trainee.getLastName()
+                trainee.getFirstname(),
+                trainee.getLastname()
         );
     }
 
@@ -125,8 +125,8 @@ public class DTOFactory {
 
         return new TrainerTrainingAddDTO(
                 trainer.getUsername(),
-                trainer.getFirstName(),
-                trainer.getLastName(),
+                trainer.getFirstname(),
+                trainer.getLastname(),
                 trainer.isActive(),
                 training.getTrainingDate(),
                 training.getTrainingDuration()

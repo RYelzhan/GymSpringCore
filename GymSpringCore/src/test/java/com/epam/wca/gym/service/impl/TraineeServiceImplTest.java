@@ -150,8 +150,8 @@ class TraineeServiceImplTest {
     void testUpdateTrainee() {
         // Create test data
         Trainee trainee = new Trainee();
-        trainee.setFirstName("John");
-        trainee.setLastName("Doe");
+        trainee.setFirstname("John");
+        trainee.setLastname("Doe");
         trainee.setDateOfBirth(
                 ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)));
@@ -181,8 +181,8 @@ class TraineeServiceImplTest {
             TraineeSendDTO result = traineeService.update(trainee, traineeUpdateDTO);
 
             // Verify that the trainee fields were updated correctly
-            assertEquals("Jane", trainee.getFirstName());
-            assertEquals("Smith", trainee.getLastName());
+            assertEquals("Jane", trainee.getFirstname());
+            assertEquals("Smith", trainee.getLastname());
             assertEquals(
                     ZonedDateTime.parse(
                             "05.05.1995 00:00:00 " + ZoneId.systemDefault(),
@@ -244,8 +244,8 @@ class TraineeServiceImplTest {
 
         Trainee trainee = new Trainee();
         trainee.setId(traineeId);
-        trainee.setFirstName("John");
-        trainee.setLastName("Doe");
+        trainee.setFirstname("John");
+        trainee.setLastname("Doe");
         trainee.setDateOfBirth(
                 ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)));

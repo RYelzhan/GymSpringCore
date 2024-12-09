@@ -11,15 +11,25 @@ import lombok.experimental.UtilityClass;
 public class UserFactory {
 
     public static Trainee createTrainee(TraineeRegistrationDTO traineeRegistrationDTO) {
-        return new Trainee(traineeRegistrationDTO.firstName(),
+        //TODO: Use Username/Id somehow
+        return new Trainee(
+                1L,
+                "",
+                traineeRegistrationDTO.firstName(),
                 traineeRegistrationDTO.lastName(),
                 traineeRegistrationDTO.dateOfBirth(),
-                traineeRegistrationDTO.address());
+                traineeRegistrationDTO.address()
+        );
     }
 
     public static Trainer createTrainer(TrainerRegistrationDTO trainerDTO, TrainingType trainingType) {
-        return new Trainer(trainerDTO.firstName(),
+        //TODO: Use Username/Id somehow
+        return new Trainer(
+                1L,
+                "",
+                trainerDTO.firstName(),
                 trainerDTO.lastName(),
-                trainingType);
+                trainingType
+        );
     }
 }

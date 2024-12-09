@@ -1,6 +1,9 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
+import com.epam.wca.gym.communication.feign.AuthenticationFeign;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -12,10 +15,8 @@ import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
-import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.service.TrainingService;
@@ -26,9 +27,11 @@ import com.epam.wca.gym.util.UserFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,18 +44,18 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
-    private final PasswordEncoder passwordEncoder;
     private final StatisticsCommunicationService statisticsCommunicationService;
+    private final AuthenticationFeign authenticationFeign;
 
     @Override
     @Logging
     @Transactional
     public UserAuthenticatedDTO save(TraineeRegistrationDTO dto) {
+        //TODO: Call register of Authentication and get Username/Id
+
         var trainee = UserFactory.createTrainee(dto);
 
-        var authenticatedUser = new UserAuthenticatedDTO(trainee.getUsername(), trainee.getPassword());
-
-        trainee.setPassword(passwordEncoder.encode(trainee.getPassword()));
+        var authenticatedUser = new UserAuthenticatedDTO(trainee.getUsername(), null);
 
         traineeRepository.save(trainee);
 
@@ -75,8 +78,8 @@ public class TraineeServiceImpl implements TraineeService {
     @Logging
     @Transactional
     public TraineeSendDTO update(Trainee trainee, TraineeUpdateDTO traineeUpdateDTO) {
-        trainee.setFirstName(traineeUpdateDTO.firstName());
-        trainee.setLastName(traineeUpdateDTO.lastName());
+        trainee.setFirstname(traineeUpdateDTO.firstName());
+        trainee.setLastname(traineeUpdateDTO.lastName());
         if (traineeUpdateDTO.dateOfBirth() != null) {
             trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
         }
@@ -102,9 +105,24 @@ public class TraineeServiceImpl implements TraineeService {
     @Logging
     @Transactional
     public void deleteById(Long id) {
+        deleteAuthAccount();
         deleteAssociatedTrainings(id);
 
         traineeRepository.deleteById(id);
+    }
+
+    @Logging
+    private void deleteAuthAccount() {
+        var request =
+                    ((ServletRequestAttributes)RequestContextHolder
+                            .getRequestAttributes())
+                            .getRequest();
+
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        log.info("Auth Header Sent to Auth Service: {}", authHeader);
+
+        authenticationFeign.delete(authHeader);
     }
 
     @Override

@@ -5,13 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.util.UUID;
+import java.io.IOException;
+
+import static com.epam.wca.common.gymcommon.util.AppConstants.TRANSACTION_ID_HEADER;
 
 @Slf4j
-@Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override
@@ -19,12 +20,22 @@ public class LoggingInterceptor implements HandlerInterceptor {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull Object handler
-    ) {
-        TransactionContext.setTransactionId(createTransactionId());
+    ) throws IOException {
+        String transactionId = request.getHeader(TRANSACTION_ID_HEADER);
 
-        String transactionId = TransactionContext.getTransactionId();
+        if (transactionId == null) {
+            log.warn("No transactionId found in request. URL: {}, HTTP Method: {}",
+                    request.getRequestURL(), request.getMethod());
 
-        log.info("TransactionId: {}, received request: URL: {}, HTTP Method: {}",
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.getWriter().write("No transactionId found in request.");
+
+            return false;
+        }
+
+        TransactionContext.setTransactionId(transactionId);
+
+        log.info("Received request: URL: {}, HTTP Method: {}, transactionId: {}",
                 request.getRequestURL(), request.getMethod(), transactionId);
 
         return true;
@@ -47,9 +58,5 @@ public class LoggingInterceptor implements HandlerInterceptor {
             log.error("TransactionId: {}, exception occurred: {}",
                     exception.getMessage(), transactionId);
         }
-    }
-
-    private String createTransactionId() {
-        return UUID.randomUUID().toString();
     }
 }

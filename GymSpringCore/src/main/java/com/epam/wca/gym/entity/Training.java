@@ -44,12 +44,14 @@ public class Training {
     @Column(name = "DURATION", nullable = false)
     private int trainingDuration;
 
-    public Training(Trainee trainee,
-                    Trainer trainer,
-                    String trainingName,
-                    TrainingType trainingType,
-                    ZonedDateTime trainingDate,
-                    int trainingDuration) {
+    public Training(
+            Trainee trainee,
+            Trainer trainer,
+            String trainingName,
+            TrainingType trainingType,
+            ZonedDateTime trainingDate,
+            int trainingDuration
+    ) {
         this.trainee = trainee;
         this.trainer = trainer;
         this.trainingName = trainingName;

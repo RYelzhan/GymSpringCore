@@ -2,7 +2,6 @@ package com.epam.wca.gym.advice;
 
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.util.AppConstants;
-import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
@@ -67,11 +66,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleInvalidLoginAttempt(IllegalArgumentException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> handleInvalidLoginAttempt(AuthenticationException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ProfileNotFoundException.class)

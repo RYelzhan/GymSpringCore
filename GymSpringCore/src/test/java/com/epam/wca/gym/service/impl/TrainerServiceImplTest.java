@@ -161,8 +161,8 @@ class TrainerServiceImplTest {
     void testUpdateTrainee() {
         // Create test data
         Trainer trainer = new Trainer();
-        trainer.setFirstName("John");
-        trainer.setLastName("Doe");
+        trainer.setFirstname("John");
+        trainer.setLastname("Doe");
         trainer.setSpecialization(new TrainingType("YOGA"));
 
         TrainerUpdateDTO trainerUpdateDTO = new TrainerUpdateDTO(
@@ -190,8 +190,8 @@ class TrainerServiceImplTest {
             TrainerSendDTO result = trainerService.update(trainer, trainerUpdateDTO);
 
             // Verify that the trainee fields were updated correctly
-            assertEquals("Jane", trainer.getFirstName());
-            assertEquals("Smith", trainer.getLastName());
+            assertEquals("Jane", trainer.getFirstname());
+            assertEquals("Smith", trainer.getLastname());
             assertEquals(updatedTrainingType, trainer.getSpecialization());
             assertFalse(trainer.isActive());
 
@@ -286,8 +286,8 @@ class TrainerServiceImplTest {
 
         Trainer trainer = new Trainer();
         trainer.setId(trainerId);
-        trainer.setFirstName("John");
-        trainer.setLastName("Doe");
+        trainer.setFirstname("John");
+        trainer.setLastname("Doe");
         trainer.setActive(true);
         trainer.setTrainings(new HashSet<>());
 
@@ -312,14 +312,14 @@ class TrainerServiceImplTest {
                 null
         );
 
-        when(trainerRepository.findTrainerByUserName(username)).thenReturn(Optional.of(trainer));
+        when(trainerRepository.findTrainerByUsername(username)).thenReturn(Optional.of(trainer));
 
         // When
         Trainer result = trainerService.findByUsername(username);
 
         // Then
         assertEquals(trainer, result);
-        verify(trainerRepository).findTrainerByUserName(username); // Verify the repository method was called
+        verify(trainerRepository).findTrainerByUsername(username); // Verify the repository method was called
     }
 
     @Test
@@ -340,14 +340,14 @@ class TrainerServiceImplTest {
 
         Trainee trainee = new Trainee("Jane", "Smith", null, null);
         trainee.setTrainersAssigned(new HashSet<>());
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.of(trainee));
+        when(traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername())).thenReturn(Optional.of(trainee));
 
         // When
         trainerService.createTraining(trainer, trainingDTO);
 
         // Then
         assertTrue(trainee.getTrainersAssigned().contains(trainer)); // Check that the trainer was added to trainee's assigned trainers
-        verify(traineeRepository).findTraineeByUserName(trainingDTO.traineeUsername()); // Verify trainee lookup
+        verify(traineeRepository).findTraineeByUsername(trainingDTO.traineeUsername()); // Verify trainee lookup
         verify(trainingService).save(any(Training.class)); // Verify the training was saved
     }
 
@@ -367,7 +367,7 @@ class TrainerServiceImplTest {
         );
 
         // Mocking that no trainee is found
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.empty());
+        when(traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername())).thenReturn(Optional.empty());
 
         // When & Then
         var exception = assertThrows(
@@ -379,7 +379,7 @@ class TrainerServiceImplTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage)); // Verify the exception message
-        verify(traineeRepository).findTraineeByUserName(trainingDTO.traineeUsername()); // Verify trainee lookup
+        verify(traineeRepository).findTraineeByUsername(trainingDTO.traineeUsername()); // Verify trainee lookup
         verify(trainingService, never()).save(any(Training.class)); // Ensure save is not called
     }
 }

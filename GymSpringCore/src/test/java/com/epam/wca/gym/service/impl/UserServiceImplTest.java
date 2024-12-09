@@ -75,7 +75,7 @@ class UserServiceImplTest {
     void testFindByUsername() {
         // Given
         String username = "testUser";
-        when(userRepository.findUserByUserName(username)).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(user));
 
         // When
         User foundUser = userService.findByUsername(username);
@@ -83,6 +83,6 @@ class UserServiceImplTest {
         // Then
         assertNotNull(foundUser);
         assertEquals(user, foundUser);
-        verify(userRepository).findUserByUserName(username);
+        verify(userRepository).findUserByUsername(username);
     }
 }

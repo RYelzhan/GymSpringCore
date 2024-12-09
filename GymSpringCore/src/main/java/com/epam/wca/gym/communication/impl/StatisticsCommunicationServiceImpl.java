@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StatisticsCommunicationServiceImpl implements StatisticsCommunicationService {
     public static final String STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE =
-            "Training Creation is impossible right now. Please wait, and retry after some time.";
+            "Action is impossible right now. Please wait, and retry after some time.";
 
     private final StatisticsClient statisticsClient;
 
@@ -62,7 +62,7 @@ public class StatisticsCommunicationServiceImpl implements StatisticsCommunicati
     }
 
     private static void logErrorMessage(Throwable e) {
-        log.error("TransactionId: {}, Fallback for getWorkload: {}",
+        log.error("TransactionId: {}, Fallback for method: {}",
                 TransactionContext.getTransactionId(), e.getMessage());
     }
 }

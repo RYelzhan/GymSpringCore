@@ -1,7 +1,5 @@
 package com.epam.wca.gym.entity;
 
-import com.epam.wca.gym.service.ProfileService;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,16 +10,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,8 +23,6 @@ import java.util.Set;
 @Entity
 @Table(name = "TRAINERS")
 public class Trainer extends User {
-    private static ProfileService profileService;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAINING_TYPE_ID", nullable = false)
     private TrainingType specialization;
@@ -48,14 +39,20 @@ public class Trainer extends User {
             inverseJoinColumns = @JoinColumn(name = "TRAINEE_ID"))
     private Set<Trainee> traineesAssigned;
 
-    public Trainer(String firstName,
-                   String lastName,
-                   TrainingType specialization) {
-        super(firstName,
+    public Trainer(
+            Long id,
+            String username,
+           String firstName,
+           String lastName,
+           TrainingType specialization
+    ) {
+        super(
+                id,
+                firstName,
                 lastName,
-                profileService.createUsername(firstName, lastName),
-                profileService.createPassword(),
-                true);
+                username,
+                true
+        );
 
         this.specialization = specialization;
         this.trainings = new HashSet<>();
@@ -65,15 +62,6 @@ public class Trainer extends User {
     @PreRemove
     public void clearJoinTableEntriesWithTrainees() {
         traineesAssigned.clear();
-    }
-
-    public static void setProfileService(ProfileService profileService) {
-        Trainer.profileService = profileService;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_TRAINER"));
     }
 
     @Override
