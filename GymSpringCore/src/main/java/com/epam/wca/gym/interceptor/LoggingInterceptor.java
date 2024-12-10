@@ -35,8 +35,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
         TransactionContext.setTransactionId(transactionId);
 
-        log.info("Received request: URL: {}, HTTP Method: {}, transactionId: {}",
-                request.getRequestURL(), request.getMethod(), transactionId);
+        log.info("TransactionId: {} | Received request: URL: {}, HTTP Method: {}",
+                transactionId, request.getRequestURL(), request.getMethod());
 
         return true;
     }
@@ -51,11 +51,11 @@ public class LoggingInterceptor implements HandlerInterceptor {
         String transactionId = TransactionContext.getTransactionId();
         TransactionContext.clear();
 
-        log.info("Completed request: transactionId: {}, Response Status: {}",
+        log.info("transactionId: {} | Completed request. Response Status: {}",
                 transactionId, response.getStatus());
 
         if (exception != null) {
-            log.error("TransactionId: {}, exception occurred: {}",
+            log.error("TransactionId: {} | Exception occurred: {}",
                     exception.getMessage(), transactionId);
         }
     }

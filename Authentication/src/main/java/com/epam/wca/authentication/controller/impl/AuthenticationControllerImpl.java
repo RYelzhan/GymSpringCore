@@ -23,12 +23,11 @@ public class AuthenticationControllerImpl implements
 
     @Override
     @Logging
-    public Long authenticate(@AuthenticationPrincipal User user) {
-        return user.getId();
+    public String authenticate(@AuthenticationPrincipal User user) {
+        return user.getUsername();
     }
 
     @Override
-    @Logging
     public String login(@AuthenticationPrincipal User user) {
         String token = authService.generateToken(user);
 

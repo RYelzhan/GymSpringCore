@@ -2,8 +2,8 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.AuthenticationCommunicationService;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
-import com.epam.wca.gym.communication.feign.AuthenticationFeign;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -27,11 +27,8 @@ import com.epam.wca.gym.util.UserFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +42,12 @@ public class TraineeServiceImpl implements TraineeService {
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final StatisticsCommunicationService statisticsCommunicationService;
-    private final AuthenticationFeign authenticationFeign;
+    private final AuthenticationCommunicationService authenticationCommunicationService;
+
+    @Override
+    public TraineeSendDTO getProfile(Trainee trainee) {
+        return DTOFactory.createTraineeSendDTO(trainee);
+    }
 
     @Override
     @Logging
@@ -111,22 +113,11 @@ public class TraineeServiceImpl implements TraineeService {
         traineeRepository.deleteById(id);
     }
 
-    @Logging
     private void deleteAuthAccount() {
-        var request =
-                    ((ServletRequestAttributes)RequestContextHolder
-                            .getRequestAttributes())
-                            .getRequest();
-
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        log.info("Auth Header Sent to Auth Service: {}", authHeader);
-
-        authenticationFeign.delete(authHeader);
+        authenticationCommunicationService.delete();
     }
 
     @Override
-    @Logging
     public void deleteAssociatedTrainings(Long id) {
         try {
             var trainee = traineeRepository.getReferenceById(id);

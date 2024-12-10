@@ -13,7 +13,6 @@ import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
-import com.epam.wca.gym.util.DTOFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +28,7 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     @Override
     @Logging
     public TraineeSendDTO getProfile(@InsertUser Trainee trainee) {
-        return DTOFactory.createTraineeSendDTO(trainee);
+        return traineeService.getProfile(trainee);
     }
 
     @Override
@@ -87,6 +86,6 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     ) {
         traineeService.createTraining(authenticatedTrainee, trainingDTO);
 
-        return "Training Created Successfully";
+        return "Training Creation Started Successfully";
     }
 }

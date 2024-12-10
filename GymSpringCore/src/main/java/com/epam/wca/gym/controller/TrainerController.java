@@ -40,22 +40,17 @@ public interface TrainerController {
             @InsertUserId Long id
     );
 
-    @PostMapping(value = "/trainings", consumes = MediaType.ALL_VALUE)
+    @PostMapping(value = "/trainings")
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
             @InsertUser Trainer authenticatedTrainer
     );
 
     @PostMapping(value = "/trainings/new")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
             @InsertUser Trainer authenticatedTrainer
-    );
-
-    @GetMapping("/trainings/statistics")
-    Object getStatistics(
-            @InsertUser Trainer trainer
     );
 }
 

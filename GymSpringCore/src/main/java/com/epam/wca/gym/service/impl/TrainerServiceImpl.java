@@ -2,8 +2,8 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.AuthenticationCommunicationService;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
-import com.epam.wca.gym.communication.feign.AuthenticationFeign;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
@@ -26,11 +26,8 @@ import com.epam.wca.gym.util.UserFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +42,12 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainingTypeService trainingTypeService;
     private final TrainingService trainingService;
     private final StatisticsCommunicationService statisticsCommunicationService;
-    private final AuthenticationFeign authenticationFeign;
+    private final AuthenticationCommunicationService authenticationCommunicationService;
+
+    @Override
+    public TrainerSendDTO getProfile(Trainer trainer) {
+        return DTOFactory.createTrainerSendDTO(trainer);
+    }
 
     @Override
     @Logging
@@ -126,16 +128,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Logging
     private void deleteAuthAccount() {
-        var request =
-                ((ServletRequestAttributes) RequestContextHolder
-                        .getRequestAttributes())
-                        .getRequest();
-
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        log.info("Auth Header Sent to Auth Service: {}", authHeader);
-
-        authenticationFeign.delete(authHeader);
+        authenticationCommunicationService.delete();
     }
 
     @Override
@@ -146,6 +139,8 @@ public class TrainerServiceImpl implements TrainerService {
 
             var trainingsDeleteDTO =
                     DTOFactory.createTrainersTrainingsDeleteDTO(trainer.getTrainings());
+
+            trainerRepository.save(trainer);
 
             log.info("Calling the Statistics service with argument: " + trainingsDeleteDTO);
 

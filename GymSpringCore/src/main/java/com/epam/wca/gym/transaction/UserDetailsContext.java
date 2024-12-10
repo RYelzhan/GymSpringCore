@@ -4,14 +4,14 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class UserDetailsContext {
-    private final ThreadLocal<Long> userDetailsHolder =
+    private final ThreadLocal<String> userDetailsHolder =
             new ThreadLocal<>();
 
-    public void setUserId(Long id) {
-        userDetailsHolder.set(id);
+    public void setUsername(String username) {
+        userDetailsHolder.set(username);
     }
 
-    public Long getUserId() {
+    public String getUsername() {
         return userDetailsHolder.get();
     }
 

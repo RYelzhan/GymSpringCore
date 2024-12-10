@@ -2,6 +2,7 @@ package com.epam.wca.authentication.service;
 
 import com.epam.wca.authentication.filter.TransactionIdFilter;
 import com.epam.wca.authentication.util.RequestDetailsUtil;
+import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -16,12 +17,14 @@ import reactor.core.publisher.Mono;
 public class AuthService {
     private final TransactionIdFilter transactionIdFilter;
     private final WebClient webClient;
+
     public AuthService(WebClient.Builder webClientBuilder, TransactionIdFilter transactionIdFilter) {
         this.webClient = webClientBuilder.baseUrl("http://localhost:8095").build();
         this.transactionIdFilter = transactionIdFilter;
     }
 
-    public Mono<Long> authenticate(ServerWebExchange exchange, String authHeader) {
+    @Logging
+    public Mono<String> authenticate(ServerWebExchange exchange, String authHeader) {
         String transactionId = RequestDetailsUtil.getTransactionId(exchange);
 
         if (transactionId == null) {
@@ -39,8 +42,8 @@ public class AuthService {
                         clientResponse.bodyToMono(String.class)
                                 .flatMap(errorBody ->
                                         Mono.error(new ResponseStatusException(clientResponse.statusCode(), errorBody
-                                )))
+                                        )))
                 )
-                .bodyToMono(Long.class);
+                .bodyToMono(String.class);
     }
 }

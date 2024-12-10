@@ -43,14 +43,14 @@ public class AuthenticationFilter implements GatewayFilter {
         }
 
         return authService.authenticate(exchange, authHeader)
-                .flatMap(userId -> {
+                .flatMap(username -> {
                     // Add userId to the request or context for downstream services
                     ServerHttpRequest modifiedRequest = exchange.getRequest()
                             .mutate()
-                            .header(AppConstants.USER_ID_HEADER, userId.toString())
+                            .header(AppConstants.USERNAME_HEADER, username)
                             .build();
 
-                    log.info("User Id returned from Auth Service: {}", userId);
+                    log.info("User Id returned from Auth Service: {}", username);
 
                     return chain.filter(exchange.mutate().request(modifiedRequest).build());
                 })

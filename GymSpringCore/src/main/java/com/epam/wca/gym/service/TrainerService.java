@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface TrainerService {
+    TrainerSendDTO getProfile(Trainer trainer);
+
     UserAuthenticatedDTO save(TrainerRegistrationDTO trainer);
 
     List<TrainingBasicDTO> findTrainingsFiltered(Long id, TrainerTrainingQuery trainerTrainingQuery);

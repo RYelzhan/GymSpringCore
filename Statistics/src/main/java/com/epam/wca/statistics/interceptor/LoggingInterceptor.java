@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import static com.epam.wca.common.gymcommon.util.AppConstants.TRANSACTION_ID_HEADER;
 
 @Slf4j
-@Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override

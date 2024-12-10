@@ -26,7 +26,7 @@ public interface AuthenticationControllerDocumentation extends AuthenticationCon
     )
     @SecurityRequirement(name = "jwtToken")
     @Override
-    Long authenticate(@AuthenticationPrincipal User user);
+    String authenticate(@AuthenticationPrincipal User user);
 
     @Operation(
             summary = "User Login",

@@ -47,20 +47,20 @@ public interface TraineeController {
             @InsertUser Trainee authenticatedTrainee
     );
 
-    @PutMapping(value = "/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/trainers")
     List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
             @InsertUser Trainee authenticatedTrainee
     );
 
-    @PostMapping(value = "/trainings", consumes = MediaType.ALL_VALUE)
+    @PostMapping(value = "/trainings")
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
             @InsertUser Trainee authenticatedTrainee
     );
 
     @PostMapping("/trainings/new")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
             @InsertUser Trainee authenticatedTrainee

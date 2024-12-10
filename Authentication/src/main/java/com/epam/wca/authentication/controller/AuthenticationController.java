@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public interface AuthenticationController {
 
     @GetMapping(value = "/authenticate", consumes = MediaType.ALL_VALUE)
-    Long authenticate(@AuthenticationPrincipal User user);
+    String authenticate(@AuthenticationPrincipal User user);
 
     @PostMapping(value = "/login", consumes = MediaType.ALL_VALUE)
     String login(@AuthenticationPrincipal User user);

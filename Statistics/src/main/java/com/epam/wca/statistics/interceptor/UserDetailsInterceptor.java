@@ -1,8 +1,8 @@
-package com.epam.wca.gym.interceptor;
+package com.epam.wca.statistics.interceptor;
 
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.util.AppConstants;
-import com.epam.wca.gym.transaction.UserDetailsContext;
+import com.epam.wca.statistics.transaction.UserDetailsContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;

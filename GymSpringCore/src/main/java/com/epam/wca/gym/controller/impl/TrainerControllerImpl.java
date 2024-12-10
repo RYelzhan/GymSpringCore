@@ -1,8 +1,8 @@
 package com.epam.wca.gym.controller.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
-import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.gym.aop.argument.InsertUser;
+import com.epam.wca.gym.aop.argument.InsertUserId;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.controller.documentation.TrainerControllerDocumentation;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
@@ -12,7 +12,6 @@ import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.service.TrainerService;
-import com.epam.wca.gym.util.DTOFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +30,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     public TrainerSendDTO getProfile(
             @InsertUser Trainer authenticatedTrainer
     ) {
-        return DTOFactory.createTrainerSendDTO(authenticatedTrainer);
+        return trainerService.getProfile(authenticatedTrainer);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     @Override
     @Logging
     public void deleteProfile(
-            @InsertUser Long id
+            @InsertUserId Long id
     ) {
         // TODO: invalidation refresh token logic
 
@@ -71,14 +70,6 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
     ) {
         trainerService.createTraining(authenticatedTrainer, trainingDTO);
 
-        return "Training Created Successfully";
-    }
-
-    @Override
-    @Logging
-    public TrainerWorkloadSummary getStatistics(
-            @InsertUser Trainer trainer
-    ) {
-        return statisticsCommunicationService.getWorkload(trainer.getUsername());
+        return "Training Creation Started Successfully";
     }
 }

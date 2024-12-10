@@ -14,6 +14,8 @@ import com.epam.wca.gym.entity.Trainee;
 import java.util.List;
 
 public interface TraineeService {
+    TraineeSendDTO getProfile(Trainee trainee);
+
     UserAuthenticatedDTO save(TraineeRegistrationDTO trainee);
 
     List<TrainingBasicDTO> findTrainingsFiltered(Long id, TraineeTrainingQuery traineeTrainingQuery);
