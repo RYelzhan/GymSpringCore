@@ -2,7 +2,6 @@ package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
-import com.epam.wca.gym.communication.AuthenticationCommunicationService;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
@@ -42,7 +41,6 @@ public class TraineeServiceImpl implements TraineeService {
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final StatisticsCommunicationService statisticsCommunicationService;
-    private final AuthenticationCommunicationService authenticationCommunicationService;
 
     @Override
     public TraineeSendDTO getProfile(Trainee trainee) {
@@ -107,14 +105,9 @@ public class TraineeServiceImpl implements TraineeService {
     @Logging
     @Transactional
     public void deleteById(Long id) {
-        deleteAuthAccount();
         deleteAssociatedTrainings(id);
 
         traineeRepository.deleteById(id);
-    }
-
-    private void deleteAuthAccount() {
-        authenticationCommunicationService.delete();
     }
 
     @Override

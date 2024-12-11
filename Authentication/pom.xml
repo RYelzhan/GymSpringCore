@@ -107,6 +107,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Circuit Breaker -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+		</dependency>
+
 		<!-- Messaging dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -2,7 +2,6 @@ package com.epam.wca.gym.config;
 
 import com.epam.wca.common.gymcommon.aop.LoggingAspect;
 import com.epam.wca.gym.aop.argument.UserArgumentResolver;
-import com.epam.wca.gym.aop.argument.UserIdArgumentResolver;
 import com.epam.wca.gym.interceptor.LoggingInterceptor;
 import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final UserArgumentResolver userArgumentResolver;
-    private final UserIdArgumentResolver userIdArgumentResolver;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -31,7 +29,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userArgumentResolver);
-        resolvers.add(userIdArgumentResolver);
     }
 
     @Bean

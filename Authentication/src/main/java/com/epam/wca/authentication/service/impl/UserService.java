@@ -1,6 +1,8 @@
 package com.epam.wca.authentication.service.impl;
 
+import com.epam.wca.authentication.communication.GymCommunicationService;
 import com.epam.wca.authentication.dto.UserUpdateDTO;
+import com.epam.wca.authentication.entity.Role;
 import com.epam.wca.authentication.entity.User;
 import com.epam.wca.authentication.repository.UserRepository;
 import com.epam.wca.common.gymcommon.aop.Logging;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GymCommunicationService gymCommunicationService;
 
     @Logging
     @Transactional
@@ -28,5 +31,10 @@ public class UserService {
     public void delete(User user) {
         userRepository.delete(user);
 
+        if (user.getRoles().contains(new Role("TRAINEE"))) {
+            gymCommunicationService.deleteTrainee(user.getUsername());
+        } else if (user.getRoles().contains(new Role("TRAINER"))) {
+            gymCommunicationService.deleteTrainer(user.getUsername());
+        }
     }
 }

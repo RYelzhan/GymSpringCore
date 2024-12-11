@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -35,4 +36,22 @@ public class Role {
             joinColumns = @JoinColumn(name = "ROLE_ID"),
             inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     private Set<User> users;
+
+    public Role(String name) {
+        this.name = name;
+        users = new HashSet<>();
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Role role) {
+            return name.equals(role.getName());
+        }
+        return false;
+    }
 }

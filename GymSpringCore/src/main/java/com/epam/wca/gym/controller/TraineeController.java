@@ -36,7 +36,6 @@ public interface TraineeController {
             @InsertUser Trainee authenticatedTrainee
     );
 
-    @Deprecated(since = "2.2")
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteProfile(

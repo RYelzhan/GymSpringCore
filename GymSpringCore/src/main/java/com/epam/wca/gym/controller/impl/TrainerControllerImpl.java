@@ -40,6 +40,11 @@ public class TrainerControllerImpl implements TrainerControllerDocumentation {
         return trainerService.update(authenticatedTrainer, trainerUpdateDTO);
     }
 
+    /**
+     * @deprecated refactored Trainee deletion logic to be accessible through message receiver
+     * @param id of Trainer getting deleted
+     */
+    @Deprecated(since = "2.3")
     @Override
     @Logging
     public void deleteProfile(

@@ -40,6 +40,11 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
         return traineeService.update(authenticatedTrainee, traineeDTO);
     }
 
+    /**
+     * @deprecated refactored Trainee deletion logic to be accessible through message receiver
+     * @param id id of trainee getting deleted
+     */
+    @Deprecated(since = "2.3")
     @Override
     @Logging
     public void deleteProfile(

@@ -22,6 +22,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class TrainingsReceiver {
+    public static final String NO_TRANSACTION_ID_FOUND = "Not Transaction Id found in message received.";
     private final TrainerService trainerService;
     private final Validator validator;
 
@@ -30,30 +31,25 @@ public class TrainingsReceiver {
     public void receiveAddTraining(
             TrainerTrainingAddDTO trainingAddDTO,
             Message message
-    ) {
+    ) throws JMSException {
         try {
             validate(trainingAddDTO);
 
-            String transactionId = message.getStringProperty(AppConstants.TRANSACTION_ID_PROPERTY);
-
-            if (transactionId == null) {
-                log.error("Not Transaction Id found in message received.");
-                return;
-            }
+            String transactionId = getTransactionId(message);
 
             TransactionContext.setTransactionId(transactionId);
-
-            if (trainingAddDTO.username().equals("ethan.white")) {
-                throw new RuntimeException("Can not create training with this dude.");
-            }
 
             trainerService.addNewTraining(trainingAddDTO);
 
             TransactionContext.clear();
         } catch (ConstraintViolationException e) {
             log.error("Not valid message received. Error: {}", e.getMessage());
+
+            throw new JMSException("Not valid message received. Error: " + e.getMessage());
         } catch (JMSException e) {
             log.error("Error processing message. Error: {}", e.getMessage());
+
+            throw new JMSException("Error processing message. Error: " + e.getMessage());
         }
     }
 
@@ -62,16 +58,11 @@ public class TrainingsReceiver {
     public void receiveDeleteTraining(
             TrainersTrainingsDeleteDTO trainingsDeleteDTO,
             Message message
-    ) {
+    ) throws JMSException {
         try {
             validate(trainingsDeleteDTO);
 
-            String transactionId = message.getStringProperty(AppConstants.TRANSACTION_ID_PROPERTY);
-
-            if (transactionId == null) {
-                log.error("Not Transaction Id found in message received.");
-                return;
-            }
+            String transactionId = getTransactionId(message);
 
             TransactionContext.setTransactionId(transactionId);
 
@@ -80,8 +71,12 @@ public class TrainingsReceiver {
             TransactionContext.clear();
         } catch (ConstraintViolationException e) {
             log.error("Not valid message received. Error: {}", e.getMessage());
+
+            throw new JMSException("Not valid message received. Error: " + e.getMessage());
         } catch (JMSException e) {
             log.error("Error processing message. Error: {}", e.getMessage());
+
+            throw new JMSException("Error processing message. Error: " + e.getMessage());
         }
     }
 
@@ -90,5 +85,16 @@ public class TrainingsReceiver {
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
+    }
+
+    private static String getTransactionId(Message message) throws JMSException {
+        String transactionId = message.getStringProperty(AppConstants.TRANSACTION_ID_PROPERTY);
+
+        if (transactionId == null) {
+            log.error(NO_TRANSACTION_ID_FOUND);
+
+            throw new JMSException(NO_TRANSACTION_ID_FOUND);
+        }
+        return transactionId;
     }
 }
