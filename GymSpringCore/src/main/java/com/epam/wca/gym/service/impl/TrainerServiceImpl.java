@@ -126,21 +126,17 @@ public class TrainerServiceImpl implements TrainerService {
         trainerRepository.deleteById(id);
     }
 
-    @Logging
     private void deleteAuthAccount() {
         authenticationCommunicationService.delete();
     }
 
     @Override
-    @Logging
     public void deleteAssociatedTrainings(Long id) {
         try {
             var trainer = trainerRepository.getReferenceById(id);
 
             var trainingsDeleteDTO =
                     DTOFactory.createTrainersTrainingsDeleteDTO(trainer.getTrainings());
-
-            trainerRepository.save(trainer);
 
             log.info("Calling the Statistics service with argument: " + trainingsDeleteDTO);
 

@@ -29,8 +29,12 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
             @NonNull NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        return userRepository.findUserByUsername(UserDetailsContext.getUsername())
+        var user = userRepository.findUserByUsername(UserDetailsContext.getUsername())
                 .orElseThrow(() ->
                         new InternalErrorException("Controller method reached with not existing username" + parameter));
+
+        userRepository.save(user);
+
+        return user;
     }
 }

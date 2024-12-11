@@ -1,6 +1,7 @@
 package com.epam.wca.gym.aop.argument;
 
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.transaction.UserDetailsContext;
 import lombok.NonNull;
@@ -29,10 +30,15 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
             @NonNull NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        return userRepository.findUserByUsername(UserDetailsContext.getUsername())
+        User user = userRepository.findUserByUsername(UserDetailsContext.getUsername())
                 .orElseThrow(
                         () ->
-                        new InternalErrorException("Controller method reached with not existing username" + parameter))
-                .getId();
+                        new InternalErrorException("Controller method reached with not existing username" + parameter));
+
+        Long id = user.getId();
+
+        userRepository.save(user);
+
+        return id;
     }
 }

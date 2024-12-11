@@ -34,6 +34,7 @@ public interface TrainerController {
             @InsertUser Trainer authenticatedTrainer
     );
 
+    @Deprecated(since = "2.2")
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteProfile(

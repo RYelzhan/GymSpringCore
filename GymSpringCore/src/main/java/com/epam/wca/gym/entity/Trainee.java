@@ -31,14 +31,14 @@ public class Trainee extends User {
 
     @OneToMany(mappedBy = "trainee",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE,
+            cascade = CascadeType.ALL,
             orphanRemoval = true)
     private Set<Training> trainings;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
-            joinColumns = @JoinColumn(name = "TRAINEE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "TRAINER_ID"))
+            joinColumns = @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID"))
     private Set<Trainer> trainersAssigned;
 
     public Trainee(
@@ -63,13 +63,15 @@ public class Trainee extends User {
         this.trainersAssigned = new HashSet<>();
     }
 
-    @PreRemove
-    public void clearJoinTableEntriesWithTrainers() {
-        trainersAssigned.clear();
-    }
-
     public void addTrainers(List<Trainer> trainerList) {
         trainersAssigned.addAll(trainerList);
+    }
+
+    @PreRemove
+    public void removeTrainers() {
+        for (Trainer trainer : trainersAssigned) {
+            trainer.getTraineesAssigned().remove(this);
+        }
     }
 
     @Override

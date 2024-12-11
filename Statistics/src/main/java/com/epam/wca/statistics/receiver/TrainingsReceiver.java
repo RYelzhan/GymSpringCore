@@ -43,6 +43,10 @@ public class TrainingsReceiver {
 
             TransactionContext.setTransactionId(transactionId);
 
+            if (trainingAddDTO.username().equals("ethan.white")) {
+                throw new RuntimeException("Can not create training with this dude.");
+            }
+
             trainerService.addNewTraining(trainingAddDTO);
 
             TransactionContext.clear();

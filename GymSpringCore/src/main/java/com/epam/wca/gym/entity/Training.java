@@ -28,15 +28,15 @@ public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRAINEE_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID", nullable = false)
     private Trainee trainee;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRAINER_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID", nullable = false)
     private Trainer trainer;
     @Column(name = "NAME", nullable = false)
     private String trainingName;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "TRAINING_TYPE_ID", nullable = false)
     private TrainingType trainingType;
     @Column(name = "DATE", nullable = false)

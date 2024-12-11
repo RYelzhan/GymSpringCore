@@ -3,7 +3,6 @@ package com.epam.wca.gym.controller.impl;
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.gym.aop.argument.InsertUser;
 import com.epam.wca.gym.aop.argument.InsertUserId;
-import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.controller.documentation.TrainerControllerDocumentation;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
@@ -23,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerControllerImpl implements TrainerControllerDocumentation {
     private final TrainerService trainerService;
-    private final StatisticsCommunicationService statisticsCommunicationService;
 
     @Override
     @Logging
