@@ -3,6 +3,7 @@ package com.epam.wca.authentication.controller;
 import com.epam.wca.authentication.dto.UserActivationDTO;
 import com.epam.wca.authentication.dto.UserUpdateDTO;
 import com.epam.wca.authentication.entity.User;
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.common.gymcommon.auth_dto.UserRegistrationDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public interface AuthenticationController {
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    String register(UserRegistrationDTO registrationDTO);
+    UserAuthenticatedDTO register(UserRegistrationDTO registrationDTO);
 
     @PutMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     String changePassword(

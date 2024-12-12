@@ -2,7 +2,7 @@ package com.epam.wca.gym.controller.documentation;
 
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.common.gymcommon.util.ResponseMessages;
 import com.epam.wca.gym.controller.AuthenticationController;
 import io.swagger.v3.oas.annotations.Operation;

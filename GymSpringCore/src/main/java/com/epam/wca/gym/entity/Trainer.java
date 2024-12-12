@@ -40,14 +40,12 @@ public class Trainer extends User {
     private Set<Trainee> traineesAssigned;
 
     public Trainer(
-            Long id,
             String username,
-           String firstName,
-           String lastName,
-           TrainingType specialization
+            String firstName,
+            String lastName,
+            TrainingType specialization
     ) {
         super(
-                id,
                 firstName,
                 lastName,
                 username

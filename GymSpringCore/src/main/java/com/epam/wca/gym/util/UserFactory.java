@@ -10,11 +10,13 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserFactory {
 
-    public static Trainee createTrainee(TraineeRegistrationDTO traineeRegistrationDTO) {
+    public static Trainee createTrainee(
+            TraineeRegistrationDTO traineeRegistrationDTO,
+            String username
+    ) {
         //TODO: Use Username/Id somehow
         return new Trainee(
-                1L,
-                "",
+                username,
                 traineeRegistrationDTO.firstName(),
                 traineeRegistrationDTO.lastName(),
                 traineeRegistrationDTO.dateOfBirth(),
@@ -22,11 +24,13 @@ public class UserFactory {
         );
     }
 
-    public static Trainer createTrainer(TrainerRegistrationDTO trainerDTO, TrainingType trainingType) {
+    public static Trainer createTrainer(
+            TrainerRegistrationDTO trainerDTO,
+            TrainingType trainingType,
+            String username) {
         //TODO: Use Username/Id somehow
         return new Trainer(
-                1L,
-                "",
+                username,
                 trainerDTO.firstName(),
                 trainerDTO.lastName(),
                 trainingType

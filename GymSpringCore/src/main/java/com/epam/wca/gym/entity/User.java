@@ -2,6 +2,8 @@ package com.epam.wca.gym.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -20,6 +22,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "FIRSTNAME", nullable = false)
     private String firstname;
@@ -27,6 +30,16 @@ public class User {
     private String lastname;
     @Column(name = "USERNAME", nullable = false)
     private String username;
+
+    public User(
+            String firstname,
+            String lastname,
+            String username
+    ) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.username = username;
+    }
 
     @Override
     public boolean equals(Object obj) {

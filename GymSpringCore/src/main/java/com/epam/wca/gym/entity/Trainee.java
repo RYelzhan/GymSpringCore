@@ -42,7 +42,6 @@ public class Trainee extends User {
     private Set<Trainer> trainersAssigned;
 
     public Trainee(
-            Long id,
                String username,
                String firstName,
                String lastName,
@@ -50,7 +49,6 @@ public class Trainee extends User {
                String address
     ) {
         super(
-                id,
                 firstName,
                 lastName,
                 username

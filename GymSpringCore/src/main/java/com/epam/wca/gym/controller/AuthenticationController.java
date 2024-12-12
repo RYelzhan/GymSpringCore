@@ -2,7 +2,7 @@ package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

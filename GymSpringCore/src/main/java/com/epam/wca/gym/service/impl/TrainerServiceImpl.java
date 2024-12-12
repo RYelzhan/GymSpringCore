@@ -1,7 +1,9 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.common.gymcommon.auth_dto.UserRegistrationDTO;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.AuthenticationCommunicationService;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
@@ -10,7 +12,7 @@ import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
@@ -41,6 +43,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainingTypeService trainingTypeService;
     private final TrainingService trainingService;
     private final StatisticsCommunicationService statisticsCommunicationService;
+    private final AuthenticationCommunicationService authenticationCommunicationService;
 
     @Override
     public TrainerSendDTO getProfile(Trainer trainer) {
@@ -50,14 +53,14 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     @Logging
     @Transactional
-    public UserAuthenticatedDTO save(TrainerRegistrationDTO trainerDTO) {
-        //TODO: Call register of Authentication and get Username/Id
+    public UserAuthenticatedDTO save(TrainerRegistrationDTO dto) {
+        var trainingType = trainingTypeService.findByType(dto.trainingType());
 
-        var trainingType = trainingTypeService.findByType(trainerDTO.trainingType());
+        UserAuthenticatedDTO authenticatedUser = authenticationCommunicationService.userRegister(
+                new UserRegistrationDTO(dto.firstName(), dto.lastName(), Set.of("TRAINER"))
+        );
 
-        var trainer = UserFactory.createTrainer(trainerDTO, trainingType);
-
-        var authenticatedUser = new UserAuthenticatedDTO(trainer.getUsername(), null);
+        var trainer = UserFactory.createTrainer(dto, trainingType, authenticatedUser.username());
 
         trainerRepository.save(trainer);
 
@@ -85,9 +88,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.setFirstname(trainerUpdateDTO.firstName());
         trainer.setLastname(trainerUpdateDTO.lastName());
         trainer.setSpecialization(trainingType);
-        trainer.setActive(trainerUpdateDTO.isActive());
 
-        // it turns out finByUserName detaches object
         trainerRepository.save(trainer);
 
         return DTOFactory.createTrainerSendDTO(trainer);
@@ -152,19 +153,17 @@ public class TrainerServiceImpl implements TrainerService {
     @Logging
     @Transactional
     public void createTraining(Trainer trainer, TrainerTrainingCreateDTO trainingDTO) {
-        // TODO: replace with service call
-        var trainee = traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername());
-
-        if (trainee.isEmpty()) {
-            throw new InternalErrorException("No Trainee Found with Username: " + trainingDTO.traineeUsername());
-        }
+        var trainee = traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername())
+                .orElseThrow(() -> {
+                    throw new InternalErrorException("No Trainee Found with Username: " + trainingDTO.traineeUsername());
+                });
 
         // trainer might create training without assigning himself to trainee, so, we do it manually
-        trainee.get().getTrainersAssigned().add(trainer);
+        trainee.getTrainersAssigned().add(trainer);
 
         trainingService.save(TrainingFactory.createTraining(
                 trainingDTO,
-                trainee.get(), trainer
+                trainee, trainer
         ));
     }
 }

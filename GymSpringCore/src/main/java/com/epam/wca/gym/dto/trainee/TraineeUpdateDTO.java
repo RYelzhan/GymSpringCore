@@ -3,7 +3,6 @@ package com.epam.wca.gym.dto.trainee;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
@@ -20,8 +19,6 @@ public record TraineeUpdateDTO(
         @JsonFormat(pattern = AppConstants.DEFAULT_DATE_FORMAT)
         ZonedDateTime dateOfBirth,
         @Size(min = 5, max = 50, message = "Address must be between 5 and 50 characters")
-        String address,
-        @NotNull(message = "Is active is required")
-        Boolean isActive
+        String address
 ) {
 }

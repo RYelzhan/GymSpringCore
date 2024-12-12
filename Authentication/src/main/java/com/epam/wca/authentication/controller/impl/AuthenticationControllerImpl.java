@@ -7,6 +7,7 @@ import com.epam.wca.authentication.entity.User;
 import com.epam.wca.authentication.service.AuthService;
 import com.epam.wca.authentication.service.impl.UserService;
 import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.common.gymcommon.auth_dto.UserRegistrationDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +54,9 @@ public class AuthenticationControllerImpl implements
     }
 
     @Override
-    public String register(UserRegistrationDTO registrationDTO) {
-        return null;
+    @Logging
+    public UserAuthenticatedDTO register(@RequestBody @Valid UserRegistrationDTO dto) {
+        return userService.create(dto);
     }
 
     @Override
