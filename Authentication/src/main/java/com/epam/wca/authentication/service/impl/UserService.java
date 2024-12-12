@@ -1,6 +1,7 @@
 package com.epam.wca.authentication.service.impl;
 
 import com.epam.wca.authentication.communication.GymCommunicationService;
+import com.epam.wca.authentication.dto.UserActivationDTO;
 import com.epam.wca.authentication.dto.UserUpdateDTO;
 import com.epam.wca.authentication.entity.Role;
 import com.epam.wca.authentication.entity.User;
@@ -22,6 +23,14 @@ public class UserService {
     @Transactional
     public void update(User user, UserUpdateDTO userDTO) {
         user.setPassword(passwordEncoder.encode(userDTO.newPassword()));
+
+        userRepository.save(user);
+    }
+
+    @Logging
+    @Transactional
+    public void update(User user, UserActivationDTO userDTO) {
+        user.setActive(userDTO.isActive());
 
         userRepository.save(user);
     }

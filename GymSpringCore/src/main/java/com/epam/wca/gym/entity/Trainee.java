@@ -53,8 +53,7 @@ public class Trainee extends User {
                 id,
                 firstName,
                 lastName,
-                username,
-                true
+                username
         );
 
         this.dateOfBirth = dateOfBirth;

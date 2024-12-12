@@ -1,6 +1,7 @@
 package com.epam.wca.authentication.controller.impl;
 
 import com.epam.wca.authentication.controller.documentation.AuthenticationControllerDocumentation;
+import com.epam.wca.authentication.dto.UserActivationDTO;
 import com.epam.wca.authentication.dto.UserUpdateDTO;
 import com.epam.wca.authentication.entity.User;
 import com.epam.wca.authentication.service.AuthService;
@@ -65,5 +66,16 @@ public class AuthenticationControllerImpl implements
         userService.update(authenticatedUser, userDTO);
 
         return "Password Changed Successfully";
+    }
+
+    @Override
+    @Logging
+    public String activateDeactivate(
+            @RequestBody @Valid UserActivationDTO userDTO,
+            @AuthenticationPrincipal User authenticatedUser
+    ) {
+        userService.update(authenticatedUser, userDTO);
+
+        return "Is Active Updated Successfully";
     }
 }

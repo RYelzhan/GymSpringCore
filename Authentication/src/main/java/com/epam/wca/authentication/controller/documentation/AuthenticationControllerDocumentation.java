@@ -1,6 +1,7 @@
 package com.epam.wca.authentication.controller.documentation;
 
 import com.epam.wca.authentication.controller.AuthenticationController;
+import com.epam.wca.authentication.dto.UserActivationDTO;
 import com.epam.wca.authentication.dto.UserUpdateDTO;
 import com.epam.wca.authentication.entity.User;
 import com.epam.wca.common.gymcommon.util.ResponseMessages;
@@ -93,6 +94,27 @@ public interface AuthenticationControllerDocumentation extends AuthenticationCon
     )
     String changePassword(
             @RequestBody @Valid UserUpdateDTO userDTO,
+            @AuthenticationPrincipal User authenticatedUser
+    );
+
+    @Operation(
+            summary = "Activate or Deactivate User"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "User activation status updated successfully."
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = ResponseMessages.INVALID_INPUT_DESCRIPTION
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
+    )
+    @Override
+    String activateDeactivate(
+            @RequestBody @Valid UserActivationDTO userDTO,
             @AuthenticationPrincipal User authenticatedUser
     );
 }
