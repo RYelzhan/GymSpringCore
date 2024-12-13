@@ -10,9 +10,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,12 +30,24 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Table(name = "USERS")
 public class User implements UserDetails {
+    @Value("${table-generator.initial-value}")
+    private static final int ID_INITIAL_VALUE = 100;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_id_table_generator")
+    @TableGenerator(
+            name = "user_id_table_generator",
+            table = "user_id_generator",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_value",
+            pkColumnValue = "user_id",
+            initialValue = ID_INITIAL_VALUE,
+            allocationSize = 1
+    )
     private Long id;
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
-    @Column(name = "PASSWORD")
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "USER_ROLE_MAPPING",

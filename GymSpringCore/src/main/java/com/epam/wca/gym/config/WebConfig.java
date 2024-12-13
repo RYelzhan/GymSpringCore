@@ -19,11 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final UserArgumentResolver userArgumentResolver;
+    private final UserDetailsInterceptor userDetailsInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoggingInterceptor());
-        registry.addInterceptor(new UserDetailsInterceptor());
+        registry.addInterceptor(userDetailsInterceptor);
     }
 
     @Override
