@@ -51,7 +51,8 @@ public class Trainee extends User {
         super(
                 firstName,
                 lastName,
-                username
+                username,
+                true
         );
 
         this.dateOfBirth = dateOfBirth;

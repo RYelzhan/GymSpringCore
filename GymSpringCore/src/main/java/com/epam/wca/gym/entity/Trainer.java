@@ -48,7 +48,8 @@ public class Trainer extends User {
         super(
                 firstName,
                 lastName,
-                username
+                username,
+                true
         );
 
         this.specialization = specialization;

@@ -30,6 +30,8 @@ public class User {
     private String lastname;
     @Column(name = "USERNAME", nullable = false)
     private String username;
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private boolean isActive;
 
     public User(
             String firstname,
@@ -66,6 +68,7 @@ public class User {
         return "\nid = " + id + '\n' +
                 "firstName = " + firstname + '\n' +
                 "lastName = " + lastname + '\n' +
-                "userName = " + username + '\n';
+                "userName = " + username + '\n' +
+                "isActive = " + isActive + '\n';
     }
 }

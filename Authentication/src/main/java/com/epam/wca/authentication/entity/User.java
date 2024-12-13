@@ -35,8 +35,6 @@ public class User implements UserDetails {
     private String username;
     @Column(name = "PASSWORD")
     private String password;
-    @Column(name = "IS_ACTIVE", nullable = false)
-    private boolean isActive;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "USER_ROLE_MAPPING",
             joinColumns = @JoinColumn(name = "USER_ID"),
@@ -46,7 +44,6 @@ public class User implements UserDetails {
     public User(String username, String password, Set<Role> roles) {
         this.username = username;
         this.password = password;
-        isActive = true;
         this.roles = roles;
     }
 

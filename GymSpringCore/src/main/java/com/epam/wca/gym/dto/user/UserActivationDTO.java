@@ -1,4 +1,4 @@
-package com.epam.wca.authentication.dto;
+package com.epam.wca.gym.dto.user;
 
 import jakarta.validation.constraints.NotNull;
 
