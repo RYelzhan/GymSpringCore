@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import static com.epam.wca.common.gymcommon.util.AppConstants.TRANSACTION_ID_HEADER;
 
@@ -25,27 +24,6 @@ public class LoggingInterceptor implements HandlerInterceptor {
             @NonNull Object handler
     ) throws IOException {
         String transactionId = request.getHeader(TRANSACTION_ID_HEADER);
-
-        Enumeration<String> headerNames = request.getHeaderNames();
-
-        if (headerNames != null) {
-            System.out.println("Request Headers:");
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                Enumeration<String> headerValues = request.getHeaders(headerName);
-
-                System.out.print(headerName + ": ");
-                while (headerValues.hasMoreElements()) {
-                    System.out.print(headerValues.nextElement());
-                    if (headerValues.hasMoreElements()) {
-                        System.out.print(", ");
-                    }
-                }
-                System.out.println();
-            }
-        } else {
-            System.out.println("No headers present in the request.");
-        }
 
         if (transactionId == null) {
             log.warn("No transactionId found in request. URL: {}, HTTP Method: {}",
