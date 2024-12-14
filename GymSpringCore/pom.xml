@@ -185,6 +185,12 @@
             <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
         </dependency>
 
+        <!-- Messaging dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-artemis</artifactId>
+        </dependency>
+
         <!-- Logs Tracing -->
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -193,12 +199,6 @@
         <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-reporter-brave</artifactId>
-        </dependency>
-
-        <!-- Messaging dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-artemis</artifactId>
         </dependency>
 
     </dependencies>

@@ -1,7 +1,7 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.authentication.service.impl;
 
-import com.epam.wca.gym.entity.Username;
-import com.epam.wca.gym.repository.UsernameRepository;
+import com.epam.wca.authentication.entity.Username;
+import com.epam.wca.authentication.repository.UsernameRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +43,7 @@ class ProfileServiceImplTest {
         Username existingUsername = new Username(baseUsername, 1L);
 
         // Mocking usernameDAO behavior
-        when(usernameRepository.findUsernameByBaseUserName(baseUsername)).thenReturn(existingUsername);
+        when(usernameRepository.findUsernameByBaseUserName(baseUsername)).thenReturn(Optional.of(existingUsername));
 
         // When
         String generatedUsername = profileService.createUsername(firstName, lastName);
@@ -62,7 +64,7 @@ class ProfileServiceImplTest {
         String baseUsername = firstName + "." + lastName;
 
         // Mocking the case where no username is found
-        when(usernameRepository.findUsernameByBaseUserName(baseUsername)).thenThrow(new RuntimeException());
+        when(usernameRepository.findUsernameByBaseUserName(baseUsername)).thenReturn(Optional.empty());
 
         // When
         String generatedUsername = profileService.createUsername(firstName, lastName);

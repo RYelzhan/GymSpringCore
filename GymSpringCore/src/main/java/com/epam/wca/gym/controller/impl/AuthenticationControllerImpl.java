@@ -1,10 +1,10 @@
 package com.epam.wca.gym.controller.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
-import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
-import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.gym.controller.documentation.AuthenticationControllerDocumentation;
+import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
+import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import jakarta.validation.Valid;

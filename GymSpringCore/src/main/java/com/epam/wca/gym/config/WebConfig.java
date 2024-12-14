@@ -20,10 +20,11 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
     private final UserArgumentResolver userArgumentResolver;
     private final UserDetailsInterceptor userDetailsInterceptor;
+    private final LoggingInterceptor loggingInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoggingInterceptor());
+        registry.addInterceptor(loggingInterceptor);
         registry.addInterceptor(userDetailsInterceptor);
     }
 

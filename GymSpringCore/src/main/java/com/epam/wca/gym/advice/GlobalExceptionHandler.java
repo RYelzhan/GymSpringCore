@@ -7,6 +7,7 @@ import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.exception.ServiceUnavailableException;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+@NoArgsConstructor
 public class GlobalExceptionHandler {
 
     private static final String INVALID_DATE_FORMAT = "Invalid date format. Please use the correct format (e.g., %s ).";

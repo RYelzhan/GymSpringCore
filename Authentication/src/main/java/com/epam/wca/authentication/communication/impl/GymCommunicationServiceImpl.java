@@ -1,5 +1,6 @@
 package com.epam.wca.authentication.communication.impl;
 
+import brave.Tracing;
 import com.epam.wca.authentication.communication.GymCommunicationService;
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
@@ -7,6 +8,8 @@ import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.core.JmsTemplate;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class GymCommunicationServiceImpl implements GymCommunicationService {
     private final JmsTemplate jmsTemplate;
+    private final Tracing tracing;
 
     @Override
     @Logging
@@ -29,10 +33,8 @@ public class GymCommunicationServiceImpl implements GymCommunicationService {
                 AppConstants.TRAINEE_DELETE_QUEUE,
                 username,
                 message -> {
-                    message.setStringProperty(
-                            AppConstants.TRANSACTION_ID_PROPERTY,
-                            TransactionContext.getTransactionId()
-                    );
+                    attachMessageProperties(message);
+
                     return message;
                 });
     }
@@ -52,10 +54,8 @@ public class GymCommunicationServiceImpl implements GymCommunicationService {
                 AppConstants.TRAINER_DELETE_QUEUE,
                 username,
                 message -> {
-                    message.setStringProperty(
-                            AppConstants.TRANSACTION_ID_PROPERTY,
-                            TransactionContext.getTransactionId()
-                    );
+                    attachMessageProperties(message);
+
                     return message;
                 });
     }
@@ -70,5 +70,18 @@ public class GymCommunicationServiceImpl implements GymCommunicationService {
         logErrorMessage(throwable);
 
         throw new InternalErrorException("Deletion is impossible right now. Retry later.");
+    }
+
+    private void attachMessageProperties(Message message) throws JMSException {
+        message.setStringProperty(
+                AppConstants.TRANSACTION_ID_PROPERTY,
+                TransactionContext.getTransactionId()
+        );
+
+        var context = tracing.currentTraceContext().get();
+        if (context != null) {
+            message.setStringProperty("X_B3_TraceId", context.traceIdString());
+            message.setStringProperty("X_B3_SpanId", context.spanIdString());
+        }
     }
 }

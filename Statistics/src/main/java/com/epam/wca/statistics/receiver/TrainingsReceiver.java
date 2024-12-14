@@ -1,5 +1,6 @@
 package com.epam.wca.statistics.receiver;
 
+import brave.Tracer;
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
@@ -25,13 +26,19 @@ import java.util.Set;
 public class TrainingsReceiver {
     private final TrainerService trainerService;
     private final Validator validator;
+    private Tracer tracer;
 
     @Logging
     @JmsListener(destination = AppConstants.TRAINING_ADD_QUEUE)
     public void receiveAddTraining(
             @Payload TrainerTrainingAddDTO trainingAddDTO,
-            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId
+            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId,
+            @Header(name = AppConstants.SPAN_ID_HEADER) String spanId,
+            @Header(name = AppConstants.TRACE_ID_HEADER) String traceId
     ) throws JMSException {
+        log.info("Request with spanId: {} and traceID: {}",
+                spanId, traceId);
+
         try {
             validate(trainingAddDTO);
 
@@ -51,8 +58,13 @@ public class TrainingsReceiver {
     @JmsListener(destination = AppConstants.TRAINING_DELETE_QUEUE)
     public void receiveDeleteTraining(
             @Payload TrainersTrainingsDeleteDTO trainingsDeleteDTO,
-            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId
+            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId,
+            @Header(name = AppConstants.SPAN_ID_HEADER) String spanId,
+            @Header(name = AppConstants.TRACE_ID_HEADER) String traceId
     ) throws JMSException {
+        log.info("Request with spanId: {} and traceID: {}",
+                spanId, traceId);
+
         try {
             validate(trainingsDeleteDTO);
 

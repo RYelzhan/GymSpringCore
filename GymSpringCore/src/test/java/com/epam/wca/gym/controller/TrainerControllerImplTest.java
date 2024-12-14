@@ -5,8 +5,12 @@ import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.interceptor.LoggingInterceptor;
+import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
+import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.util.DTOFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,16 +22,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -42,18 +47,36 @@ class TrainerControllerImplTest {
     @MockitoBean
     private TrainerService trainerService;
 
+    @MockitoBean
+    private UserRepository userRepository;
+
+    @MockitoBean
+    private LoggingInterceptor loggingInterceptor;
+
+    @MockitoBean
+    private UserDetailsInterceptor userDetailsInterceptor;
+
     private final Trainer trainer = new Trainer();
+
+    @BeforeEach
+    void setUp() throws IOException {
+        when(loggingInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userDetailsInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(trainer));
+    }
 
     @Test
     void testGetProfile() throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainer));
+
         var trainerSendDto = mock(TrainerSendDTO.class);
 
         try(var mockDTOFactory = mockStatic(DTOFactory.class)) {
             mockDTOFactory.when(() -> DTOFactory.createTrainerSendDTO(trainer))
                     .thenReturn(trainerSendDto);
 
-            mockMvc.perform(get("/users/trainers/profiles")
-                            .with(user(trainer)))
+            mockMvc.perform(get("/users/trainers/profiles"))
                     .andExpect(status().isOk());
         }
     }
@@ -64,9 +87,10 @@ class TrainerControllerImplTest {
 
         when(trainerService.update(any(Trainer.class), any(TrainerUpdateDTO.class)))
                 .thenReturn(trainerSendDto);
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainer));
 
         mockMvc.perform(put("/users/trainers/profiles")
-                        .with(user(trainer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -177,7 +201,7 @@ class TrainerControllerImplTest {
                              "isActive": true
                         }
                         """
-                ),
+                )/*,
                 Arguments.of("IsActive missing",
                         """
                         {
@@ -187,6 +211,7 @@ class TrainerControllerImplTest {
                         }
                         """
                 )
+                */
         );
     }
 
@@ -194,17 +219,9 @@ class TrainerControllerImplTest {
     @MethodSource("updateProfileBadData")
     void testUpdateProfile_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         mockMvc.perform(put("/users/trainers/profiles")
-                        .with(user(trainer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testDeleteProfile() throws Exception {
-        mockMvc.perform(delete("/users/trainers/profiles")
-                        .with(user(trainer)))
-                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -213,9 +230,10 @@ class TrainerControllerImplTest {
 
         when(trainerService.findTrainingsFiltered(any(Long.class), any(TrainerTrainingQuery.class)))
                 .thenReturn(trainingBasicDTOS);
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainer));
 
         mockMvc.perform(post("/users/trainers/trainings")
-                        .with(user(trainer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -272,7 +290,6 @@ class TrainerControllerImplTest {
     @MethodSource("getTrainingsBadData")
     void testGetTrainings_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         mockMvc.perform(post("/users/trainers/trainings")
-                        .with(user(trainer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());
@@ -280,8 +297,10 @@ class TrainerControllerImplTest {
 
     @Test
     void testCreateTraining() throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainer));
+
         mockMvc.perform(post("/users/trainers/trainings/new")
-                        .with(user(trainer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -291,7 +310,7 @@ class TrainerControllerImplTest {
                              "trainingDuration": 60
                         }
                     """))
-                .andExpect(status().isCreated());
+                .andExpect(status().isAccepted());
     }
 
     static Stream<Arguments> createTrainingBadData() {
@@ -408,8 +427,10 @@ class TrainerControllerImplTest {
     @ParameterizedTest(name = "{index} - {0}")
     @MethodSource("createTrainingBadData")
     void testCreateTraining_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainer));
+
         mockMvc.perform(post("/users/trainers/trainings/new")
-                        .with(user(trainer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());

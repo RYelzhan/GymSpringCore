@@ -136,6 +136,13 @@ The Gym-CRM system follows a microservices-based architecture with the following
 
 - A docker-compose.yml file for Grafana and Prometheus is located in the monitoring directory of the Gym Main module.
 
+### 6. Start Zipkin Tracing Services:
+- Ensure Zipkin Tracing is running on 
+- To start using Docker:
+  ```bash
+  docker run -d -p 9411:9411 openzipkin/zipkin:latest
+  ```
+
 ## Configuration Details
 
 - All configurations can be updated in application.properties files for each module.

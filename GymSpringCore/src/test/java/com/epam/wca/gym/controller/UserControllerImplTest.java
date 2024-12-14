@@ -1,7 +1,11 @@
 package com.epam.wca.gym.controller;
 
 import com.epam.wca.gym.entity.User;
+import com.epam.wca.gym.interceptor.LoggingInterceptor;
+import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
+import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,9 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,12 +37,30 @@ class UserControllerImplTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private LoggingInterceptor loggingInterceptor;
+
+    @MockitoBean
+    private UserDetailsInterceptor userDetailsInterceptor;
+
+    @MockitoBean
+    private UserRepository userRepository;
+
     private final User user = new User();
+
+    @BeforeEach
+    void setUp() throws IOException {
+        when(loggingInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userDetailsInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
+    }
 
     @Test
     void testChangePassword_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(user));
+
         mockMvc.perform(put("/users/password")
-                        .with(user(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -81,7 +107,6 @@ class UserControllerImplTest {
     @MethodSource("changePasswordBadData")
     void testChangePassword_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         mockMvc.perform(put("/users/password")
-                        .with(user(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());
@@ -89,8 +114,10 @@ class UserControllerImplTest {
 
     @Test
     void testActivateDeactivate_Active_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(user));
+
         mockMvc.perform(patch("/users/active")
-                        .with(user(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -102,8 +129,10 @@ class UserControllerImplTest {
 
     @Test
     void testActivateDeactivate_Deactivate_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(user));
+
         mockMvc.perform(patch("/users/active")
-                        .with(user(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -116,7 +145,6 @@ class UserControllerImplTest {
     @Test
     void testActivateDeactivate_isActiveNull_ShouldReturnBadRequest() throws Exception {
         mockMvc.perform(patch("/users/active")
-                        .with(user(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {

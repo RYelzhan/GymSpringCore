@@ -1,4 +1,4 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.authentication.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;

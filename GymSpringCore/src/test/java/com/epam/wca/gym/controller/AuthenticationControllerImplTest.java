@@ -1,12 +1,13 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
-import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
-import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.service.AuthService;
+import com.epam.wca.gym.interceptor.LoggingInterceptor;
+import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,26 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.properties")
 class AuthenticationControllerImplTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @MockitoBean
-    private AuthService authService;
 
     @MockitoBean
     private TraineeService traineeService;
@@ -42,29 +42,19 @@ class AuthenticationControllerImplTest {
     @MockitoBean
     private TrainerService trainerService;
 
-    private final User user = new User();
+    @MockitoBean
+    private LoggingInterceptor loggingInterceptor;
+
+    @MockitoBean
+    private UserDetailsInterceptor userDetailsInterceptor;
 
     private static final String TRAINEE_REGISTER_URL = "/authentication/account/trainee";
     private static final String TRAINER_REGISTER_URL = "/authentication/account/trainer";
 
-    @Test
-    void testLogin() throws Exception {
-        String expectedToken = "dummyToken";
-
-        when(authService.generateToken(any(User.class))).thenReturn(expectedToken);
-
-        mockMvc.perform(post("/authentication/login")
-                        .with(user(user)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Login Successful. Token: " + expectedToken));
-    }
-
-    @Test
-    void testLogout() throws Exception {
-        mockMvc.perform(post("/authentication/logout")
-                        .with(user(user)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Logout Successful"));
+    @BeforeEach
+    void setUp() throws IOException {
+        when(loggingInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userDetailsInterceptor.preHandle(any(), any(), any())).thenReturn(true);
     }
 
     @Test
@@ -86,6 +76,9 @@ class AuthenticationControllerImplTest {
                             "address": "123 Main St"
                         }
                     """))
+                .andDo(mvcResult -> {
+                    System.out.println(mvcResult.getResponse().getContentAsString());
+                })
                 .andExpect(status().isCreated())
                 .andExpect(content().json("""
                 {
@@ -207,7 +200,8 @@ class AuthenticationControllerImplTest {
 
         var userAuthenticatedDTO = new UserAuthenticatedDTO(username, password);
 
-        when(trainerService.save(any(TrainerRegistrationDTO.class))).thenReturn(userAuthenticatedDTO);
+        when(trainerService.save(any(TrainerRegistrationDTO.class)))
+                .thenReturn(userAuthenticatedDTO);
 
         mockMvc.perform(post(TRAINER_REGISTER_URL)
                         .contentType("application/json")

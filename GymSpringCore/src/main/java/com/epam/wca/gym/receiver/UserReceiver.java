@@ -27,8 +27,13 @@ public class UserReceiver {
     @JmsListener(destination = AppConstants.TRAINEE_DELETE_QUEUE)
     public void receiveTraineeDelete(
             String username,
-            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId
+            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId,
+            @Header(name = AppConstants.SPAN_ID_HEADER) String spanId,
+            @Header(name = AppConstants.TRACE_ID_HEADER) String traceId
     ) throws JMSException {
+        log.info("Request with spanId: {} and traceID: {}",
+                spanId, traceId);
+
         var trainee = traineeRepository.findTraineeByUsername(username)
                 .orElseThrow(() -> {
                     log.error("Not valid message received. Error: trainee does not exist.");
@@ -47,8 +52,13 @@ public class UserReceiver {
     @JmsListener(destination = AppConstants.TRAINER_DELETE_QUEUE)
     public void receiveTrainerDelete(
             String username,
-            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId
+            @Header(name = AppConstants.TRANSACTION_ID_PROPERTY) String transactionId,
+            @Header(name = AppConstants.SPAN_ID_HEADER) String spanId,
+            @Header(name = AppConstants.TRACE_ID_HEADER) String traceId
     ) throws JMSException {
+        log.info("Request with spanId: {} and traceID: {}",
+                spanId, traceId);
+
         var trainer = trainerRepository.findTrainerByUsername(username)
                 .orElseThrow(() -> {
                     log.error("Not valid message received. Error: trainer does not exist.");

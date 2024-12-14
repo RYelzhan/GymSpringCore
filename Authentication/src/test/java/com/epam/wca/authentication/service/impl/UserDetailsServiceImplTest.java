@@ -1,8 +1,8 @@
-package com.epam.wca.gym.service.impl;
+package com.epam.wca.authentication.service.impl;
 
-import com.epam.wca.gym.entity.User;
-import com.epam.wca.gym.exception.authentication.UserBlockedAuthException;
-import com.epam.wca.gym.repository.UserRepository;
+import com.epam.wca.authentication.entity.User;
+import com.epam.wca.authentication.exception.authentication.UserBlockedAuthException;
+import com.epam.wca.authentication.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
