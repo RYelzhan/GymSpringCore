@@ -34,7 +34,6 @@ public class MessagingConfig {
     public JmsTemplate jmsTemplate() {
         var jmsTemplate = new JmsTemplate();
 
-        jmsTemplate.setSessionTransacted(true);
         jmsTemplate.setConnectionFactory(connectionFactory);
         jmsTemplate.setMessageConverter(jacksonJmsMessageConverter());
 
@@ -47,7 +46,6 @@ public class MessagingConfig {
 
         factory.setConnectionFactory(connectionFactory);
         factory.setConcurrency("1-1");
-        factory.setSessionTransacted(true);
 
         return factory;
     }

@@ -129,7 +129,7 @@ The Gym-CRM system follows a microservices-based architecture with the following
 - To start using Docker:
 
   ```bash
-  docker run --detach --name mycontainer -p 61616:61616 -p 8161:8161 --rm apache/activemq-artemis:latest-alpine
+  docker run --detach --name mycontainer -p 61616:61616 -p 8161:8161 apache/activemq-artemis:latest-alpine
   ```
 
 ### 5. Start Monitoring Services:
@@ -137,12 +137,29 @@ The Gym-CRM system follows a microservices-based architecture with the following
 - A docker-compose.yml file for Grafana and Prometheus is located in the monitoring directory of the Gym Main module.
 
 ### 6. Start Zipkin Tracing Services:
+
 - Ensure Zipkin Tracing is running on 
+
 - To start using Docker:
+
   ```bash
   docker run -d -p 9411:9411 openzipkin/zipkin:latest
   ```
 
+### 7. Start MongoDB Service:
+
+- To start using Docker:
+
+  ```bash
+  docker run --name some-mongo -d -p 27017:27017 mongo:latest
+  ```
+  
+- MongoShell command runner:
+
+  ```bash
+  mongosh mongodb://localhost:27017/
+  ```
+  
 ## Configuration Details
 
 - All configurations can be updated in application.properties files for each module.

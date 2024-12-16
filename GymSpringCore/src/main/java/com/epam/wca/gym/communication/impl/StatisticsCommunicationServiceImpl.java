@@ -9,7 +9,6 @@ import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class StatisticsCommunicationServiceImpl implements StatisticsCommunicationService {
     private final JmsTemplate jmsTemplate;
     private final Tracing tracing;
+    private static int attempt = 0;
 
     @Override
     @Logging
     @Transactional(transactionManager = "jmsTransactionManager")
     @CircuitBreaker(name = "statistics", fallbackMethod = "fallback")
-    @Retry(name = "statistics")
     public void deleteTrainings(TrainersTrainingsDeleteDTO trainingsDeleteDTO) {
         jmsTemplate.convertAndSend(
                 AppConstants.TRAINING_DELETE_QUEUE,
@@ -50,8 +49,9 @@ public class StatisticsCommunicationServiceImpl implements StatisticsCommunicati
     @Logging
     @Transactional(transactionManager = "jmsTransactionManager")
     @CircuitBreaker(name = "statistics", fallbackMethod = "fallback")
-    @Retry(name = "statistics")
     public void addNewTraining(TrainerTrainingAddDTO trainingAddDTO) {
+        log.info("Trying to add. Attempt: {}", attempt ++);
+
         jmsTemplate.convertAndSend(
                 AppConstants.TRAINING_ADD_QUEUE,
                 trainingAddDTO,
