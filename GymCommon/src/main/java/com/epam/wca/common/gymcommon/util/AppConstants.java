@@ -14,4 +14,5 @@ public final class AppConstants {
     public static final String TRAINER_DELETE_QUEUE = "trainer-delete-queue";
     public static final String SPAN_ID_HEADER = "X_B3_SpanId";
     public static final String TRACE_ID_HEADER = "X_B3_TraceId";
+    public static final String URI_ACCESSED_HEADER = "accessedURI";
 }

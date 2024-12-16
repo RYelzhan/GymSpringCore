@@ -24,7 +24,7 @@ public class AuthService {
     }
 
     @Logging
-    public Mono<String> authenticate(ServerWebExchange exchange, String authHeader) {
+    public Mono<String> authenticate(ServerWebExchange exchange, String authHeader, String uri) {
         String transactionId = RequestDetailsUtil.getTransactionId(exchange);
 
         if (transactionId == null) {
@@ -36,6 +36,7 @@ public class AuthService {
                 .uri("/authenticate")
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .header(AppConstants.TRANSACTION_ID_HEADER, transactionId)
+                .header(AppConstants.URI_ACCESSED_HEADER, uri)
                 .accept(MediaType.ALL)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, clientResponse ->

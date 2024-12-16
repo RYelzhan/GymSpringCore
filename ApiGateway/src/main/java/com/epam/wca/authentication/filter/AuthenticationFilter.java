@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 public class AuthenticationFilter implements GatewayFilter {
     private final AuthService authService;
 
-
     public AuthenticationFilter(@Lazy AuthService authService) {
         this.authService = authService;
     }
@@ -42,25 +41,27 @@ public class AuthenticationFilter implements GatewayFilter {
             return exchange.getResponse().setComplete();
         }
 
-        return authService.authenticate(exchange, authHeader)
-                .flatMap(username -> {
-                    // Add userId to the request or context for downstream services
-                    ServerHttpRequest modifiedRequest = exchange.getRequest()
-                            .mutate()
-                            .header(AppConstants.USERNAME_HEADER, username)
-                            .build();
+        String uri = exchange.getRequest().getURI().getPath();
 
-                    log.info("User Id returned from Auth Service: {}", username);
+        return authService.authenticate(exchange, authHeader, uri)
+                        .flatMap(username -> {
+                            // Add userId to the request or context for downstream services
+                            ServerHttpRequest modifiedRequest = exchange.getRequest()
+                                    .mutate()
+                                    .header(AppConstants.USERNAME_HEADER, username)
+                                    .build();
 
-                    return chain.filter(exchange.mutate().request(modifiedRequest).build());
-                })
-                .onErrorResume(ResponseStatusException.class, ex -> {
-                    // Propagate error details from the authentication service
-                    exchange.getResponse().setStatusCode(ex.getStatusCode());
-                    DataBuffer dataBuffer = exchange.getResponse().bufferFactory().wrap(
-                            ex.getReason().getBytes(StandardCharsets.UTF_8)
-                    );
-                    return exchange.getResponse().writeWith(Mono.just(dataBuffer));
-                });
+                            log.info("Username returned from Auth Service: {}", username);
+
+                            return chain.filter(exchange.mutate().request(modifiedRequest).build());
+                        })
+                        .onErrorResume(ResponseStatusException.class, ex -> {
+                            // Propagate error details from the authentication service
+                            exchange.getResponse().setStatusCode(ex.getStatusCode());
+                            DataBuffer dataBuffer = exchange.getResponse().bufferFactory().wrap(
+                                    ex.getReason().getBytes(StandardCharsets.UTF_8)
+                            );
+                            return exchange.getResponse().writeWith(Mono.just(dataBuffer));
+                        });
     }
 }

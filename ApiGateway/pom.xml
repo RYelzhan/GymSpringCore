@@ -18,15 +18,17 @@
 	<properties>
 		<java.version>17</java.version>
 
+		<gym-common.version>0.0.1-SNAPSHOT</gym-common.version>
+
 		<spring-cloud.version>2024.0.0-RC1</spring-cloud.version>
 	</properties>
 
 	<dependencies>
-		<!-- Common dependency classes -->
+		<!-- Common Classes needed for smooth communication -->
 		<dependency>
 			<groupId>com.epam.wca.common</groupId>
 			<artifactId>GymCommon</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${gym-common.version}</version>
 		</dependency>
 
 		<dependency>
@@ -44,12 +46,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-
-		<!-- Inter-service Communication tool -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 
 		<!-- Utility Dependency -->

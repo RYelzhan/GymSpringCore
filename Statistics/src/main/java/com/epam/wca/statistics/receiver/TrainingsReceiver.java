@@ -81,8 +81,8 @@ public class TrainingsReceiver {
     private <T> void validate(T dto) {
         Set<ConstraintViolation<T>> violations = validator.validate(dto);
 
-        //if (!violations.isEmpty()) {
+        if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
-        //}
+        }
     }
 }

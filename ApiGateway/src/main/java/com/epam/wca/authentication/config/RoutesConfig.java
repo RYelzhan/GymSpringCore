@@ -22,11 +22,11 @@ public class RoutesConfig {
                                 .uri("lb://Gym"))
                 .route("gym_application-main_route",
                         r -> r.path("/gym/**")
-                                .filters(f -> f.stripPrefix(1).filter(authenticationFilter))
+                                .filters(f -> f.filter(authenticationFilter).stripPrefix(1))
                                 .uri("lb://Gym"))
                 .route("statistics_route",
                         r -> r.path("/stats/**")
-                                .filters(f -> f.stripPrefix(1).filter(authenticationFilter))
+                                .filters(f -> f.filter(authenticationFilter).stripPrefix(1))
                                 .uri("lb://Statistics"))
                 .route("authentication_route",
                         r -> r.path("/auth/**")
