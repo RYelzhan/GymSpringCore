@@ -1,8 +1,15 @@
 package com.epam.wca.authentication.controller;
 
+import com.epam.wca.authentication.advice.AccessDeniedHandlerImpl;
+import com.epam.wca.authentication.advice.RestAuthenticationEntryPoint;
+import com.epam.wca.authentication.config.SecurityConfig;
+import com.epam.wca.authentication.controller.impl.AuthenticationControllerImpl;
+import com.epam.wca.authentication.entity.Role;
 import com.epam.wca.authentication.entity.User;
 import com.epam.wca.authentication.interceptor.LoggingInterceptor;
 import com.epam.wca.authentication.service.AuthService;
+import com.epam.wca.authentication.service.impl.JwtService;
+import com.epam.wca.authentication.service.impl.LoginAttemptService;
 import com.epam.wca.authentication.service.impl.UserService;
 import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,14 +18,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,9 +41,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("classpath:application-test.properties")
+@WebMvcTest(AuthenticationControllerImpl.class)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@Import(SecurityConfig.class)
 public class AuthenticationControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +57,29 @@ public class AuthenticationControllerTest {
     @MockitoBean
     private LoggingInterceptor loggingInterceptor;
 
-    private final User user = new User();
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @MockitoBean
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @MockitoBean
+    private LoginAttemptService loginAttemptService;
+
+    @MockitoBean
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @MockitoBean
+    private AccessDeniedHandlerImpl accessDeniedHandler;
+
+    private final User user = new User(
+            "user.name",
+            "password",
+            Set.of(new Role("ADMIN"))
+    );
 
     @BeforeEach
     void setUp() throws IOException {
@@ -69,10 +101,13 @@ public class AuthenticationControllerTest {
     void testLogin() throws Exception {
         String expectedToken = "dummyToken";
 
-        when(authService.generateToken(any(User.class))).thenReturn(expectedToken);
+        when(authService.generateToken(user)).thenReturn(expectedToken);
 
         mockMvc.perform(post("/login")
                         .with(user(user)))
+                .andDo(mvcResult -> {
+                    System.out.println(mvcResult.getResponse().getContentAsString());
+                })
                 .andExpect(status().isOk())
                 .andExpect(content().string("Login Successful. Token: " + expectedToken));
     }
@@ -80,8 +115,8 @@ public class AuthenticationControllerTest {
     @Test
     void testDelete() throws Exception {
         mockMvc.perform(delete("/delete")
-                .with(user(user))
-                .contentType(MediaType.ALL_VALUE))
+                        .with(user(user))
+                        .contentType(MediaType.ALL_VALUE))
                 .andExpect(status().isNoContent());
     }
 

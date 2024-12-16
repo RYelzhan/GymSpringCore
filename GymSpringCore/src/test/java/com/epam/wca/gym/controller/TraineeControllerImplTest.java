@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.controller.impl.TraineeControllerImpl;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
@@ -7,8 +8,12 @@ import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.interceptor.LoggingInterceptor;
 import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
+import com.epam.wca.gym.repository.TrainerRepository;
+import com.epam.wca.gym.repository.TrainingTypeRepository;
 import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
@@ -18,10 +23,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -41,15 +45,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("classpath:application-test.properties")
+@WebMvcTest(TraineeControllerImpl.class)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 class TraineeControllerImplTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private TraineeService traineeService;
+
+    @MockitoBean
+    private TrainerRepository trainerRepository;
+
+    @MockitoBean
+    private TrainingTypeRepository trainingTypeRepository;
 
     @MockitoBean
     private UserRepository userRepository;
@@ -251,6 +260,8 @@ class TraineeControllerImplTest {
 
         when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
                 .thenReturn(newlyAssignedTrainers);
+        when(trainerRepository.findTrainerByUsername(anyString()))
+                .thenReturn(Optional.of(new Trainer()));
 
         mockMvc.perform(put("/users/trainees/trainers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -304,6 +315,8 @@ class TraineeControllerImplTest {
                 .thenReturn(Optional.of(trainee));
         when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
                 .thenReturn(newlyAssignedTrainers);
+        when(trainerRepository.findTrainerByUsername("invalid_trainer"))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(put("/users/trainees/trainers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -319,6 +332,10 @@ class TraineeControllerImplTest {
                 .thenReturn(newlyAssignedTrainers);
         when(userRepository.findUserByUsername(anyString()))
                 .thenReturn(Optional.of(trainee));
+        when(trainerRepository.findTrainerByUsername(anyString()))
+                .thenReturn(Optional.of(new Trainer()));
+        when(trainingTypeRepository.findTrainingTypeByType(anyString()))
+                .thenReturn(Optional.of(new TrainingType()));
 
         mockMvc.perform(post("/users/trainees/trainings")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -374,6 +391,16 @@ class TraineeControllerImplTest {
                              "trainingType": "VeryLongTrainingTypeThatExceedsLimit"
                         }
                         """
+                ),
+                Arguments.of("Invalid Training type",
+                        """
+                        {
+                             "trainerName": "ethan.white",
+                             "dateFrom": "01.01.2020 10:00:00 UTC",
+                             "dateTo": "31.12.2030 10:00:00 UTC",
+                             "trainingType": "INVALID_TYPE"
+                        }
+                    """
                 )
         );
     }
@@ -381,6 +408,11 @@ class TraineeControllerImplTest {
     @ParameterizedTest(name = "{index} - {0}")
     @MethodSource("getTrainingsBadData")
     void testGetTrainings_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        when(trainingTypeRepository.findTrainingTypeByType("YOGA"))
+                .thenReturn(Optional.of(new TrainingType()));
+        when(trainingTypeRepository.findTrainingTypeByType("INVALID_TYPE"))
+                .thenReturn(Optional.empty());
+
         mockMvc.perform(post("/users/trainees/trainings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -391,6 +423,8 @@ class TraineeControllerImplTest {
     void testCreateTraining_ValidRequest() throws Exception {
         when(userRepository.findUserByUsername(anyString()))
                 .thenReturn(Optional.of(trainee));
+        when(trainerRepository.findTrainerByUsername(anyString()))
+                .thenReturn(Optional.of(new Trainer()));
 
         mockMvc.perform(post("/users/trainees/trainings/new")
                         .contentType(MediaType.APPLICATION_JSON)

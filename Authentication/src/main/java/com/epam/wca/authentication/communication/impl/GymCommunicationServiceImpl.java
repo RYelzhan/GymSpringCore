@@ -7,7 +7,6 @@ import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class GymCommunicationServiceImpl implements GymCommunicationService {
     @Logging
     @Transactional(transactionManager = "jmsTransactionManager")
     @CircuitBreaker(name = "gym", fallbackMethod = "fallbackTrainee")
-    @Retry(name = "statistics")
     public void deleteTrainee(String username) {
         jmsTemplate.convertAndSend(
                 AppConstants.TRAINEE_DELETE_QUEUE,
@@ -48,7 +46,6 @@ public class GymCommunicationServiceImpl implements GymCommunicationService {
     @Logging
     @Transactional(transactionManager = "jmsTransactionManager")
     @CircuitBreaker(name = "gym", fallbackMethod = "fallbackTrainer")
-    @Retry(name = "statistics")
     public void deleteTrainer(String username) {
         jmsTemplate.convertAndSend(
                 AppConstants.TRAINER_DELETE_QUEUE,
@@ -80,8 +77,8 @@ public class GymCommunicationServiceImpl implements GymCommunicationService {
 
         var context = tracing.currentTraceContext().get();
         if (context != null) {
-            message.setStringProperty("X_B3_TraceId", context.traceIdString());
-            message.setStringProperty("X_B3_SpanId", context.spanIdString());
+            message.setStringProperty(AppConstants.TRACE_ID_HEADER, context.traceIdString());
+            message.setStringProperty(AppConstants.SPAN_ID_HEADER, context.spanIdString());
         }
     }
 }

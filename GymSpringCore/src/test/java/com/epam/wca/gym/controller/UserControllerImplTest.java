@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.controller.impl.UserControllerImpl;
 import com.epam.wca.gym.entity.User;
 import com.epam.wca.gym.interceptor.LoggingInterceptor;
 import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
@@ -8,8 +9,8 @@ import com.epam.wca.gym.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,8 +24,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(UserControllerImpl.class)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 class UserControllerImplTest {
     @Autowired
     private MockMvc mockMvc;

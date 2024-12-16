@@ -25,6 +25,8 @@ public class AuthenticationControllerImpl implements
     @Override
     @Logging
     public String authenticate(@AuthenticationPrincipal User user) {
+        System.out.println(user);
+
         return user.getUsername();
     }
 

@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class StatisticsCommunicationServiceImpl implements StatisticsCommunicationService {
     private final JmsTemplate jmsTemplate;
     private final Tracing tracing;
-    private static int attempt = 0;
 
     @Override
     @Logging
@@ -40,18 +39,11 @@ public class StatisticsCommunicationServiceImpl implements StatisticsCommunicati
                 });
     }
 
-    private static void logErrorMessage(Throwable e) {
-        log.error("TransactionId: {} | Error of sending message to Message Queue. Error: {}",
-                TransactionContext.getTransactionId(), e.getMessage());
-    }
-
     @Override
     @Logging
     @Transactional(transactionManager = "jmsTransactionManager")
     @CircuitBreaker(name = "statistics", fallbackMethod = "fallback")
     public void addNewTraining(TrainerTrainingAddDTO trainingAddDTO) {
-        log.info("Trying to add. Attempt: {}", attempt ++);
-
         jmsTemplate.convertAndSend(
                 AppConstants.TRAINING_ADD_QUEUE,
                 trainingAddDTO,
@@ -70,9 +62,14 @@ public class StatisticsCommunicationServiceImpl implements StatisticsCommunicati
 
         var context = tracing.currentTraceContext().get();
         if (context != null) {
-            message.setStringProperty("X_B3_TraceId", context.traceIdString());
-            message.setStringProperty("X_B3_SpanId", context.spanIdString());
+            message.setStringProperty(AppConstants.TRACE_ID_HEADER, context.traceIdString());
+            message.setStringProperty(AppConstants.SPAN_ID_HEADER, context.spanIdString());
         }
+    }
+
+    private static void logErrorMessage(Throwable e) {
+        log.error("TransactionId: {} | Error of sending message to Message Queue. Error: {}",
+                TransactionContext.getTransactionId(), e.getMessage());
     }
 
     public void fallback(TrainersTrainingsDeleteDTO trainingsDeleteDTO, Throwable throwable) {

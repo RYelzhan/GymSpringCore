@@ -1,14 +1,12 @@
 package com.epam.wca.gym.controller.documentation;
 
-import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
-import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.common.gymcommon.util.ResponseMessages;
 import com.epam.wca.gym.controller.AuthenticationController;
+import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
+import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestBody;
 
 public interface AuthenticationControllerDocumentation extends AuthenticationController {
     @Operation(
@@ -24,7 +22,7 @@ public interface AuthenticationControllerDocumentation extends AuthenticationCon
             description = ResponseMessages.INVALID_INPUT_DESCRIPTION
     )
     @Override
-    UserAuthenticatedDTO registerTrainee(@RequestBody @Valid TraineeRegistrationDTO traineeDTO);
+    UserAuthenticatedDTO registerTrainee(TraineeRegistrationDTO traineeDTO);
 
     @Operation(
             summary = "Register a new trainer",
@@ -39,5 +37,5 @@ public interface AuthenticationControllerDocumentation extends AuthenticationCon
             description = ResponseMessages.INVALID_INPUT_DESCRIPTION
     )
     @Override
-    UserAuthenticatedDTO registerTrainer(@RequestBody @Valid TrainerRegistrationDTO trainerDTO);
+    UserAuthenticatedDTO registerTrainer(TrainerRegistrationDTO trainerDTO);
 }

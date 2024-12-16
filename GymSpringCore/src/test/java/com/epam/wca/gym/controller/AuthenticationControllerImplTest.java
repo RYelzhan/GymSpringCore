@@ -1,10 +1,14 @@
 package com.epam.wca.gym.controller;
 
 import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
+import com.epam.wca.gym.controller.impl.AuthenticationControllerImpl;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
+import com.epam.wca.gym.entity.TrainingType;
 import com.epam.wca.gym.interceptor.LoggingInterceptor;
 import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
+import com.epam.wca.gym.repository.TrainingTypeRepository;
+import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,25 +17,25 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("classpath:application-test.properties")
+@WebMvcTest(AuthenticationControllerImpl.class)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 class AuthenticationControllerImplTest {
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +51,12 @@ class AuthenticationControllerImplTest {
 
     @MockitoBean
     private UserDetailsInterceptor userDetailsInterceptor;
+
+    @MockitoBean
+    private TrainingTypeRepository trainingTypeRepository;
+
+    @MockitoBean
+    private UserRepository userRepository;
 
     private static final String TRAINEE_REGISTER_URL = "/authentication/account/trainee";
     private static final String TRAINER_REGISTER_URL = "/authentication/account/trainer";
@@ -76,9 +86,6 @@ class AuthenticationControllerImplTest {
                             "address": "123 Main St"
                         }
                     """))
-                .andDo(mvcResult -> {
-                    System.out.println(mvcResult.getResponse().getContentAsString());
-                })
                 .andExpect(status().isCreated())
                 .andExpect(content().json("""
                 {
@@ -202,6 +209,8 @@ class AuthenticationControllerImplTest {
 
         when(trainerService.save(any(TrainerRegistrationDTO.class)))
                 .thenReturn(userAuthenticatedDTO);
+        when(trainingTypeRepository.findTrainingTypeByType(anyString()))
+                .thenReturn(Optional.of(new TrainingType()));
 
         mockMvc.perform(post(TRAINER_REGISTER_URL)
                         .contentType("application/json")
@@ -234,14 +243,14 @@ class AuthenticationControllerImplTest {
                 Arguments.of("Missing required last name", """
                             {
                                 "firstName": "Jane",
-                                "trainingType": "YOGA"
+                                "trainingType": "VALID"
                             }
                         """
                 ),
                 Arguments.of("Missing required first name", """
                             {
                                 "lastName": "Smith",
-                                "trainingType": "YOGA"
+                                "trainingType": "VALID"
                             }
                         """
                 ),
@@ -256,7 +265,7 @@ class AuthenticationControllerImplTest {
                             {
                                 "firstName": "Jane",
                                 "lastName": "",
-                                "trainingType": "YOGA"
+                                "trainingType": "VALID"
                             }
                         """
                 ),
@@ -264,7 +273,7 @@ class AuthenticationControllerImplTest {
                             {
                                 "firstName": "",
                                 "lastName": "Smith",
-                                "trainingType": "YOGA"
+                                "trainingType": "VALID"
                             }
                         """
                 ),
@@ -282,7 +291,7 @@ class AuthenticationControllerImplTest {
                                 "lastName": "Smith",
                                 "trainingType": "%s"
                             }
-                        """.formatted("YOGA".repeat(100))
+                        """.formatted("VALID".repeat(100))
                 )
         );
     }
@@ -290,6 +299,11 @@ class AuthenticationControllerImplTest {
     @ParameterizedTest(name = "{index} - {0}")
     @MethodSource("provideInvalidTrainerData")
     void testRegisterTrainer_BadRequest_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        when(trainingTypeRepository.findTrainingTypeByType("INVALID_TYPE"))
+                .thenReturn(Optional.empty());
+        when(trainingTypeRepository.findTrainingTypeByType("VALID"))
+                .thenReturn(Optional.of(new TrainingType()));
+
         mockMvc.perform(post(TRAINER_REGISTER_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))

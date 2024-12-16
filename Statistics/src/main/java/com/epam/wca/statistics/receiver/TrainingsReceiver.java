@@ -1,6 +1,5 @@
 package com.epam.wca.statistics.receiver;
 
-import brave.Tracer;
 import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
@@ -26,7 +25,6 @@ import java.util.Set;
 public class TrainingsReceiver {
     private final TrainerService trainerService;
     private final Validator validator;
-    private Tracer tracer;
 
     @Logging
     @JmsListener(destination = AppConstants.TRAINING_ADD_QUEUE)
@@ -82,8 +80,9 @@ public class TrainingsReceiver {
 
     private <T> void validate(T dto) {
         Set<ConstraintViolation<T>> violations = validator.validate(dto);
-        if (!violations.isEmpty()) {
+
+        //if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
-        }
+        //}
     }
 }
