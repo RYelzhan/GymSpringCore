@@ -1,68 +1,86 @@
 package com.epam.wca.gym.communication.impl;
 
+import brave.Tracing;
+import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
-import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
+import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
-import com.epam.wca.gym.communication.feign.StatisticsClient;
-import com.epam.wca.gym.exception.ServiceUnavailableException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class StatisticsCommunicationServiceImpl implements StatisticsCommunicationService {
-    public static final String STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE =
-            "Training Creation is impossible right now. Please wait, and retry after some time.";
-
-    private final StatisticsClient statisticsClient;
+    private final JmsTemplate jmsTemplate;
+    private final Tracing tracing;
 
     @Override
-    @CircuitBreaker(name = "StatisticsService", fallbackMethod = "fallbackResponse")
-    @Retry(name = "StatisticsService")
+    @Logging
+    @Transactional(transactionManager = "jmsTransactionManager")
+    @CircuitBreaker(name = "statistics", fallbackMethod = "fallback")
     public void deleteTrainings(TrainersTrainingsDeleteDTO trainingsDeleteDTO) {
-        statisticsClient.deleteTrainings(trainingsDeleteDTO);
+        jmsTemplate.convertAndSend(
+                AppConstants.TRAINING_DELETE_QUEUE,
+                trainingsDeleteDTO,
+                message -> {
+                    attachMessageProperties(message);
+
+                    return message;
+                });
     }
 
     @Override
-    @CircuitBreaker(name = "StatisticsService", fallbackMethod = "fallbackResponse")
-    @Retry(name = "StatisticsService")
+    @Logging
+    @Transactional(transactionManager = "jmsTransactionManager")
+    @CircuitBreaker(name = "statistics", fallbackMethod = "fallback")
     public void addNewTraining(TrainerTrainingAddDTO trainingAddDTO) {
-        statisticsClient.addNewTraining(trainingAddDTO);
+        jmsTemplate.convertAndSend(
+                AppConstants.TRAINING_ADD_QUEUE,
+                trainingAddDTO,
+                message -> {
+                    attachMessageProperties(message);
+
+                    return message;
+                });
     }
 
-    @Override
-    @CircuitBreaker(name = "StatisticsService", fallbackMethod = "fallbackResponse")
-    @Retry(name = "StatisticsService")
-    public TrainerWorkloadSummary getWorkload(String username) {
-        return statisticsClient.getWorkload(username);
-    }
+    private void attachMessageProperties(Message message) throws JMSException {
+        message.setStringProperty(
+                AppConstants.TRANSACTION_ID_PROPERTY,
+                TransactionContext.getTransactionId()
+        );
 
-    public void fallbackResponse(TrainersTrainingsDeleteDTO trainingsDeleteDTO, Throwable e) {
-        logErrorMessage(e);
-
-        throw new ServiceUnavailableException(STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE);
-    }
-
-    public void fallbackResponse(TrainerTrainingAddDTO trainingAddDTO, Throwable e) {
-        logErrorMessage(e);
-
-        throw new ServiceUnavailableException(STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE);
-    }
-
-    public TrainerWorkloadSummary fallbackResponse(String username, Throwable e) {
-        logErrorMessage(e);
-
-        throw new ServiceUnavailableException(STATISTICS_SERVICE_UNAVAILABLE_USER_MESSAGE);
+        var context = tracing.currentTraceContext().get();
+        if (context != null) {
+            message.setStringProperty(AppConstants.TRACE_ID_HEADER, context.traceIdString());
+            message.setStringProperty(AppConstants.SPAN_ID_HEADER, context.spanIdString());
+        }
     }
 
     private static void logErrorMessage(Throwable e) {
-        log.error("TransactionId: {}, Fallback for getWorkload: {}",
+        log.error("TransactionId: {} | Error of sending message to Message Queue. Error: {}",
                 TransactionContext.getTransactionId(), e.getMessage());
+    }
+
+    public void fallback(TrainersTrainingsDeleteDTO trainingsDeleteDTO, Throwable throwable) {
+        logErrorMessage(throwable);
+
+        throw new InternalErrorException("Deletion is impossible right now. Retry later.");
+    }
+
+    public void fallback(TrainerTrainingAddDTO trainingAddDTO, Throwable throwable) {
+        logErrorMessage(throwable);
+
+        throw new InternalErrorException("Addition is impossible right now. Retry later.");
     }
 }

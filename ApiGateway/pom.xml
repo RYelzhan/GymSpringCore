@@ -17,20 +17,35 @@
 
 	<properties>
 		<java.version>17</java.version>
+
+		<gym-common.version>0.0.1-SNAPSHOT</gym-common.version>
+
 		<spring-cloud.version>2024.0.0-RC1</spring-cloud.version>
 	</properties>
 
 	<dependencies>
-		<!-- Eureka Server Client -->
+		<!-- Common Classes needed for smooth communication -->
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<groupId>com.epam.wca.common</groupId>
+			<artifactId>GymCommon</artifactId>
+			<version>${gym-common.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 
 		<!-- API Gateway -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
+		</dependency>
+
+		<!-- Eureka Server Client -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 
 		<!-- Utility Dependency -->
@@ -41,7 +56,22 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Testing Dependencies -->
+		<!-- Actuator -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Logs Tracing -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-brave</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.reporter2</groupId>
+			<artifactId>zipkin-reporter-brave</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

@@ -8,49 +8,54 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User implements UserDetails {
+public class User {
+    @Value("${table-generator.initial-value}")
+    private static final int ID_INITIAL_VALUE = 100;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_id_table_generator")
+    @TableGenerator(
+            name = "user_id_table_generator",
+            table = "user_id_generator",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_value",
+            pkColumnValue = "user_id",
+            initialValue = ID_INITIAL_VALUE,
+            allocationSize = 1
+    )
     private Long id;
     @Column(name = "FIRSTNAME", nullable = false)
-    private String firstName;
+    private String firstname;
     @Column(name = "LASTNAME", nullable = false)
-    private String lastName;
-    @Column(name = "USERNAME", nullable = false)
-    private String userName;
-    @Column(name = "PASSWORD", nullable = false)
-    private String password;
+    private String lastname;
+    @Column(name = "USERNAME", nullable = false, unique = true)
+    private String username;
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;
 
-    public User(String firstName,
-                String lastName,
-                String userName,
-                String password,
-                boolean isActive) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userName = userName;
-        this.password = password;
+    public User(
+            String firstname,
+            String lastname,
+            String username,
+            boolean isActive
+    ) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.username = username;
         this.isActive = isActive;
     }
 
@@ -65,7 +70,7 @@ public class User implements UserDetails {
         }
 
         return Objects.equals(this.id, otherUser.id) &&
-                Objects.equals(this.userName, otherUser.userName);
+                Objects.equals(this.username, otherUser.username);
     }
 
     @Override
@@ -77,43 +82,9 @@ public class User implements UserDetails {
     @Override
     public String toString() {
         return "\nid = " + id + '\n' +
-                "firstName = " + firstName + '\n' +
-                "lastName = " + lastName + '\n' +
-                "userName = " + userName + '\n' +
+                "firstName = " + firstname + '\n' +
+                "lastName = " + lastname + '\n' +
+                "userName = " + username + '\n' +
                 "isActive = " + isActive + '\n';
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public Object getRole() {
-        return new SimpleGrantedAuthority("USER");
     }
 }

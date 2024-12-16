@@ -28,12 +28,6 @@
             <version>${jackson-annocations.version}</version>
         </dependency>
 
-        <!-- Web (includes Spring, Jackson, Tomcat) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
         <!-- AOP (includes AspectJ and Spring AOP) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

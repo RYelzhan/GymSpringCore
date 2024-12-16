@@ -10,16 +10,30 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserFactory {
 
-    public static Trainee createTrainee(TraineeRegistrationDTO traineeRegistrationDTO) {
-        return new Trainee(traineeRegistrationDTO.firstName(),
+    public static Trainee createTrainee(
+            TraineeRegistrationDTO traineeRegistrationDTO,
+            String username
+    ) {
+        //TODO: Use Username/Id somehow
+        return new Trainee(
+                username,
+                traineeRegistrationDTO.firstName(),
                 traineeRegistrationDTO.lastName(),
                 traineeRegistrationDTO.dateOfBirth(),
-                traineeRegistrationDTO.address());
+                traineeRegistrationDTO.address()
+        );
     }
 
-    public static Trainer createTrainer(TrainerRegistrationDTO trainerDTO, TrainingType trainingType) {
-        return new Trainer(trainerDTO.firstName(),
+    public static Trainer createTrainer(
+            TrainerRegistrationDTO trainerDTO,
+            TrainingType trainingType,
+            String username) {
+        //TODO: Use Username/Id somehow
+        return new Trainer(
+                username,
+                trainerDTO.firstName(),
                 trainerDTO.lastName(),
-                trainingType);
+                trainingType
+        );
     }
 }

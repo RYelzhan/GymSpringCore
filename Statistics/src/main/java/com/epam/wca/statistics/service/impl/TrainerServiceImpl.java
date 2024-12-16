@@ -33,6 +33,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerWorkloadRepository trainerWorkloadRepository;
 
     @Override
+    @Logging
     @Transactional
     public void addNewTraining(TrainerTrainingAddDTO trainingAddDTO) {
         var trainerWorkload = trainerWorkloadRepository.findByUsernameAndYearAndMonth(

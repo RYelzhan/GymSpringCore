@@ -2,7 +2,6 @@ package com.epam.wca.gym.dto.trainer;
 
 import com.epam.wca.gym.aop.validation.ValidTrainingType;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record TrainerUpdateDTO(
@@ -15,8 +14,6 @@ public record TrainerUpdateDTO(
         @ValidTrainingType
         @NotBlank(message = "Last name is required")
         @Size(min = 2, max = 20, message = "Last name must be between 2 and 20 characters")
-        String trainingType,
-        @NotNull(message = "Is active is required")
-        Boolean isActive
+        String trainingType
 ) {
 }

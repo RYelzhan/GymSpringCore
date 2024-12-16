@@ -1,5 +1,8 @@
 package com.epam.wca.gym.controller.documentation;
 
+import com.epam.wca.common.gymcommon.util.ResponseMessages;
+import com.epam.wca.gym.aop.argument.InsertUser;
+import com.epam.wca.gym.aop.argument.InsertUserId;
 import com.epam.wca.gym.controller.TrainerController;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
@@ -7,12 +10,10 @@ import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -31,8 +32,9 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     TrainerSendDTO getProfile(
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 
     @Operation(
@@ -51,9 +53,10 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 
     @Operation(
@@ -68,8 +71,9 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     void deleteProfile(
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUserId Long id
     );
 
     @Operation(
@@ -87,9 +91,10 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 
     @Operation(
@@ -108,8 +113,9 @@ public interface TrainerControllerDocumentation extends TrainerController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 }

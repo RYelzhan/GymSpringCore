@@ -6,9 +6,9 @@ import com.epam.wca.common.gymcommon.statistics_dto.TrainerWorkloadSummary;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
 import com.epam.wca.statistics.controller.TrainerController;
 import com.epam.wca.statistics.service.TrainerService;
+import com.epam.wca.statistics.transaction.UserDetailsContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,10 +27,8 @@ public class TrainerControllerImpl implements TrainerController {
 
     @Override
     @Logging
-    public TrainerWorkloadSummary getWorkload(
-            @PathVariable("username") String username
-    ) {
-        return trainerService.getWorkload(username);
+    public TrainerWorkloadSummary getWorkload() {
+        return trainerService.getWorkload(UserDetailsContext.getUsername());
     }
 
     @Override

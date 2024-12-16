@@ -1,5 +1,8 @@
 package com.epam.wca.gym.controller.documentation;
 
+import com.epam.wca.common.gymcommon.util.ResponseMessages;
+import com.epam.wca.gym.aop.argument.InsertUser;
+import com.epam.wca.gym.aop.argument.InsertUserId;
 import com.epam.wca.gym.controller.TraineeController;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -9,13 +12,11 @@ import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
-import com.epam.wca.gym.util.ResponseMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -36,8 +37,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
+    @Override
     TraineeSendDTO getProfile(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -56,9 +58,10 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -73,8 +76,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     void deleteProfile(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUserId Long id
     );
 
     @Operation(
@@ -89,8 +93,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     List<TrainerBasicDTO> getNotAssignedTrainers(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -109,9 +114,10 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -126,9 +132,10 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @Operation(
@@ -147,8 +154,9 @@ public interface TraineeControllerDocumentation extends TraineeController {
             responseCode = "401",
             description = ResponseMessages.UNAUTHORIZED_ACCESS_DESCRIPTION
     )
+    @Override
     String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 }

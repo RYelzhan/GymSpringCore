@@ -1,6 +1,10 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.common.gymcommon.auth_dto.UserRegistrationDTO;
+import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.AuthenticationCommunicationService;
+import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -9,13 +13,11 @@ import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
-import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.repository.TraineeRepository;
-import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.service.TrainerService;
 import com.epam.wca.gym.service.TrainingService;
@@ -26,13 +28,13 @@ import com.epam.wca.gym.util.UserFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -41,18 +43,23 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
-    private final PasswordEncoder passwordEncoder;
     private final StatisticsCommunicationService statisticsCommunicationService;
+    private final AuthenticationCommunicationService authenticationCommunicationService;
+
+    @Override
+    public TraineeSendDTO getProfile(Trainee trainee) {
+        return DTOFactory.createTraineeSendDTO(trainee);
+    }
 
     @Override
     @Logging
     @Transactional
     public UserAuthenticatedDTO save(TraineeRegistrationDTO dto) {
-        var trainee = UserFactory.createTrainee(dto);
+        UserAuthenticatedDTO authenticatedUser = authenticationCommunicationService.userRegister(
+                new UserRegistrationDTO(dto.firstName(), dto.lastName(), Set.of("TRAINEE"))
+        );
 
-        var authenticatedUser = new UserAuthenticatedDTO(trainee.getUsername(), trainee.getPassword());
-
-        trainee.setPassword(passwordEncoder.encode(trainee.getPassword()));
+        var trainee = UserFactory.createTrainee(dto, authenticatedUser.username());
 
         traineeRepository.save(trainee);
 
@@ -75,17 +82,15 @@ public class TraineeServiceImpl implements TraineeService {
     @Logging
     @Transactional
     public TraineeSendDTO update(Trainee trainee, TraineeUpdateDTO traineeUpdateDTO) {
-        trainee.setFirstName(traineeUpdateDTO.firstName());
-        trainee.setLastName(traineeUpdateDTO.lastName());
+        trainee.setFirstname(traineeUpdateDTO.firstName());
+        trainee.setLastname(traineeUpdateDTO.lastName());
         if (traineeUpdateDTO.dateOfBirth() != null) {
             trainee.setDateOfBirth(traineeUpdateDTO.dateOfBirth());
         }
         if (traineeUpdateDTO.address() != null) {
             trainee.setAddress(traineeUpdateDTO.address());
         }
-        trainee.setActive(traineeUpdateDTO.isActive());
 
-        // it turns out finByUserName detaches object
         traineeRepository.save(trainee);
 
         return DTOFactory.createTraineeSendDTO(trainee);
@@ -108,7 +113,6 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    @Logging
     public void deleteAssociatedTrainings(Long id) {
         try {
             var trainee = traineeRepository.getReferenceById(id);

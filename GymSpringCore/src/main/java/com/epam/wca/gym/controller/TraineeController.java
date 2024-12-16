@@ -1,5 +1,7 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.aop.argument.InsertUser;
+import com.epam.wca.gym.aop.argument.InsertUserId;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainingCreateDTO;
@@ -11,7 +13,6 @@ import com.epam.wca.gym.entity.Trainee;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,42 +27,42 @@ import java.util.List;
 public interface TraineeController {
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     TraineeSendDTO getProfile(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @PutMapping(value = "/profiles")
     TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteProfile(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUserId Long id
     );
 
     @GetMapping(value = "/trainers", consumes = MediaType.ALL_VALUE)
     List<TrainerBasicDTO> getNotAssignedTrainers(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
-    @PutMapping(value = "/trainers", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/trainers")
     List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
-    @PostMapping(value = "/trainings", consumes = MediaType.ALL_VALUE)
+    @PostMapping(value = "/trainings")
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 
     @PostMapping("/trainings/new")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     );
 }

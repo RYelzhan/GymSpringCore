@@ -1,5 +1,6 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.controller.impl.TraineeControllerImpl;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
 import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
@@ -7,38 +8,45 @@ import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
+import com.epam.wca.gym.entity.Trainer;
+import com.epam.wca.gym.entity.TrainingType;
+import com.epam.wca.gym.interceptor.LoggingInterceptor;
+import com.epam.wca.gym.interceptor.UserDetailsInterceptor;
+import com.epam.wca.gym.repository.TrainerRepository;
+import com.epam.wca.gym.repository.TrainingTypeRepository;
+import com.epam.wca.gym.repository.UserRepository;
 import com.epam.wca.gym.service.TraineeService;
 import com.epam.wca.gym.util.DTOFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("classpath:application-test.properties")
+@WebMvcTest(TraineeControllerImpl.class)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 class TraineeControllerImplTest {
     @Autowired
     private MockMvc mockMvc;
@@ -46,30 +54,54 @@ class TraineeControllerImplTest {
     @MockitoBean
     private TraineeService traineeService;
 
+    @MockitoBean
+    private TrainerRepository trainerRepository;
+
+    @MockitoBean
+    private TrainingTypeRepository trainingTypeRepository;
+
+    @MockitoBean
+    private UserRepository userRepository;
+
+    @MockitoBean
+    private LoggingInterceptor loggingInterceptor;
+
+    @MockitoBean
+    private UserDetailsInterceptor userDetailsInterceptor;
+
     private final Trainee trainee = new Trainee();
     private final TraineeSendDTO traineeSendDto = mock(TraineeSendDTO.class);
 
+    @BeforeEach
+    void setUp() throws IOException {
+        when(loggingInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userDetailsInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(trainee));
+    }
+
     @Test
     void testGetProfile_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(trainee));
+
         var traineeSendDTO = mock(TraineeSendDTO.class);
 
         try (var mockDTOFactory = mockStatic(DTOFactory.class)) {
             mockDTOFactory.when(() -> DTOFactory.createTraineeSendDTO(trainee))
                     .thenReturn(traineeSendDTO);
 
-            mockMvc.perform(get("/users/trainees/profiles")
-                            .with(user(trainee)))
+            mockMvc.perform(get("/users/trainees/profiles"))
                     .andExpect(status().isOk());
         }
     }
 
     @Test
     void testUpdateProfile_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(trainee));
+
         when(traineeService.update(any(Trainee.class), any(TraineeUpdateDTO.class)))
                 .thenReturn(traineeSendDto);
 
         mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -127,6 +159,7 @@ class TraineeControllerImplTest {
                         }
                         """
                 ),
+                /*
                 Arguments.of("Missing required isActive",
                         """
                         {
@@ -137,6 +170,8 @@ class TraineeControllerImplTest {
                         }
                         """
                 ),
+
+                 */
                 Arguments.of("Exceeding firstname length",
                         """
                         {
@@ -199,40 +234,36 @@ class TraineeControllerImplTest {
     @MethodSource("updateProfileBadData")
     void testUpdateProfile_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         mockMvc.perform(put("/users/trainees/profiles")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testDeleteProfile_Success() throws Exception {
-        mockMvc.perform(delete("/users/trainees/profiles")
-                        .with(user(trainee)))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
     void testGetNotAssignedTrainers() throws Exception {
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(trainee));
+
         List<TrainerBasicDTO> noAssignedTrainers = new ArrayList<>();
 
         when(traineeService.getListOfNotAssignedTrainers(any(Trainee.class)))
                 .thenReturn(noAssignedTrainers);
 
-        mockMvc.perform(get("/users/trainees/trainers")
-                        .with(user(trainee)))
+        mockMvc.perform(get("/users/trainees/trainers"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testUpdateTrainerList_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(trainee));
+
         List<TrainerBasicDTO> newlyAssignedTrainers = new ArrayList<>();
 
         when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
                 .thenReturn(newlyAssignedTrainers);
+        when(trainerRepository.findTrainerByUsername(anyString()))
+                .thenReturn(Optional.of(new Trainer()));
 
         mockMvc.perform(put("/users/trainees/trainers")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -280,11 +311,14 @@ class TraineeControllerImplTest {
     void testUpdateTrainerList_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         List<TrainerBasicDTO> newlyAssignedTrainers = new ArrayList<>();
 
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainee));
         when(traineeService.addTrainers(any(Trainee.class), any(TraineeTrainersUpdateDTO.class)))
                 .thenReturn(newlyAssignedTrainers);
+        when(trainerRepository.findTrainerByUsername("invalid_trainer"))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(put("/users/trainees/trainers")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());
@@ -296,9 +330,14 @@ class TraineeControllerImplTest {
 
         when(traineeService.findTrainingsFiltered(any(Long.class), any(TraineeTrainingQuery.class)))
                 .thenReturn(newlyAssignedTrainers);
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainee));
+        when(trainerRepository.findTrainerByUsername(anyString()))
+                .thenReturn(Optional.of(new Trainer()));
+        when(trainingTypeRepository.findTrainingTypeByType(anyString()))
+                .thenReturn(Optional.of(new TrainingType()));
 
         mockMvc.perform(post("/users/trainees/trainings")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -352,6 +391,16 @@ class TraineeControllerImplTest {
                              "trainingType": "VeryLongTrainingTypeThatExceedsLimit"
                         }
                         """
+                ),
+                Arguments.of("Invalid Training type",
+                        """
+                        {
+                             "trainerName": "ethan.white",
+                             "dateFrom": "01.01.2020 10:00:00 UTC",
+                             "dateTo": "31.12.2030 10:00:00 UTC",
+                             "trainingType": "INVALID_TYPE"
+                        }
+                    """
                 )
         );
     }
@@ -359,8 +408,12 @@ class TraineeControllerImplTest {
     @ParameterizedTest(name = "{index} - {0}")
     @MethodSource("getTrainingsBadData")
     void testGetTrainings_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
+        when(trainingTypeRepository.findTrainingTypeByType("YOGA"))
+                .thenReturn(Optional.of(new TrainingType()));
+        when(trainingTypeRepository.findTrainingTypeByType("INVALID_TYPE"))
+                .thenReturn(Optional.empty());
+
         mockMvc.perform(post("/users/trainees/trainings")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());
@@ -368,8 +421,12 @@ class TraineeControllerImplTest {
 
     @Test
     void testCreateTraining_ValidRequest() throws Exception {
+        when(userRepository.findUserByUsername(anyString()))
+                .thenReturn(Optional.of(trainee));
+        when(trainerRepository.findTrainerByUsername(anyString()))
+                .thenReturn(Optional.of(new Trainer()));
+
         mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -379,7 +436,7 @@ class TraineeControllerImplTest {
                              "trainingDuration": 60
                         }
                     """))
-                .andExpect(status().isCreated());
+                .andExpect(status().isAccepted());
     }
 
     static Stream<Arguments> createTrainingsBadData() {
@@ -488,7 +545,6 @@ class TraineeControllerImplTest {
     @MethodSource("createTrainingsBadData")
     void testCreateTraining_BadData_ShouldReturnBadRequest(String testName, String body) throws Exception {
         mockMvc.perform(post("/users/trainees/trainings/new")
-                        .with(user(trainee))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest());

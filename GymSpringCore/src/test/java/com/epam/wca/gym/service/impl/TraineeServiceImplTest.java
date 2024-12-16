@@ -1,7 +1,10 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
+import com.epam.wca.common.gymcommon.auth_dto.UserRegistrationDTO;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.util.AppConstants;
+import com.epam.wca.gym.communication.AuthenticationCommunicationService;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainee.TraineeRegistrationDTO;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
@@ -11,7 +14,6 @@ import com.epam.wca.gym.dto.trainee.TraineeUpdateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
@@ -21,7 +23,6 @@ import com.epam.wca.gym.repository.TraineeRepository;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.UserFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,7 +43,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,38 +60,36 @@ class TraineeServiceImplTest {
     @Mock
     private TrainerServiceImpl trainerService;
     @Mock
-    private ProfileServiceImpl profileService;
-    @Mock
     private TrainingServiceImpl trainingService;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private StatisticsCommunicationService statisticsCommunicationService;
+    @Mock
+    private AuthenticationCommunicationService authenticationCommunicationService;
 
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
-    @BeforeEach
-    public void setUp() {
-        // Given // Create a TraineeDTO object
-        Trainee.setProfileService(profileService);
-        Trainer.setProfileService(profileService);
-    }
-
     @ParameterizedTest
     @CsvSource("John, Doe, John.Doe, password12")
     void testSave(String firstname, String lastname, String username, String password) {
-        TraineeRegistrationDTO traineeRegistrationDTO = new TraineeRegistrationDTO("John",
-                "Doe",
+        // arrange
+        UserAuthenticatedDTO userAuthenticatedDTO = new UserAuthenticatedDTO(
+                username,
+                password
+        );
+
+        TraineeRegistrationDTO traineeRegistrationDTO = new TraineeRegistrationDTO(firstname,
+                lastname,
                 ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
                 "123 Street");
 
-        when(profileService.createUsername(firstname, lastname)).thenReturn(username);
-        when(profileService.createPassword()).thenReturn(password);
-        when(passwordEncoder.encode(any())).thenReturn("encoded_password");
+        when(authenticationCommunicationService.userRegister(any(UserRegistrationDTO.class)))
+                .thenReturn(userAuthenticatedDTO);
 
-        Trainee trainee = UserFactory.createTrainee(traineeRegistrationDTO);
+        Trainee trainee = UserFactory.createTrainee(traineeRegistrationDTO, userAuthenticatedDTO.username());
 
         UserAuthenticatedDTO expectedAuthenticatedDTO = new UserAuthenticatedDTO(username, password);
 
@@ -150,8 +148,8 @@ class TraineeServiceImplTest {
     void testUpdateTrainee() {
         // Create test data
         Trainee trainee = new Trainee();
-        trainee.setFirstName("John");
-        trainee.setLastName("Doe");
+        trainee.setFirstname("John");
+        trainee.setLastname("Doe");
         trainee.setDateOfBirth(
                 ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)));
@@ -163,8 +161,7 @@ class TraineeServiceImplTest {
                 "Smith",
                 ZonedDateTime.parse("05.05.1995 00:00:00 " + ZoneId.systemDefault(),
                 DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)),
-                "456 Avenue",
-                false
+                "456 Avenue"
         );
 
         // Mock repository behavior
@@ -181,8 +178,8 @@ class TraineeServiceImplTest {
             TraineeSendDTO result = traineeService.update(trainee, traineeUpdateDTO);
 
             // Verify that the trainee fields were updated correctly
-            assertEquals("Jane", trainee.getFirstName());
-            assertEquals("Smith", trainee.getLastName());
+            assertEquals("Jane", trainee.getFirstname());
+            assertEquals("Smith", trainee.getLastname());
             assertEquals(
                     ZonedDateTime.parse(
                             "05.05.1995 00:00:00 " + ZoneId.systemDefault(),
@@ -191,7 +188,6 @@ class TraineeServiceImplTest {
                     trainee.getDateOfBirth()
             );
             assertEquals("456 Avenue", trainee.getAddress());
-            assertFalse(trainee.isActive());
 
             // Verify that the save method was called
             verify(traineeRepository).save(trainee);
@@ -207,10 +203,10 @@ class TraineeServiceImplTest {
         Trainee trainee = new Trainee();
         Set<Trainer> assignedTrainers = new HashSet<>();
 
-        Trainer trainer1 = new Trainer("John", "Doe", new TrainingType("YOGA"));
+        Trainer trainer1 = new Trainer("John.Doe", "John", "Doe", new TrainingType("YOGA"));
         trainer1.setId(1L);
 
-        Trainer trainer2 = new Trainer("Jane", "Smith", new TrainingType("CROSSFIT"));
+        Trainer trainer2 = new Trainer("Jane.Smith", "Jane", "Smith", new TrainingType("CROSSFIT"));
         trainer2.setId(2L);
 
         assignedTrainers.add(trainer1);
@@ -244,8 +240,8 @@ class TraineeServiceImplTest {
 
         Trainee trainee = new Trainee();
         trainee.setId(traineeId);
-        trainee.setFirstName("John");
-        trainee.setLastName("Doe");
+        trainee.setFirstname("John");
+        trainee.setLastname("Doe");
         trainee.setDateOfBirth(
                 ZonedDateTime.parse("01.01.1990 00:00:00 " + ZoneId.systemDefault(),
                         DateTimeFormatter.ofPattern(AppConstants.DEFAULT_DATE_FORMAT)));

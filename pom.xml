@@ -13,8 +13,9 @@
         <module>Statistics</module>
         <module>GymSpringCore</module>
         <module>ServiceDiscovery</module>
-        <module>ApiGateway</module>
+        <module>Authentication</module>
         <module>GymCommon</module>
+        <module>ApiGateway</module>
     </modules>
 
     <!-- All Spring Boot Starter versions -->

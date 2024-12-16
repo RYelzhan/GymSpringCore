@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.time.ZonedDateTime;
 
 public record TrainerTrainingQuery(
-        @Size(min = 2, max = 50, message = "Trainer name must be between 2 and 25 characters")
+        @Size(min = 2, max = 25, message = "Trainer name must be between 2 and 25 characters")
         @ValidTrainee
         String traineeName,
         @JsonFormat(pattern = AppConstants.DEFAULT_DATE_FORMAT)

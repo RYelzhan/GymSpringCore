@@ -16,6 +16,8 @@
 	<properties>
 		<java.version>17</java.version>
 
+		<gym-common.version>0.0.1-SNAPSHOT</gym-common.version>
+
 		<!--  Database version  -->
 		<postgresql.version>42.7.4</postgresql.version>
 
@@ -24,11 +26,11 @@
 	</properties>
 
 	<dependencies>
-		<!-- Dependency of Main Working Application -->
+		<!-- Common dependency classes -->
 		<dependency>
 			<groupId>com.epam.wca.common</groupId>
 			<artifactId>GymCommon</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${gym-common.version}</version>
 		</dependency>
 
 		<!-- Database (includes Hibernate and JPA support) -->
@@ -80,10 +82,29 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
+
+		<!-- Messaging dependencies -->
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-artemis</artifactId>
 		</dependency>
+
+		<!-- Actuator -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Logs Tracing -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-brave</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.reporter2</groupId>
+			<artifactId>zipkin-reporter-brave</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

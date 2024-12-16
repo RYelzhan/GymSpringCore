@@ -16,7 +16,7 @@ public class TraineeValidator implements ConstraintValidator<ValidTrainee, Strin
         if (usernameNotRequired(traineeUsername)) {
             return true;
         }
-        return traineeRepository.findTraineeByUserName(traineeUsername).isPresent();
+        return traineeRepository.findTraineeByUsername(traineeUsername).isPresent();
     }
 
     private boolean usernameNotRequired(String traineeUsername) {

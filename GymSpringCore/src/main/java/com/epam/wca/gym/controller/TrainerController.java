@@ -1,5 +1,7 @@
 package com.epam.wca.gym.controller;
 
+import com.epam.wca.gym.aop.argument.InsertUser;
+import com.epam.wca.gym.aop.argument.InsertUserId;
 import com.epam.wca.gym.dto.trainer.TrainerSendDTO;
 import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
@@ -9,7 +11,6 @@ import com.epam.wca.gym.entity.Trainer;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,37 +25,32 @@ import java.util.List;
 public interface TrainerController {
     @GetMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     TrainerSendDTO getProfile(
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 
     @PutMapping(value = "/profiles")
     TrainerSendDTO updateProfile(
             @RequestBody @Valid TrainerUpdateDTO trainerUpdateDTO,
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 
     @DeleteMapping(value = "/profiles", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteProfile(
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUserId Long id
     );
 
-    @PostMapping("/trainings")
+    @PostMapping(value = "/trainings")
     List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TrainerTrainingQuery trainerTrainingQuery,
-            @AuthenticationPrincipal Trainer authenticatedTrainer
+            @InsertUser Trainer authenticatedTrainer
     );
 
-    @PostMapping("/trainings/new")
-    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "/trainings/new")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     String createTraining(
             @RequestBody @Valid TrainerTrainingCreateDTO trainingDTO,
-            @AuthenticationPrincipal Trainer authenticatedTrainer
-    );
-
-    @GetMapping("/trainings/statistics")
-    Object getStatistics(
-            @AuthenticationPrincipal Trainer trainer
+            @InsertUser Trainer authenticatedTrainer
     );
 }
 

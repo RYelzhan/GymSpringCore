@@ -12,5 +12,5 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long> {
     @Query("SELECT t FROM Trainer t WHERE t.isActive = true AND t NOT IN (:assignedTrainers)")
     List<Trainer> findActiveUnassignedTrainers(Set<Trainer> assignedTrainers);
 
-    Optional<Trainer> findTrainerByUserName(String username);
+    Optional<Trainer> findTrainerByUsername(String username);
 }
