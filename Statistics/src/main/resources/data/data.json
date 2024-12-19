@@ -1,0 +1,185 @@
+[
+  {
+    "id": null,
+    "username": "ethan.white",
+    "firstname": "Ethan",
+    "lastname": "White",
+    "status": true,
+    "summary": {
+      "2025": {
+        "10": 60
+      },
+      "2024": {
+        "10": 120
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "olivia.harris",
+    "firstname": "Olivia",
+    "lastname": "Harris",
+    "status": true,
+    "summary": {
+      "2025": {
+        "10": 90
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "isabella.clark",
+    "firstname": "Isabella",
+    "lastname": "Clark",
+    "status": true,
+    "summary": {
+      "2025": {
+        "10": 75
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "aiden.lewis",
+    "firstname": "Aiden",
+    "lastname": "Lewis",
+    "status": true,
+    "summary": {
+      "2025": {
+        "10": 60
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "ava.young",
+    "firstname": "Ava",
+    "lastname": "Young",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 50
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "jacob.walker",
+    "firstname": "Jacob",
+    "lastname": "Walker",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 70
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "liam.hall",
+    "firstname": "Liam",
+    "lastname": "Hall",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 95
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "mia.allen",
+    "firstname": "Mia",
+    "lastname": "Allen",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 80
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "noah.king",
+    "firstname": "Noah",
+    "lastname": "King",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 65
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "ella.wright",
+    "firstname": "Ella",
+    "lastname": "Wright",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 55
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "william.scott",
+    "firstname": "William",
+    "lastname": "Scott",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 60
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "abigail.torres",
+    "firstname": "Abigail",
+    "lastname": "Torres",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 85
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "elijah.nguyen",
+    "firstname": "Elijah",
+    "lastname": "Nguyen",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 70
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "avery.hill",
+    "firstname": "Avery",
+    "lastname": "Hill",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 60
+      }
+    }
+  },
+  {
+    "id": null,
+    "username": "evelyn.green",
+    "firstname": "Evelyn",
+    "lastname": "Green",
+    "status": true,
+    "summary": {
+      "2024": {
+        "10": 50
+      }
+    }
+  }
+]

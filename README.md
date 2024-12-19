@@ -148,16 +148,27 @@ The Gym-CRM system follows a microservices-based architecture with the following
 
 ### 7. Start MongoDB Service:
 
+- Use docker-compose.yml file in Statistics module, under directory mongo.
+
 - To start using Docker:
 
   ```bash
-  docker run --name some-mongo -d -p 27017:27017 mongo:latest
+  docker compose -f docker-compose.yml up
+  or
+  docker compose up
   ```
   
-- MongoShell command runner:
+- After creating containers, to stop/start them, run commands:
 
   ```bash
-  mongosh mongodb://localhost:27017/
+  docker compose stop
+  docekr compose start 
+  ```
+  
+- MongoShell connecting to database command:
+
+  ```bash
+  mongosh mongodb://localhost:27017/ -u rootUser -p rooPassXXX
   ```
   
 ## Configuration Details

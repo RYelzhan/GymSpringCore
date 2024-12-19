@@ -2,10 +2,8 @@ package com.epam.wca.statistics.service.impl;
 
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
-import com.epam.wca.statistics.entity.TrainerWorkload;
 import com.epam.wca.statistics.exception.BadDataException;
 import com.epam.wca.statistics.exception.NoDataException;
-import com.epam.wca.statistics.repository.TrainerWorkloadRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

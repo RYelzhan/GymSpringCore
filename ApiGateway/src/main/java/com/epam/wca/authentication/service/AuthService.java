@@ -2,7 +2,6 @@ package com.epam.wca.authentication.service;
 
 import com.epam.wca.authentication.filter.TransactionIdFilter;
 import com.epam.wca.authentication.util.RequestDetailsUtil;
-import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.util.AppConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -23,7 +22,6 @@ public class AuthService {
         this.transactionIdFilter = transactionIdFilter;
     }
 
-    @Logging
     public Mono<String> authenticate(ServerWebExchange exchange, String authHeader, String uri) {
         String transactionId = RequestDetailsUtil.getTransactionId(exchange);
 
