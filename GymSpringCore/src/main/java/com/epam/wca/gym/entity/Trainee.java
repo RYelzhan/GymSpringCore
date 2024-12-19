@@ -1,7 +1,5 @@
 package com.epam.wca.gym.entity;
 
-import com.epam.wca.gym.service.ProfileService;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,27 +10,19 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
-
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "TRAINEES")
 public class Trainee extends User {
-    private static ProfileService profileService;
-
     @Column(name = "DATE_OF_BIRTH")
     private ZonedDateTime dateOfBirth;
 
@@ -41,26 +31,29 @@ public class Trainee extends User {
 
     @OneToMany(mappedBy = "trainee",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE,
+            cascade = CascadeType.ALL,
             orphanRemoval = true)
     private Set<Training> trainings;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "TRAINEE_TRAINER_MAPPING",
-            joinColumns = @JoinColumn(name = "TRAINEE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "TRAINER_ID"))
+            joinColumns = @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID"))
     private Set<Trainer> trainersAssigned;
 
-    public Trainee(String firstName,
-                   String lastName,
-                   ZonedDateTime dateOfBirth,
-                   String address) {
-
-        super(firstName,
+    public Trainee(
+               String username,
+               String firstName,
+               String lastName,
+               ZonedDateTime dateOfBirth,
+               String address
+    ) {
+        super(
+                firstName,
                 lastName,
-                profileService.createUsername(firstName, lastName),
-                profileService.createPassword(),
-                true);
+                username,
+                true
+        );
 
         this.dateOfBirth = dateOfBirth;
         this.address = address;
@@ -68,22 +61,15 @@ public class Trainee extends User {
         this.trainersAssigned = new HashSet<>();
     }
 
-    @PreRemove
-    public void clearJoinTableEntriesWithTrainers() {
-        trainersAssigned.clear();
-    }
-
-    public static void setProfileService(ProfileService profileService) {
-        Trainee.profileService = profileService;
-    }
-
     public void addTrainers(List<Trainer> trainerList) {
         trainersAssigned.addAll(trainerList);
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_TRAINEE"));
+    @PreRemove
+    public void removeTrainers() {
+        for (Trainer trainer : trainersAssigned) {
+            trainer.getTraineesAssigned().remove(this);
+        }
     }
 
     @Override

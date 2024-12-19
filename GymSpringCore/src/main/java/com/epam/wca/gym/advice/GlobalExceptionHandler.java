@@ -2,12 +2,12 @@ package com.epam.wca.gym.advice;
 
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.util.AppConstants;
-import com.epam.wca.gym.exception.AuthenticationException;
 import com.epam.wca.gym.exception.BadControllerRequestException;
 import com.epam.wca.gym.exception.ControllerValidationException;
 import com.epam.wca.gym.exception.ForbiddenActionException;
 import com.epam.wca.gym.exception.ProfileNotFoundException;
 import com.epam.wca.gym.exception.ServiceUnavailableException;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,7 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+@NoArgsConstructor
 public class GlobalExceptionHandler {
 
     private static final String INVALID_DATE_FORMAT = "Invalid date format. Please use the correct format (e.g., %s ).";
@@ -67,11 +68,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleInvalidLoginAttempt(IllegalArgumentException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> handleInvalidLoginAttempt(AuthenticationException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ProfileNotFoundException.class)

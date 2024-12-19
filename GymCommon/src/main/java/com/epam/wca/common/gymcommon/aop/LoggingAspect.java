@@ -1,6 +1,5 @@
 package com.epam.wca.common.gymcommon.aop;
 
-import com.epam.wca.common.gymcommon.exception.InternalErrorException;
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,11 @@ public class LoggingAspect {
     public Object logMethodDetails(ProceedingJoinPoint pjp) throws Throwable {
         String transactionId = TransactionContext.getTransactionId();
 
-        if (transactionId == null) {
+/*        if (transactionId == null) {
             throw new InternalErrorException("Method reached without creation of Transaction Id.");
         }
+
+ */
 
         String methodName = pjp.getSignature().toShortString();
         Object[] methodArgs = pjp.getArgs();

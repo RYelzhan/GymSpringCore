@@ -1,5 +1,6 @@
 package com.epam.wca.gym.aop.validation;
 
+import com.epam.wca.gym.aop.validation.TrainingTypeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -1,6 +1,9 @@
 package com.epam.wca.gym.service.impl;
 
+import com.epam.wca.common.gymcommon.auth_dto.UserAuthenticatedDTO;
+import com.epam.wca.common.gymcommon.auth_dto.UserRegistrationDTO;
 import com.epam.wca.common.gymcommon.exception.InternalErrorException;
+import com.epam.wca.gym.communication.AuthenticationCommunicationService;
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
 import com.epam.wca.gym.dto.trainer.TrainerBasicDTO;
 import com.epam.wca.gym.dto.trainer.TrainerRegistrationDTO;
@@ -9,7 +12,6 @@ import com.epam.wca.gym.dto.trainer.TrainerTrainingCreateDTO;
 import com.epam.wca.gym.dto.trainer.TrainerUpdateDTO;
 import com.epam.wca.gym.dto.training.TrainerTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
-import com.epam.wca.gym.dto.user.UserAuthenticatedDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
@@ -20,9 +22,10 @@ import com.epam.wca.gym.repository.TrainerRepository;
 import com.epam.wca.gym.util.DTOFactory;
 import com.epam.wca.gym.util.Filter;
 import com.epam.wca.gym.util.UserFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -58,42 +61,43 @@ class TrainerServiceImplTest {
     @Mock
     private TrainingServiceImpl trainingService;
     @Mock
-    private ProfileServiceImpl profileService;
-    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private StatisticsCommunicationService statisticsCommunicationService;
+    @Mock
+    private AuthenticationCommunicationService authenticationCommunicationService;
 
     @InjectMocks
     private TrainerServiceImpl trainerService;
 
-    @BeforeEach
-    public void setUp() {
-        // Given // Create a TraineeDTO object
-        Trainee.setProfileService(profileService);
-        Trainer.setProfileService(profileService);
-    }
-
-    @Test
-    void testSave() {
+    @ParameterizedTest
+    @CsvSource("John, Doe, John.Doe, password12")
+    void testSave(String firstname, String lastname, String username, String password) {
         // Given
+        UserAuthenticatedDTO userAuthenticatedDTO = new UserAuthenticatedDTO(
+                username,
+                password
+        );
         TrainingType trainingType = new TrainingType("CROSSFIT");
-        Trainer trainer = new Trainer("John", "Doe", trainingType);
+        Trainer trainer = new Trainer(username, firstname, lastname, trainingType);
         TrainerRegistrationDTO trainerDTO = new TrainerRegistrationDTO(
-                "John",
-                "Doe",
+                firstname,
+                lastname,
                 "CROSSFIT"
         );
 
         String encodedPassword = "encoded_password";
 
         // Mock trainingTypeService to return a specific TrainingType
-        when(trainingTypeService.findByType(trainerDTO.trainingType())).thenReturn(trainingType);
-        when(passwordEncoder.encode(any())).thenReturn(encodedPassword);
+        when(trainingTypeService.findByType(trainerDTO.trainingType()))
+                .thenReturn(trainingType);
+        when(authenticationCommunicationService.userRegister(any(UserRegistrationDTO.class)))
+                .thenReturn(userAuthenticatedDTO);
 
         // Mock static UserFactory.createTrainer to return a Trainer object
         try (MockedStatic<UserFactory> mockedUserFactory = mockStatic(UserFactory.class)) {
-            mockedUserFactory.when(() -> UserFactory.createTrainer(trainerDTO, trainingType))
+            mockedUserFactory.when(() ->
+                            UserFactory.createTrainer(trainerDTO, trainingType, userAuthenticatedDTO.username()))
                     .thenReturn(trainer);
 
             // Act: Call the save method
@@ -108,7 +112,7 @@ class TrainerServiceImplTest {
 
             // Verify the static method call
             mockedUserFactory.verify(
-                    () -> UserFactory.createTrainer(trainerDTO, trainingType),
+                    () -> UserFactory.createTrainer(trainerDTO, trainingType, userAuthenticatedDTO.username()),
                     times(1)
             );
         }
@@ -161,15 +165,14 @@ class TrainerServiceImplTest {
     void testUpdateTrainee() {
         // Create test data
         Trainer trainer = new Trainer();
-        trainer.setFirstName("John");
-        trainer.setLastName("Doe");
+        trainer.setFirstname("John");
+        trainer.setLastname("Doe");
         trainer.setSpecialization(new TrainingType("YOGA"));
 
         TrainerUpdateDTO trainerUpdateDTO = new TrainerUpdateDTO(
                 "Jane",
                 "Smith",
-                "CALISTHENICS",
-                false
+                "CALISTHENICS"
         );
 
         TrainingType updatedTrainingType = new TrainingType("CALISTHENICS");
@@ -190,8 +193,8 @@ class TrainerServiceImplTest {
             TrainerSendDTO result = trainerService.update(trainer, trainerUpdateDTO);
 
             // Verify that the trainee fields were updated correctly
-            assertEquals("Jane", trainer.getFirstName());
-            assertEquals("Smith", trainer.getLastName());
+            assertEquals("Jane", trainer.getFirstname());
+            assertEquals("Smith", trainer.getLastname());
             assertEquals(updatedTrainingType, trainer.getSpecialization());
             assertFalse(trainer.isActive());
 
@@ -211,6 +214,7 @@ class TrainerServiceImplTest {
         // Initialize a list of unassigned trainers that the repository will return
         List<Trainer> unassignedTrainers = List.of(
                 new Trainer(
+                        "Unassigned1.Trainer",
                         "Unassigned1",
                         "Trainer",
                         null
@@ -253,6 +257,7 @@ class TrainerServiceImplTest {
     void testFindById_TrainerExists() {
         // Given
         Trainer trainer = new Trainer(
+                "John.Doe",
                 "John",
                 "Doe",
                 null
@@ -286,8 +291,8 @@ class TrainerServiceImplTest {
 
         Trainer trainer = new Trainer();
         trainer.setId(trainerId);
-        trainer.setFirstName("John");
-        trainer.setLastName("Doe");
+        trainer.setFirstname("John");
+        trainer.setLastname("Doe");
         trainer.setActive(true);
         trainer.setTrainings(new HashSet<>());
 
@@ -307,25 +312,28 @@ class TrainerServiceImplTest {
         // Given
         String username = "johndoe";
         Trainer trainer = new Trainer(
+                "John.Doe",
                 "John",
                 "Doe",
                 null
         );
 
-        when(trainerRepository.findTrainerByUserName(username)).thenReturn(Optional.of(trainer));
+        when(trainerRepository.findTrainerByUsername(username)).thenReturn(Optional.of(trainer));
 
         // When
         Trainer result = trainerService.findByUsername(username);
 
         // Then
         assertEquals(trainer, result);
-        verify(trainerRepository).findTrainerByUserName(username); // Verify the repository method was called
+        verify(trainerRepository).findTrainerByUsername(username); // Verify the repository method was called
     }
 
     @Test
     void testCreateTraining() {
         // Giventrue, Tra
-        Trainer trainer = new Trainer("John",
+        Trainer trainer = new Trainer(
+                "John.Doe",
+                "John",
                 "Doe",
                 null
         );
@@ -338,16 +346,16 @@ class TrainerServiceImplTest {
                 60
         );
 
-        Trainee trainee = new Trainee("Jane", "Smith", null, null);
+        Trainee trainee = new Trainee("Jane.Smith", "Jane", "Smith", null, null);
         trainee.setTrainersAssigned(new HashSet<>());
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.of(trainee));
+        when(traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername())).thenReturn(Optional.of(trainee));
 
         // When
         trainerService.createTraining(trainer, trainingDTO);
 
         // Then
         assertTrue(trainee.getTrainersAssigned().contains(trainer)); // Check that the trainer was added to trainee's assigned trainers
-        verify(traineeRepository).findTraineeByUserName(trainingDTO.traineeUsername()); // Verify trainee lookup
+        verify(traineeRepository).findTraineeByUsername(trainingDTO.traineeUsername()); // Verify trainee lookup
         verify(trainingService).save(any(Training.class)); // Verify the training was saved
     }
 
@@ -355,6 +363,7 @@ class TrainerServiceImplTest {
     void testCreateTraining_TraineeNotFound() {
         // Given
         var trainer = new Trainer(
+                "John.Doe",
                 "John",
                 "Doe",
                 null
@@ -367,7 +376,7 @@ class TrainerServiceImplTest {
         );
 
         // Mocking that no trainee is found
-        when(traineeRepository.findTraineeByUserName(trainingDTO.traineeUsername())).thenReturn(Optional.empty());
+        when(traineeRepository.findTraineeByUsername(trainingDTO.traineeUsername())).thenReturn(Optional.empty());
 
         // When & Then
         var exception = assertThrows(
@@ -379,7 +388,7 @@ class TrainerServiceImplTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage)); // Verify the exception message
-        verify(traineeRepository).findTraineeByUserName(trainingDTO.traineeUsername()); // Verify trainee lookup
+        verify(traineeRepository).findTraineeByUsername(trainingDTO.traineeUsername()); // Verify trainee lookup
         verify(trainingService, never()).save(any(Training.class)); // Ensure save is not called
     }
 }

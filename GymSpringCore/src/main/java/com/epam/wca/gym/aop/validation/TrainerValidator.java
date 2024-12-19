@@ -16,7 +16,7 @@ public class TrainerValidator implements ConstraintValidator<ValidTrainer, Strin
         if (usernameNotRequired(trainerUsername)) {
             return true;
         }
-        return trainerRepository.findTrainerByUserName(trainerUsername).isPresent();
+        return trainerRepository.findTrainerByUsername(trainerUsername).isPresent();
     }
 
     private boolean usernameNotRequired(String trainerUsername) {

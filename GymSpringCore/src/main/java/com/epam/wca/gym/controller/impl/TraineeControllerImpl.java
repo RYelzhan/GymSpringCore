@@ -1,6 +1,8 @@
 package com.epam.wca.gym.controller.impl;
 
 import com.epam.wca.common.gymcommon.aop.Logging;
+import com.epam.wca.gym.aop.argument.InsertUser;
+import com.epam.wca.gym.aop.argument.InsertUserId;
 import com.epam.wca.gym.controller.documentation.TraineeControllerDocumentation;
 import com.epam.wca.gym.dto.trainee.TraineeSendDTO;
 import com.epam.wca.gym.dto.trainee.TraineeTrainersUpdateDTO;
@@ -11,10 +13,8 @@ import com.epam.wca.gym.dto.training.TraineeTrainingQuery;
 import com.epam.wca.gym.dto.training.TrainingBasicDTO;
 import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.service.TraineeService;
-import com.epam.wca.gym.util.DTOFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,33 +27,38 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
 
     @Override
     @Logging
-    public TraineeSendDTO getProfile(@AuthenticationPrincipal Trainee trainee) {
-        return DTOFactory.createTraineeSendDTO(trainee);
+    public TraineeSendDTO getProfile(@InsertUser Trainee trainee) {
+        return traineeService.getProfile(trainee);
     }
 
     @Override
     @Logging
     public TraineeSendDTO updateProfile(
             @RequestBody @Valid TraineeUpdateDTO traineeDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     ) {
         return traineeService.update(authenticatedTrainee, traineeDTO);
     }
 
+    /**
+     * @deprecated refactored Trainee deletion logic to be accessible through message receiver
+     * @param id id of trainee getting deleted
+     */
+    @Deprecated(since = "2.3")
     @Override
     @Logging
     public void deleteProfile(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUserId Long id
     ) {
         // TODO: invalidation refresh token logic
 
-        traineeService.deleteById(authenticatedTrainee.getId());
+        traineeService.deleteById(id);
     }
 
     @Override
     @Logging
     public List<TrainerBasicDTO> getNotAssignedTrainers(
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     ) {
         return traineeService.getListOfNotAssignedTrainers(authenticatedTrainee);
     }
@@ -61,7 +66,7 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     @Override
     public List<TrainerBasicDTO> updateTrainerList(
             @RequestBody @Valid TraineeTrainersUpdateDTO traineeTrainersUpdateDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     ) {
         return traineeService.addTrainers(authenticatedTrainee, traineeTrainersUpdateDTO);
     }
@@ -70,7 +75,7 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     @Override
     public List<TrainingBasicDTO> getTrainings(
             @RequestBody @Valid TraineeTrainingQuery traineeTrainingQuery,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     ) {
         // TODO: READ!!!
         // callable statement
@@ -82,10 +87,10 @@ public class TraineeControllerImpl implements TraineeControllerDocumentation {
     @Override
     public String createTraining(
             @RequestBody @Valid TraineeTrainingCreateDTO trainingDTO,
-            @AuthenticationPrincipal Trainee authenticatedTrainee
+            @InsertUser Trainee authenticatedTrainee
     ) {
         traineeService.createTraining(authenticatedTrainee, trainingDTO);
 
-        return "Training Created Successfully";
+        return "Training Creation Started Successfully";
     }
 }

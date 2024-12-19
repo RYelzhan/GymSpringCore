@@ -1,11 +1,9 @@
 package com.epam.wca.gym.service.impl;
 
 import com.epam.wca.gym.communication.StatisticsCommunicationService;
-import com.epam.wca.gym.entity.Trainee;
 import com.epam.wca.gym.entity.Trainer;
 import com.epam.wca.gym.entity.Training;
 import com.epam.wca.gym.repository.TrainingRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,27 +19,21 @@ class TrainingServiceImplTest {
     private TrainingRepository trainingRepository;
 
     @Mock
-    private ProfileServiceImpl profileService;
-
-    @Mock
     private StatisticsCommunicationService statisticsCommunicationService;
 
     @InjectMocks
     private TrainingServiceImpl trainingService;
-
-    @BeforeEach
-    public void setUp() {
-        // Given // Create a TraineeDTO object
-        Trainee.setProfileService(profileService);
-        Trainer.setProfileService(profileService);
-    }
 
     @Test
     void testSave() {
         // Given
         Training training = new Training(
                 null,
-                new Trainer("John", "Doe", null),
+                new Trainer(
+                        "John.Doe",
+                        "John",
+                        "Doe",
+                        null),
                 null,
                 null,
                 null,

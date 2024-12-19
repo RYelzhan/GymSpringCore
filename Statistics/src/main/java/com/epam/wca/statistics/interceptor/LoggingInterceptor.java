@@ -5,13 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.io.IOException;
 
 import static com.epam.wca.common.gymcommon.util.AppConstants.TRANSACTION_ID_HEADER;
 
 @Slf4j
-@Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override
@@ -19,12 +20,15 @@ public class LoggingInterceptor implements HandlerInterceptor {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull Object handler
-    ) throws Exception {
+    ) throws IOException {
         String transactionId = request.getHeader(TRANSACTION_ID_HEADER);
 
         if (transactionId == null) {
             log.warn("No transactionId found in request. URL: {}, HTTP Method: {}",
                     request.getRequestURL(), request.getMethod());
+
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.getWriter().write("No transactionId found in request.");
 
             return false;
         }
