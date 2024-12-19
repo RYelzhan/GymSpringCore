@@ -107,7 +107,7 @@ VALUES
     (2, 17, 'Powerlifting Session', 2, '2025-10-11T10:00:00Z', 90),
     (3, 18, 'CrossFit Endurance', 3, '2025-10-12T08:00:00Z', 75),
     (4, 19, 'Yoga Basics', 4, '2025-10-13T09:30:00Z', 60),
-    (5, 20, 'Pilates Stretch', 5, '2024-10-14T10:00:00Z', 50),
+    (5, 20, 'Pilates Stretch', 5, '2024-10-14T10:00:00Z', 50), -- In Past
     (6, 21, 'Strength Training', 1, '2024-10-15T07:30:00Z', 70),
     (7, 22, 'Advanced Powerlifting', 2, '2024-10-16T10:30:00Z', 95),
     (8, 23, 'CrossFit Mastery', 3, '2024-10-17T08:00:00Z', 80),

@@ -62,6 +62,7 @@ public class MessagingConfig {
 
         return factory;
     }
+
     @Bean(name = "jmsTransactionManager")
     public PlatformTransactionManager jmsTransactionManager() {
         return new JmsTransactionManager(connectionFactory);
