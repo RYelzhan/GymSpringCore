@@ -4,6 +4,6 @@ import java.util.Map;
 
 public record TrainerWorkloadSummary(
         String username,
-        Map<Integer, Map<Integer, Integer>> trainingSummary
+        Map<Integer, Map<Months, Integer>> trainingSummary
 ) {
 }
