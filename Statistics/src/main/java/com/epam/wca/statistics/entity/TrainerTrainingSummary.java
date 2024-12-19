@@ -1,7 +1,5 @@
 package com.epam.wca.statistics.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,14 +18,11 @@ public class TrainerTrainingSummary {
     private String id;
     @Indexed(unique = true)
     private String username;
-    @Indexed(unique = true)
+    @Indexed
     private String firstname;
-    @Indexed(unique = true)
+    @Indexed
     private String lastname;
     private Boolean status;
-
-    @JsonSerialize(using = IntegerKeyMapSerializer.class)
-    @JsonDeserialize(using = IntegerKeyMapDeserializer.class)
     private Map<Integer, Map<Integer, Integer>> summary;
 
     public TrainerTrainingSummary(

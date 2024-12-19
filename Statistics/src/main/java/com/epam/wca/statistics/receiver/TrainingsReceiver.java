@@ -1,6 +1,5 @@
 package com.epam.wca.statistics.receiver;
 
-import com.epam.wca.common.gymcommon.aop.Logging;
 import com.epam.wca.common.gymcommon.logging.TransactionContext;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainerTrainingAddDTO;
 import com.epam.wca.common.gymcommon.statistics_dto.TrainersTrainingsDeleteDTO;
@@ -8,7 +7,6 @@ import com.epam.wca.common.gymcommon.util.AppConstants;
 import com.epam.wca.statistics.service.TrainerService;
 import jakarta.jms.JMSException;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,6 @@ public class TrainingsReceiver {
     private final TrainerService trainerService;
     private final Validator validator;
 
-    @Logging
     @JmsListener(destination = AppConstants.TRAINING_ADD_QUEUE)
     public void receiveAddTraining(
             @Payload TrainerTrainingAddDTO trainingAddDTO,
@@ -37,22 +34,15 @@ public class TrainingsReceiver {
         log.info("Request with spanId: {} and traceID: {}",
                 spanId, traceId);
 
-        try {
-            validate(trainingAddDTO);
+        validate(trainingAddDTO);
 
-            TransactionContext.setTransactionId(transactionId);
+        TransactionContext.setTransactionId(transactionId);
 
-            trainerService.addNewTraining(trainingAddDTO);
+        trainerService.addNewTraining(trainingAddDTO);
 
-            TransactionContext.clear();
-        } catch (ConstraintViolationException e) {
-            log.error("Not valid message received. Error: {}", e.getMessage());
-
-            throw new JMSException("Not valid message received. Error: " + e.getMessage());
-        }
+        TransactionContext.clear();
     }
 
-    @Logging
     @JmsListener(destination = AppConstants.TRAINING_DELETE_QUEUE)
     public void receiveDeleteTraining(
             @Payload TrainersTrainingsDeleteDTO trainingsDeleteDTO,
@@ -63,26 +53,22 @@ public class TrainingsReceiver {
         log.info("Request with spanId: {} and traceID: {}",
                 spanId, traceId);
 
-        try {
-            validate(trainingsDeleteDTO);
+        validate(trainingsDeleteDTO);
 
-            TransactionContext.setTransactionId(transactionId);
+        TransactionContext.setTransactionId(transactionId);
 
-            trainerService.deleteTrainings(trainingsDeleteDTO);
+        trainerService.deleteTrainings(trainingsDeleteDTO);
 
-            TransactionContext.clear();
-        } catch (ConstraintViolationException e) {
-            log.error("Not valid message received. Error: {}", e.getMessage());
-
-            throw new JMSException("Not valid message received. Error: " + e.getMessage());
-        }
+        TransactionContext.clear();
     }
 
-    private <T> void validate(T dto) {
+    private <T> void validate(T dto) throws JMSException {
         Set<ConstraintViolation<T>> violations = validator.validate(dto);
 
         if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
+            log.error("Not valid message received. Violations: {}", violations);
+
+            throw new JMSException("Not valid message received. Violations: " + violations);
         }
     }
 }
