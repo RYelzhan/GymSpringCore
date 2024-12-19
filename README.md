@@ -99,6 +99,10 @@ The Gym-CRM system follows a microservices-based architecture with the following
 
 - Grafana and Prometheus
 
+- Zipkin
+
+- MongoDB
+
 ## Instructions
 
 ### 1. Clone the repository:
@@ -168,7 +172,7 @@ The Gym-CRM system follows a microservices-based architecture with the following
 - MongoShell connecting to database command:
 
   ```bash
-  mongosh mongodb://localhost:27017/ -u rootUser -p rooPassXXX
+  mongosh mongodb://localhost:27017/ -u rootUser -p rootPassXXX
   ```
   
 ## Configuration Details
